@@ -72,29 +72,21 @@
 
         <label for="currencyFrom">Select Currency From:</label>
         <select id="currencyFrom">
-            <option value="NZD">NZD</option>
-            <option value="USD">USD</option>
-            <option value="GBP">GBP</option>
-            <option value="CHF">CHF</option>
-            <option value="CAD">CAD</option>
-            <option value="AUD">AUD</option>
-            <option value="JPY">JPY</option>
-            <option value="EUR">EUR</option>
+            <option value="NZD/USD">NZD/USD</option>
+            <option value="EUR/USD">EUR/USD</option>
+            <option value="GBP/USD">GBP/USD</option>
+            <option value="USD/CHF">USD/CHF</option>
+            <option value="USD/CAD">USD/CAD</option>
+            <option value="AUD/USD">AUD/USD</option>
+            <option value="GBP/JPY">GBP/JPY</option>
+            <option value="EUR/GBP">EUR/GBP</option>
+            <option value="AUD/CAD">AUD/CAD</option>
+            <option value="EUR/AUD">EUR/AUD</option>
+            <option value="NZD/JPY">NZD/JPY</option>
+            <option value="EUR/CAD">EUR/CAD</option>
+            <option value="EUR/JPY">EUR/JPY</option>
+            <option value="USD/JPY">USD/JPY</option>
         </select>
-    
-        <label for="currencyTo">Select Currency To:</label>
-        <select id="currencyTo">
-            <option value="NZD">NZD</option>
-            <option value="USD">USD</option>
-            <option value="GBP">GBP</option>
-            <option value="CHF">CHF</option>
-            <option value="CAD">CAD</option>
-            <option value="AUD">AUD</option>
-            <option value="JPY">JPY</option>
-            <option value="EUR">EUR</option>
-        </select>
-    
-
         <button onclick="fetchExchangeRate()">Calculate</button>
 
         <div id="result"></div>
@@ -107,19 +99,61 @@
         const riskPercentageInput = document.getElementById("riskPercentage").value;
         const stopLossPipsInput = document.getElementById("stopLossPips").value;
         const tradeSizeInput = document.getElementById("tradeSize").value;
-
-        const currencyFrom = document.getElementById("currencyFrom").value;
-        const currencyTo = document.getElementById("currencyTo").value;
-        console.log("Selected Base Currency:", currencyFrom);
-        console.log("Selected Currencies:", currencyTo);
         
-
         // Set API key
         const apiKey = 'fca_live_PWQbVf4a1VQNbilcKyjWAg2HTeFWa0tRC7aUEw2O'; // Replace with your actual API key
+        var response = '';
+        switch (currencyFrom) {
+        case 'NZD/USD':
+            response = await fetch('https://api.freecurrencyapi.com/v1/latest?apikey=fca_live_PWQbVf4a1VQNbilcKyjWAg2HTeFWa0tRC7aUEw2O&currencies=NZD&base_currency=USD');
+            break;
+        case 'EUR/USD':
+            response = await fetch('https://api.freecurrencyapi.com/v1/latest?apikey=fca_live_PWQbVf4a1VQNbilcKyjWAg2HTeFWa0tRC7aUEw2O&currencies=USD&base_currency=EUR');
+            break;
+        case 'GBP/USD':
+            response = await fetch('https://api.freecurrencyapi.com/v1/latest?apikey=fca_live_PWQbVf4a1VQNbilcKyjWAg2HTeFWa0tRC7aUEw2O&currencies=GBP&base_currency=USD');
+            break;
+        case 'USD/CHF':
+            response = await fetch('https://api.freecurrencyapi.com/v1/latest?apikey=fca_live_PWQbVf4a1VQNbilcKyjWAg2HTeFWa0tRC7aUEw2O&currencies=CHF&base_currency=USD');
+            break;
+        case 'USD/CAD':
+            response = await fetch('https://api.freecurrencyapi.com/v1/latest?apikey=fca_live_PWQbVf4a1VQNbilcKyjWAg2HTeFWa0tRC7aUEw2O&currencies=USD&base_currency=CAD');
+            break;
+        case 'AUD/USD':
+            response = await fetch('https://api.freecurrencyapi.com/v1/latest?apikey=fca_live_PWQbVf4a1VQNbilcKyjWAg2HTeFWa0tRC7aUEw2O&currencies=AUD&base_currency=USD');
+            break;    
+        case 'GBP/JPY':
+            response = await fetch('https://api.freecurrencyapi.com/v1/latest?apikey=fca_live_PWQbVf4a1VQNbilcKyjWAg2HTeFWa0tRC7aUEw2O&currencies=GBP&base_currency=JPY');
+            break;
+        case 'EUR/GBP':
+            response = await fetch('https://api.freecurrencyapi.com/v1/latest?apikey=fca_live_PWQbVf4a1VQNbilcKyjWAg2HTeFWa0tRC7aUEw2O&currencies=EUR&base_currency=GBP');
+            break;
+        case 'AUD/CAD':
+            response = await fetch('https://api.freecurrencyapi.com/v1/latest?apikey=fca_live_PWQbVf4a1VQNbilcKyjWAg2HTeFWa0tRC7aUEw2O&currencies=AUD&base_currency=CAD');
+            break;
+        case 'EUR/AUD':
+            response = await fetch('https://api.freecurrencyapi.com/v1/latest?apikey=fca_live_PWQbVf4a1VQNbilcKyjWAg2HTeFWa0tRC7aUEw2O&currencies=EUR&base_currency=AUD');
+            break;
+        case 'NZD/JPY':
+            response = await fetch('https://api.freecurrencyapi.com/v1/latest?apikey=fca_live_PWQbVf4a1VQNbilcKyjWAg2HTeFWa0tRC7aUEw2O&currencies=NZD&base_currency=JPY');
+            break;
+        case 'EUR/CAD':
+            response = await fetch('https://api.freecurrencyapi.com/v1/latest?apikey=fca_live_PWQbVf4a1VQNbilcKyjWAg2HTeFWa0tRC7aUEw2O&currencies=EUR&base_currency=CAD');
+            break;
+        case 'EUR/JPY':
+            response = await fetch('https://api.freecurrencyapi.com/v1/latest?apikey=fca_live_PWQbVf4a1VQNbilcKyjWAg2HTeFWa0tRC7aUEw2O&currencies=EUR&base_currency=JPY');
+            break;
+        case 'USD/JPY':
+            response = await fetch('https://api.freecurrencyapi.com/v1/latest?apikey=fca_live_PWQbVf4a1VQNbilcKyjWAg2HTeFWa0tRC7aUEw2O&currencies=USD&base_currency=JPY');
+            break;
+        default:
+            response = await fetch('https://api.freecurrencyapi.com/v1/latest?apikey=fca_live_PWQbVf4a1VQNbilcKyjWAg2HTeFWa0tRC7aUEw2O&currencies=USD&base_currency=EUR');
+            break;
+        }
 
         // Construct the URL with variables
         //const response = 'https://api.freecurrencyapi.com/v1/latest?apikey=' + apiKey + '&currencies=' + currencyTo + '&base_currency=' + currencyFrom;
-        const response = await fetch('https://api.freecurrencyapi.com/v1/latest?apikey=fca_live_PWQbVf4a1VQNbilcKyjWAg2HTeFWa0tRC7aUEw2O&currencies=USD&base_currency=EUR');
+        
         console.log("API URL:", response);
         const responseData = await response.json();
 
