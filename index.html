@@ -6,43 +6,65 @@
     <title>AI Model Comparison</title>
     <style>
         body { font-family: Arial, sans-serif; margin: 20px; padding: 20px; text-align: center; }
-        .container { margin-top: 20px; }
-        .box { display: inline-block; border: 1px solid #ccc; padding: 20px; margin: 10px; border-radius: 8px; box-shadow: 2px 2px 10px rgba(0,0,0,0.1); }
-        #imagePreview { max-width: 100%; height: auto; margin-top: 10px; display: none; }
+        .container { display: flex; justify-content: center; gap: 20px; margin-top: 20px; }
+        .box { width: 45%; padding: 20px; border: 1px solid #ccc; border-radius: 8px; box-shadow: 2px 2px 10px rgba(0,0,0,0.1); }
+        .image-container { text-align: center; margin-top: 10px; }
+        img { max-width: 100%; height: auto; border-radius: 8px; display: none; }
+        button { margin-top: 10px; padding: 10px 15px; border: none; background-color: #007bff; color: white; border-radius: 5px; cursor: pointer; }
+        button:hover { background-color: #0056b3; }
+        .result { font-weight: bold; margin-top: 10px; }
     </style>
 </head>
 <body>
 
-    <h1>AI Model Comparison</h1>
-
+    <h1>Compare Two AI Models</h1>
     <div class="container">
-        <input type="file" id="imageInput" accept="image/*">
-        <button onclick="uploadImage()">Upload & Evaluate</button>
-        <p id="result">Result will be shown here...</p>
-        <img id="imagePreview">
+        <div class="box">
+            <h2>Model A</h2>
+            <input type="file" id="imageInputA" accept="image/*" onchange="previewImage('A')">
+            <div class="image-container">
+                <img id="imagePreviewA">
+            </div>
+            <button onclick="uploadImage('A')">Upload & Evaluate</button>
+            <p class="result" id="resultA">Result will be shown here...</p>
+        </div>
+
+        <div class="box">
+            <h2>Model B</h2>
+            <input type="file" id="imageInputB" accept="image/*" onchange="previewImage('B')">
+            <div class="image-container">
+                <img id="imagePreviewB">
+            </div>
+            <button onclick="uploadImage('B')">Upload & Evaluate</button>
+            <p class="result" id="resultB">Result will be shown here...</p>
+        </div>
     </div>
 
     <script>
-        async function uploadImage() {
-            const fileInput = document.getElementById("imageInput");
-            const resultText = document.getElementById("result");
-            const imagePreview = document.getElementById("imagePreview");
+        function previewImage(model) {
+            const fileInput = document.getElementById(`imageInput${model}`);
+            const imagePreview = document.getElementById(`imagePreview${model}`);
+
+            if (fileInput.files.length > 0) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    imagePreview.src = event.target.result;
+                    imagePreview.style.display = "block";
+                };
+                reader.readAsDataURL(fileInput.files[0]);
+            }
+        }
+
+        async function uploadImage(model) {
+            const fileInput = document.getElementById(`imageInput${model}`);
+            const resultText = document.getElementById(`result${model}`);
 
             if (!fileInput.files.length) {
-                alert("Please select an image!");
+                alert(`Please select an image for Model ${model}!`);
                 return;
             }
 
             const file = fileInput.files[0];
-
-            // Mostrar preview da imagem
-            const reader = new FileReader();
-            reader.onload = function(event) {
-                imagePreview.src = event.target.result;
-                imagePreview.style.display = "block";
-            };
-            reader.readAsDataURL(file);
-
             const formData = new FormData();
             formData.append("image", file);
 
