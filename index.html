@@ -9,19 +9,17 @@
     <style>
         body {
             font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #6e7fcb, #1e2a78);
-            color: #fff;
+            background: #f0f4f8;
+            color: #333;
             margin: 0;
             padding: 0;
             text-align: center;
         }
         h1 {
             font-size: 2.5em;
-            color: #fff;
-            margin-top: 30px;
+            color: #333;
+            margin-top: 20px;
             margin-bottom: 40px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
         }
         .container {
             display: flex;
@@ -33,10 +31,10 @@
         .box {
             width: 100%;
             max-width: 400px;
-            background: #fff;
+            background: white;
             padding: 20px;
             border-radius: 15px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
         .box:hover {
@@ -54,13 +52,11 @@
             height: auto;
             border-radius: 10px;
             display: none;
-            opacity: 0;
-            transition: opacity 0.5s ease-in-out;
         }
         button {
             margin-top: 20px;
             padding: 12px 25px;
-            background-color: #ff5733;
+            background-color: #007bff;
             color: white;
             font-size: 16px;
             border: none;
@@ -69,12 +65,12 @@
             transition: background-color 0.3s ease;
         }
         button:hover {
-            background-color: #d0462b;
+            background-color: #0056b3;
         }
         .result-container {
             margin-top: 30px;
             padding: 20px;
-            background-color: #fff;
+            background-color: white;
             border-radius: 15px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
             display: none;
@@ -83,7 +79,6 @@
             font-weight: 600;
             font-size: 20px;
             margin-bottom: 20px;
-            color: #333;
         }
         #loader {
             display: none;
@@ -92,7 +87,7 @@
             left: 50%;
             transform: translate(-50%, -50%);
             font-size: 40px;
-            color: #ff5733;
+            color: #007bff;
         }
         #loader i {
             animation: rotate 2s linear infinite;
@@ -111,11 +106,9 @@
             border-radius: 10px;
             display: block;
             margin: 0 auto;
-            opacity: 0;
-            transition: opacity 0.5s ease-in-out;
         }
         .box h2 {
-            color: #ff5733;
+            color: #007bff;
             font-size: 1.6em;
         }
     </style>
@@ -139,14 +132,14 @@
 
     <div class="container">
         <div class="box">
-            <h2>Yolo 11</h2>
+            <h2>Model A</h2>
             <div class="image-container">
                 <img id="imagePreviewA">
             </div>
         </div>
 
         <div class="box">
-            <h2>Yolo 7</h2>
+            <h2>Model B</h2>
             <div class="image-container">
                 <img id="imagePreviewB">
             </div>
@@ -176,7 +169,6 @@
                 reader.onload = function(event) {
                     imagePreview.src = event.target.result;
                     imagePreview.style.display = "block"; // Mostra a miniatura
-                    setTimeout(() => { imagePreview.style.opacity = 1; }, 10); // Adiciona animação de opacidade
                     loader.style.display = "none"; // Esconde o loader após carregar a imagem
                 };
                 reader.readAsDataURL(fileInput.files[0]);
@@ -219,14 +211,9 @@
                 imagePreviewA.src = data.imageA;
                 imagePreviewB.src = data.imageB;
 
-                // Exibe as imagens processadas com animação de opacidade
-                setTimeout(() => {
-                    document.getElementById("processedImageA").style.opacity = 1;
-                    document.getElementById("processedImageB").style.opacity = 1;
-                }, 10);
-
                 // Esconde o loader
                 loader.style.display = "none";
+                // Exibe as imagens processadas
                 document.getElementById("processedImageA").style.display = "block";
                 document.getElementById("processedImageB").style.display = "block";
             } catch (error) {
