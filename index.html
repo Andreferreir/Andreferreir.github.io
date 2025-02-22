@@ -53,6 +53,7 @@
     img {
       border-radius: 4px;
       display: none;
+      max-width: none; /* Aqui removemos qualquer limitação de largura */
     }
     #loader {
       position: absolute;
@@ -82,9 +83,11 @@
       font-size: 1.2em;
     }
     .yolo-box img {
-      width: 100%;
       border-radius: 4px;
-      display: none;
+      display: block;
+      margin: 0 auto;
+      max-width: none; /* Remove qualquer limitação de largura */
+      height: auto; /* Permite que a altura seja ajustada proporcionalmente */
     }
   </style>
 </head>
@@ -151,13 +154,18 @@
         if (!response.ok) throw new Error("Failed to process images");
         const data = await response.json();
         console.log("Response from API:", data);
-        // Assign directly from API
+        
+        // Garantir que as imagens da API sejam exibidas corretamente
         const yolo10Image = document.getElementById("yolo10Image");
         const yolo7Image = document.getElementById("yolo7Image");
-        yolo10Image.src = data.imageA; // Make sure your API returns distinct images here.
-        yolo7Image.src = data.imageB;
+        
+        yolo10Image.src = data.imageA; // A imagem do YOLO 10
+        yolo7Image.src = data.imageB;  // A imagem do YOLO 7
+
+        // Exibir as imagens com os tamanhos originais
         yolo10Image.style.display = "block";
         yolo7Image.style.display = "block";
+
         loader.style.display = "none";
       } catch (error) {
         console.error(error);
