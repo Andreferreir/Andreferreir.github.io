@@ -24,10 +24,10 @@
     }
     h1 {
       font-size: 2.5em;
-      margin: 20px 0 40px;
+      margin-bottom: 20px;
       color: #333;
     }
-    /* Image Selector and Preview */
+    /* Image selector and preview */
     #imagePreviewContainer {
       margin-bottom: 20px;
     }
@@ -56,111 +56,118 @@
       position: relative;
       display: inline-block;
     }
-    img {
-      border-radius: 4px;
-      display: none;
-    }
+    /* Loader using Font Awesome's built-in spin class */
     #loader {
-      display: none;
       position: absolute;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
       font-size: 2em;
       color: #007bff;
+      display: none;
     }
-    /* Processed Images Container always visible */
-    #apiResponseContainer {
-      margin: 30px auto;
-      max-width: 1000px;
-      min-height: 300px;
-      /* Optional: add a subtle border/background to denote the area */
+    /* YOLO results container */
+    #yoloContainer {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-top: 30px;
+    }
+    .yolo-box {
+      flex: 1;
+      max-width: 400px;
+      padding: 10px;
       border: 1px solid #ddd;
       border-radius: 4px;
-      padding: 10px;
     }
-    #apiResponseContainer .image-container {
-      display: inline-block;
-      margin: 10px;
+    .yolo-box h2 {
+      margin-top: 0;
+      color: #007bff;
+      font-size: 1.2em;
+      margin-bottom: 10px;
     }
-    #apiResponseContainer img {
-      max-width: 48%;
-      border: 1px solid #ccc;
+    .yolo-box img {
+      width: 100%;
       border-radius: 4px;
-      display: block;
-      margin: 0 auto;
+      display: none;
     }
   </style>
 </head>
 <body>
   <h1>AI Model Comparison</h1>
+
   <!-- Image Selector and Preview -->
   <div>
     <input type="file" id="imageInput" accept="image/*" onchange="previewImage()" />
     <div id="imagePreviewContainer">
       <p>Preview:</p>
       <div class="image-container">
-        <img id="imagePreview" alt="Preview" />
-        <div id="loader"><i class="fas fa-spinner"></i></div>
+        <img id="imagePreview" alt="Preview Image" src="" />
+        <!-- Using fa-spin to ensure the loader spins -->
+        <div id="loader"><i class="fas fa-spinner fa-spin"></i></div>
       </div>
     </div>
     <button onclick="uploadImages()">Upload & Compare</button>
   </div>
 
-  <!-- API Response Container (Processed Images) -->
-  <div id="apiResponseContainer">
-    <div class="image-container">
-      <img id="processedImageA" alt="Processed Model A" />
+  <!-- YOLO Results Container: Always visible -->
+  <div id="yoloContainer">
+    <div class="yolo-box">
+      <h2>YOLO 10</h2>
+      <img id="yolo10Image" alt="YOLO 10 Image" src="" />
     </div>
-    <div class="image-container">
-      <img id="processedImageB" alt="Processed Model B" />
+    <div class="yolo-box">
+      <h2>YOLO 7</h2>
+      <img id="yolo7Image" alt="YOLO 7 Image" src="" />
     </div>
   </div>
 
   <script>
     function previewImage() {
-      const fileInput = document.getElementById('imageInput');
-      const imagePreview = document.getElementById('imagePreview');
-      const loader = document.getElementById('loader');
+      const fileInput = document.getElementById("imageInput");
+      const imagePreview = document.getElementById("imagePreview");
+      const loader = document.getElementById("loader");
       if (fileInput.files.length > 0) {
-        loader.style.display = 'block';
+        loader.style.display = "block";
         const reader = new FileReader();
         reader.onload = function(event) {
           imagePreview.src = event.target.result;
-          imagePreview.style.display = 'block';
-          loader.style.display = 'none';
-        }
+          imagePreview.style.display = "block";
+          loader.style.display = "none";
+        };
         reader.readAsDataURL(fileInput.files[0]);
       }
     }
+
     async function uploadImages() {
-      const fileInput = document.getElementById('imageInput');
-      const loader = document.getElementById('loader');
+      const fileInput = document.getElementById("imageInput");
+      const loader = document.getElementById("loader");
       if (!fileInput.files.length) {
-        alert('Please select an image for comparison!');
+        alert("Please select an image for comparison!");
         return;
       }
       const formData = new FormData();
-      formData.append('image', fileInput.files[0]);
-      loader.style.display = 'block';
+      formData.append("image", fileInput.files[0]);
+      loader.style.display = "block";
       try {
-        const response = await fetch('http://localhost:8080/compare', {
-          method: 'POST',
+        const response = await fetch("http://localhost:8080/compare", {
+          method: "POST",
           body: formData
         });
-        if (!response.ok) throw new Error('Failed to process images');
+        if (!response.ok) throw new Error("Failed to process images");
         const data = await response.json();
         console.log("Response from API:", data);
-        const processedImageA = document.getElementById('processedImageA');
-        const processedImageB = document.getElementById('processedImageB');
-        processedImageA.src = data.imageA;
-        processedImageB.src = data.imageB;
-        processedImageA.style.display = 'block';
-        processedImageB.style.display = 'block';
-        loader.style.display = 'none';
+        // Assuming data.imageA is YOLO 10 and data.imageB is YOLO 7
+        const yolo10Image = document.getElementById("yolo10Image");
+        const yolo7Image = document.getElementById("yolo7Image");
+        yolo10Image.src = data.imageA;
+        yolo7Image.src = data.imageB;
+        yolo10Image.style.display = "block";
+        yolo7Image.style.display = "block";
+        loader.style.display = "none";
       } catch (error) {
         console.error(error);
-        loader.style.display = 'none';
+        loader.style.display = "none";
       }
     }
   </script>
