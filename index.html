@@ -198,9 +198,11 @@
         yoloContainer.style.visibility = "visible";
         yoloContainer.style.opacity = "1";
 
-        // Descer a página automaticamente e centralizar as imagens
-        yoloContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
-
+        // Esperar as imagens carregarem antes de centralizar
+        yolo10Image.onload = function() {
+          yoloContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        };
+        
         loader.style.display = "none";
       } catch (error) {
         console.error(error);
