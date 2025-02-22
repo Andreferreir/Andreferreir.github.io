@@ -14,6 +14,12 @@
         button:hover { background-color: #0056b3; }
         .result-container { margin-top: 20px; padding: 15px; border: 1px solid #ccc; border-radius: 8px; box-shadow: 2px 2px 10px rgba(0,0,0,0.1); display: none; }
         .result { font-weight: bold; }
+        #loader {
+            display: none;
+            font-size: 20px;
+            margin-top: 20px;
+            color: #007bff;
+        }
     </style>
 </head>
 <body>
@@ -39,6 +45,8 @@
 
     <button onclick="uploadImages()">Upload & Compare</button>
 
+    <div id="loader">Processing... Please wait.</div> <!-- Loader element -->
+
     <div class="result-container" id="resultContainer">
         <h2>Comparison Result</h2>
         <p class="result" id="resultText">Processing...</p>
@@ -63,45 +71,54 @@
             }
         }
 
-       async function uploadImages() {
-    const fileInputA = document.getElementById("imageInputA");
-    const fileInputB = document.getElementById("imageInputB");
-    const imagePreviewA = document.getElementById("imagePreviewA");
-    const imagePreviewB = document.getElementById("imagePreviewB");
-    const resultText = document.getElementById("resultText");
+        async function uploadImages() {
+            const fileInputA = document.getElementById("imageInputA");
+            const fileInputB = document.getElementById("imageInputB");
+            const imagePreviewA = document.getElementById("imagePreviewA");
+            const imagePreviewB = document.getElementById("imagePreviewB");
+            const resultText = document.getElementById("resultText");
+            const loader = document.getElementById("loader");
 
-    if (!fileInputA.files.length || !fileInputB.files.length) {
-        alert("Please select both images for comparison!");
-        return;
-    }
+            if (!fileInputA.files.length || !fileInputB.files.length) {
+                alert("Please select both images for comparison!");
+                return;
+            }
 
-    const formData = new FormData();
-    formData.append("imageA", fileInputA.files[0]);
-    formData.append("imageB", fileInputB.files[0]);
+            const formData = new FormData();
+            formData.append("imageA", fileInputA.files[0]);
+            formData.append("imageB", fileInputB.files[0]);
 
-    resultText.innerText = "Processing...";
+            // Show the loader
+            loader.style.display = "block";
+            resultText.innerText = "Processing...";
 
-    try {
-        const response = await fetch("http://localhost:8080/compare", {
-            method: "POST",
-            body: formData
-        });
+            try {
+                const response = await fetch("http://localhost:8080/compare", {
+                    method: "POST",
+                    body: formData
+                });
 
-        if (!response.ok) throw new Error("Failed to process images");
+                if (!response.ok) throw new Error("Failed to process images");
 
-        const data = await response.json();
-        resultText.innerText = "Comparison Completed!";
+                const data = await response.json();
+                resultText.innerText = "Comparison Completed!";
 
-        // Substituir as imagens originais pelas processadas
-        imagePreviewA.src = data.imageA;
-        imagePreviewB.src = data.imageB;
+                // Substituir as imagens originais pelas processadas
+                imagePreviewA.src = data.imageA;
+                imagePreviewB.src = data.imageB;
 
-    } catch (error) {
-        resultText.innerText = "Error processing images!";
-        console.error(error);
-    }
-}
-
+                // Hide the loader once processing is done
+                loader.style.display = "none";
+                // Show the processed images
+                document.getElementById("processedImageA").style.display = "block";
+                document.getElementById("processedImageB").style.display = "block";
+            } catch (error) {
+                resultText.innerText = "Error processing images!";
+                console.error(error);
+                // Hide the loader if an error occurs
+                loader.style.display = "none";
+            }
+        }
     </script>
 
 </body>
