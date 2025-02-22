@@ -205,18 +205,27 @@
                 if (!response.ok) throw new Error("Failed to process images");
 
                 const data = await response.json();
+
+                // Verifique a resposta da API
+                console.log("Response from API:", data); // Logando os dados recebidos
+
+                // Atualize o texto de resultado
                 resultText.innerText = "Comparison Completed!";
 
-                // Atualiza as imagens processadas
-                const processedImageA = document.getElementById("processedImageA");
-                const processedImageB = document.getElementById("processedImageB");
+                // Verifique se os caminhos das imagens são válidos
+                if (data.imageA && data.imageB) {
+                    const processedImageA = document.getElementById("processedImageA");
+                    const processedImageB = document.getElementById("processedImageB");
 
-                processedImageA.src = data.imageA;
-                processedImageB.src = data.imageB;
+                    processedImageA.src = data.imageA;
+                    processedImageB.src = data.imageB;
 
-                // Exibe as imagens processadas
-                processedImageA.style.display = "block";
-                processedImageB.style.display = "block";
+                    // Exibe as imagens processadas
+                    processedImageA.style.display = "block";
+                    processedImageB.style.display = "block";
+                } else {
+                    resultText.innerText = "Images not found in response!";
+                }
 
                 // Esconde o loader
                 loader.style.display = "none";
