@@ -186,9 +186,12 @@
         yolo10Image.style.display = "block";
         yolo7Image.style.display = "block";
 
-        // Centralizar o container das imagens
+        // Exibir e centralizar o container das imagens
         yoloContainer.style.visibility = "visible";
         yoloContainer.style.opacity = "1";
+
+        // Descer a página automaticamente e centralizar as imagens
+        yoloContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
         loader.style.display = "none";
       } catch (error) {
