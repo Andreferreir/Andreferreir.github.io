@@ -42,10 +42,10 @@
       box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
       display: block;
       margin: 0 auto;
-      transition: transform 0.3s ease;
+      transition: transform 0.5s ease; /* Aumento no tempo da transição */
     }
     #imagePreview:hover {
-      transform: scale(1.05);
+      transform: scale(1.5); /* Aumento do zoom */
     }
     #loader {
       position: absolute;
@@ -100,11 +100,11 @@
       margin: 0 auto;
       max-width: 100%;
       height: auto;
-      transition: transform 0.3s ease;
+      transition: transform 0.5s ease; /* Mais suave */
     }
     /* Hover effect for zoom */
     .yolo-box img:hover, #imagePreview:hover {
-      transform: scale(1.2);
+      transform: scale(1.5); /* Aumento do zoom */
     }
     /* Responsive Design */
     @media (max-width: 768px) {
