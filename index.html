@@ -63,45 +63,45 @@
             }
         }
 
-        async function uploadImages() {
-            const fileInputA = document.getElementById("imageInputA");
-            const fileInputB = document.getElementById("imageInputB");
-            const resultContainer = document.getElementById("resultContainer");
-            const resultText = document.getElementById("resultText");
-            const processedImageA = document.getElementById("processedImageA");
-            const processedImageB = document.getElementById("processedImageB");
+       async function uploadImages() {
+    const fileInputA = document.getElementById("imageInputA");
+    const fileInputB = document.getElementById("imageInputB");
+    const imagePreviewA = document.getElementById("imagePreviewA");
+    const imagePreviewB = document.getElementById("imagePreviewB");
+    const resultText = document.getElementById("resultText");
 
-            if (!fileInputA.files.length || !fileInputB.files.length) {
-                alert("Please select both images for comparison!");
-                return;
-            }
+    if (!fileInputA.files.length || !fileInputB.files.length) {
+        alert("Please select both images for comparison!");
+        return;
+    }
 
-            const formData = new FormData();
-            formData.append("imageA", fileInputA.files[0]);
-            formData.append("imageB", fileInputB.files[0]);
+    const formData = new FormData();
+    formData.append("imageA", fileInputA.files[0]);
+    formData.append("imageB", fileInputB.files[0]);
 
-            resultContainer.style.display = "block";
-            resultText.innerText = "Processing...";
+    resultText.innerText = "Processing...";
 
-            try {
-                const response = await fetch("http://localhost:8080/compare", {
-                    method: "POST",
-                    body: formData
-                });
+    try {
+        const response = await fetch("https://ai-image-api.onrender.com/compare", {
+            method: "POST",
+            body: formData
+        });
 
-                if (!response.ok) throw new Error("Failed to process images");
+        if (!response.ok) throw new Error("Failed to process images");
 
-                const data = await response.json();
-                resultText.innerText = "Comparison Completed!";
-                processedImageA.src = data.imageA;
-                processedImageB.src = data.imageB;
-                processedImageA.style.display = "block";
-                processedImageB.style.display = "block";
-            } catch (error) {
-                resultText.innerText = "Error processing images!";
-                console.error(error);
-            }
-        }
+        const data = await response.json();
+        resultText.innerText = "Comparison Completed!";
+
+        // Substituir as imagens originais pelas processadas
+        imagePreviewA.src = data.imageA;
+        imagePreviewB.src = data.imageB;
+
+    } catch (error) {
+        resultText.innerText = "Error processing images!";
+        console.error(error);
+    }
+}
+
     </script>
 
 </body>
