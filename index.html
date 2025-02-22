@@ -49,10 +49,11 @@
         </div>
     </div>
 
+    <!-- Input de imagem único -->
     <input type="file" id="imageInput" accept="image/*" onchange="previewImage()">
     <button onclick="uploadImages()">Upload & Compare</button>
 
-    <div id="loader"><i class="fas fa-spinner"></i></div> <!-- Loader with spinning icon -->
+    <div id="loader"><i class="fas fa-spinner"></i></div> <!-- Loader com spinner -->
 
     <div class="result-container" id="resultContainer">
         <h2>Comparison Result</h2>
@@ -90,20 +91,21 @@
             const resultText = document.getElementById("resultText");
             const loader = document.getElementById("loader");
 
+            // Certifica-se de que uma imagem foi selecionada
             if (!fileInput.files.length) {
                 alert("Please select an image for comparison!");
                 return;
             }
 
             const formData = new FormData();
-            formData.append("imageA", fileInput.files[0]);
-            formData.append("imageB", fileInput.files[0]); // Using the same image for both models
+            formData.append("image", fileInput.files[0]); // Envia apenas uma imagem
 
-            // Show the loader
+            // Exibe o loader
             loader.style.display = "block";
             resultText.innerText = "Processing...";
 
             try {
+                // Envia a imagem para a API
                 const response = await fetch("http://localhost:8080/compare", {
                     method: "POST",
                     body: formData
@@ -114,19 +116,19 @@
                 const data = await response.json();
                 resultText.innerText = "Comparison Completed!";
 
-                // Substituir as imagens originais pelas processadas
+                // Atualiza as imagens processadas
                 imagePreviewA.src = data.imageA;
                 imagePreviewB.src = data.imageB;
 
-                // Hide the loader once processing is done
+                // Esconde o loader
                 loader.style.display = "none";
-                // Show the processed images
+                // Exibe as imagens processadas
                 document.getElementById("processedImageA").style.display = "block";
                 document.getElementById("processedImageB").style.display = "block";
             } catch (error) {
                 resultText.innerText = "Error processing images!";
                 console.error(error);
-                // Hide the loader if an error occurs
+                // Esconde o loader em caso de erro
                 loader.style.display = "none";
             }
         }
