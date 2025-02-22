@@ -134,14 +134,14 @@
         <div class="box">
             <h2>Model A</h2>
             <div class="image-container">
-                <img id="imagePreviewA">
+                <img id="imagePreviewA" style="display:none;">
             </div>
         </div>
 
         <div class="box">
             <h2>Model B</h2>
             <div class="image-container">
-                <img id="imagePreviewB">
+                <img id="imagePreviewB" style="display:none;">
             </div>
         </div>
     </div>
@@ -212,19 +212,20 @@
                 // Atualize o texto de resultado
                 resultText.innerText = "Comparison Completed!";
 
-                // Verifique se os caminhos das imagens são válidos
+                // Verifique se as URLs das imagens retornadas são válidas
                 if (data.imageA && data.imageB) {
                     const processedImageA = document.getElementById("processedImageA");
                     const processedImageB = document.getElementById("processedImageB");
 
+                    // Atualize as fontes das imagens com as URLs retornadas
                     processedImageA.src = data.imageA;
                     processedImageB.src = data.imageB;
 
-                    // Exibe as imagens processadas
+                    // Torne as imagens visíveis
                     processedImageA.style.display = "block";
                     processedImageB.style.display = "block";
                 } else {
-                    resultText.innerText = "Images not found in response!";
+                    resultText.innerText = "Error: Images not returned in response!";
                 }
 
                 // Esconde o loader
