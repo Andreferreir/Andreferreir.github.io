@@ -33,6 +33,15 @@
 <body>
 
     <h1>Compare My Two AI Models</h1>
+
+    <!-- Seletor de imagem no topo -->
+    <div>
+        <input type="file" id="imageInput" accept="image/*" onchange="previewImage()">
+        <button onclick="uploadImages()">Upload & Compare</button>
+    </div>
+
+    <div id="loader"><i class="fas fa-spinner"></i></div> <!-- Loader com spinner -->
+
     <div class="container">
         <div class="box">
             <h2>Model A</h2>
@@ -48,12 +57,6 @@
             </div>
         </div>
     </div>
-
-    <!-- Input de imagem único -->
-    <input type="file" id="imageInput" accept="image/*" onchange="previewImage()">
-    <button onclick="uploadImages()">Upload & Compare</button>
-
-    <div id="loader"><i class="fas fa-spinner"></i></div> <!-- Loader com spinner -->
 
     <div class="result-container" id="resultContainer">
         <h2>Comparison Result</h2>
