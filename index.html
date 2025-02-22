@@ -42,6 +42,10 @@
     <div class="result-container" id="resultContainer">
         <h2>Comparison Result</h2>
         <p class="result" id="resultText">Processing...</p>
+        <div class="image-container">
+            <img id="processedImageA" style="display:none;">
+            <img id="processedImageB" style="display:none;">
+        </div>
     </div>
 
     <script>
@@ -64,6 +68,8 @@
             const fileInputB = document.getElementById("imageInputB");
             const resultContainer = document.getElementById("resultContainer");
             const resultText = document.getElementById("resultText");
+            const processedImageA = document.getElementById("processedImageA");
+            const processedImageB = document.getElementById("processedImageB");
 
             if (!fileInputA.files.length || !fileInputB.files.length) {
                 alert("Please select both images for comparison!");
@@ -78,7 +84,7 @@
             resultText.innerText = "Processing...";
 
             try {
-                const response = await fetch("https://your-cloud-api.com/compare", {
+                const response = await fetch("https://http://localhost:8080/compare", {
                     method: "POST",
                     body: formData
                 });
@@ -86,7 +92,11 @@
                 if (!response.ok) throw new Error("Failed to process images");
 
                 const data = await response.json();
-                resultText.innerText = `Comparison Result: ${data.result}`;
+                resultText.innerText = "Comparison Completed!";
+                processedImageA.src = data.imageA;
+                processedImageB.src = data.imageB;
+                processedImageA.style.display = "block";
+                processedImageB.style.display = "block";
             } catch (error) {
                 resultText.innerText = "Error processing images!";
                 console.error(error);
