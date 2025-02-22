@@ -27,8 +27,11 @@
     }
     /* Image Selector and Preview */
     #imagePreviewContainer {
-      margin-bottom: 30px;
+      margin-bottom: 40px;
       position: relative;
+    }
+    #imageInput {
+      margin-bottom: 20px; /* Separando o seletor de imagens */
     }
     #imagePreview {
       max-width: 250px;  /* Tamanho ajustado para a imagem de pré-visualização */
@@ -97,6 +100,11 @@
       margin: 0 auto;
       max-width: 100%;
       height: auto;
+      transition: transform 0.3s ease;
+    }
+    /* Hover effect for zoom */
+    .yolo-box img:hover, #imagePreview:hover {
+      transform: scale(1.2);
     }
     /* Responsive Design */
     @media (max-width: 768px) {
