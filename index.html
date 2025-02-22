@@ -24,7 +24,7 @@
     }
     h1 {
       font-size: 2.5em;
-      margin-bottom: 20px;
+      margin: 20px 0 40px;
       color: #333;
     }
     /* Image selector and preview */
@@ -56,7 +56,10 @@
       position: relative;
       display: inline-block;
     }
-    /* Loader using Font Awesome's built-in spin class */
+    img {
+      border-radius: 4px;
+      display: none;
+    }
     #loader {
       position: absolute;
       top: 50%;
@@ -157,11 +160,12 @@
         if (!response.ok) throw new Error("Failed to process images");
         const data = await response.json();
         console.log("Response from API:", data);
-        // Assuming data.imageA is YOLO 10 and data.imageB is YOLO 7
+        // Swap assignments if needed:
         const yolo10Image = document.getElementById("yolo10Image");
         const yolo7Image = document.getElementById("yolo7Image");
-        yolo10Image.src = data.imageA;
-        yolo7Image.src = data.imageB;
+        // For instance, if API's imageA should be YOLO 7 and imageB should be YOLO 10:
+        yolo10Image.src = data.imageB; // Adjust according to your API
+        yolo7Image.src = data.imageA;  // Adjust according to your API
         yolo10Image.style.display = "block";
         yolo7Image.style.display = "block";
         loader.style.display = "none";
