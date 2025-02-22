@@ -5,119 +5,81 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Model Comparison</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"> <!-- Font Awesome -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet"> <!-- Poppins font -->
     <style>
-        body { 
-            font-family: 'Arial', sans-serif; 
-            margin: 0; 
-            padding: 0; 
-            background: #f4f6f9; 
-            color: #333; 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center;
-            justify-content: flex-start;
-            min-height: 100vh;
-        }
-
-        /* Cabeçalho com fundo e sombra */
-        h1 {
-            font-size: 3em;
-            color: #ffffff;
-            margin: 30px 0;
-            font-weight: 700;
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #f0f4f8;
+            color: #333;
+            margin: 0;
+            padding: 0;
             text-align: center;
-            background: linear-gradient(90deg, #007bff, #6a5acd);
-            padding: 20px;
-            border-radius: 10px;
-            text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.2);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            width: 100%;
         }
-
-        .container { 
-            display: flex; 
-            justify-content: center; 
-            gap: 20px; 
-            margin-top: 30px; 
+        h1 {
+            font-size: 2.5em;
+            color: #333;
+            margin-top: 20px;
+            margin-bottom: 40px;
+        }
+        .container {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 30px;
             flex-wrap: wrap;
         }
-
         .box {
-            width: 45%;
+            width: 100%;
+            max-width: 400px;
+            background: white;
             padding: 20px;
             border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-            background: #ffffff;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
-            text-align: center;
-            overflow: hidden;
         }
-
         .box:hover {
             transform: scale(1.05);
-            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
         }
-
         .image-container {
             position: relative;
             margin-top: 20px;
+            display: flex;
+            justify-content: center;
         }
-
-        /* Imagem de pré-visualização mais estilizada */
-        #imagePreview {
-            max-width: 200px;
-            border-radius: 10px;
-            display: block;
-            margin: 20px auto;
-            border: 4px solid #007bff;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        }
-
         img {
             max-width: 100%;
             height: auto;
             border-radius: 10px;
             display: none;
-            transition: opacity 0.3s ease;
         }
-
         button {
-            padding: 15px 30px;
-            border: none;
+            margin-top: 20px;
+            padding: 12px 25px;
             background-color: #007bff;
             color: white;
             font-size: 16px;
+            border: none;
             border-radius: 30px;
             cursor: pointer;
-            transition: background-color 0.3s ease, transform 0.3s ease;
-            margin-top: 20px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: background-color 0.3s ease;
         }
-
         button:hover {
             background-color: #0056b3;
-            transform: scale(1.05);
-            box-shadow: 0 6px 18px rgba(0,0,0,0.2);
         }
-
         .result-container {
             margin-top: 30px;
-            padding: 25px;
-            background-color: #ffffff;
+            padding: 20px;
+            background-color: white;
             border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            text-align: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
             display: none;
-            width: 80%;
         }
-
         .result {
             font-weight: 600;
             font-size: 20px;
             margin-bottom: 20px;
-            color: #007bff;
         }
-
         #loader {
             display: none;
             position: absolute;
@@ -127,39 +89,33 @@
             font-size: 40px;
             color: #007bff;
         }
-
         #loader i {
             animation: rotate 2s linear infinite;
         }
-
         @keyframes rotate {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-
-        /* Alinha as imagens processadas lado a lado */
-        .processed-images {
-            display: flex;
-            justify-content: space-evenly;
-            gap: 20px;
+        #imagePreviewContainer {
             margin-top: 20px;
+            text-align: center;
         }
-
-        /* Fixo para dispositivos móveis */
-        @media (max-width: 768px) {
-            .container {
-                flex-direction: column;
-            }
-
-            .box {
-                width: 80%;
-            }
+        #imagePreview {
+            max-width: 400px;
+            height: auto;
+            border-radius: 10px;
+            display: block;
+            margin: 0 auto;
+        }
+        .box h2 {
+            color: #007bff;
+            font-size: 1.6em;
         }
     </style>
 </head>
 <body>
 
-    <h1>Compare My Two AI Models</h1>
+    <h1>AI Model Image Comparison</h1>
 
     <!-- Seletor de imagem no topo -->
     <div>
@@ -176,14 +132,14 @@
 
     <div class="container">
         <div class="box">
-            <h2>Yolo 7</h2>
+            <h2>Model A</h2>
             <div class="image-container">
                 <img id="imagePreviewA">
             </div>
         </div>
 
         <div class="box">
-            <h2>YOLO 11</h2>
+            <h2>Model B</h2>
             <div class="image-container">
                 <img id="imagePreviewB">
             </div>
@@ -193,7 +149,7 @@
     <div class="result-container" id="resultContainer">
         <h2>Comparison Result</h2>
         <p class="result" id="resultText">Processing...</p>
-        <div class="processed-images">
+        <div class="image-container">
             <img id="processedImageA" style="display:none;">
             <img id="processedImageB" style="display:none;">
         </div>
@@ -252,12 +208,15 @@
                 resultText.innerText = "Comparison Completed!";
 
                 // Atualiza as imagens processadas
-                imagePreviewA.src = data.imageA;
-                imagePreviewB.src = data.imageB;
+                const processedImageA = document.getElementById("processedImageA");
+                const processedImageB = document.getElementById("processedImageB");
 
-                // Exibe as imagens lado a lado
-                document.getElementById("processedImageA").style.display = "block";
-                document.getElementById("processedImageB").style.display = "block";
+                processedImageA.src = data.imageA;
+                processedImageB.src = data.imageB;
+
+                // Exibe as imagens processadas
+                processedImageA.style.display = "block";
+                processedImageB.style.display = "block";
 
                 // Esconde o loader
                 loader.style.display = "none";
