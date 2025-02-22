@@ -54,19 +54,20 @@
             margin-top: 20px;
         }
 
+        /* Tamanho reduzido da imagem de pré-visualização */
+        #imagePreview {
+            max-width: 200px;
+            border-radius: 10px;
+            display: block;
+            margin: 20px auto;
+        }
+
         img {
             max-width: 100%;
             height: auto;
             border-radius: 10px;
             display: none;
             transition: opacity 0.3s ease;
-        }
-
-        #imagePreview {
-            max-width: 100%;
-            border-radius: 10px;
-            display: block;
-            margin: 20px auto;
         }
 
         button {
@@ -122,6 +123,13 @@
             100% { transform: rotate(360deg); }
         }
 
+        /* Alinha as imagens processadas lado a lado */
+        .processed-images {
+            display: flex;
+            justify-content: space-evenly;
+            gap: 20px;
+        }
+
         @media (max-width: 768px) {
             .container {
                 flex-direction: column;
@@ -169,7 +177,7 @@
     <div class="result-container" id="resultContainer">
         <h2>Comparison Result</h2>
         <p class="result" id="resultText">Processing...</p>
-        <div class="image-container">
+        <div class="processed-images">
             <img id="processedImageA" style="display:none;">
             <img id="processedImageB" style="display:none;">
         </div>
@@ -231,11 +239,12 @@
                 imagePreviewA.src = data.imageA;
                 imagePreviewB.src = data.imageB;
 
-                // Esconde o loader
-                loader.style.display = "none";
-                // Exibe as imagens processadas
+                // Exibe as imagens lado a lado
                 document.getElementById("processedImageA").style.display = "block";
                 document.getElementById("processedImageB").style.display = "block";
+
+                // Esconde o loader
+                loader.style.display = "none";
             } catch (error) {
                 resultText.innerText = "Error processing images!";
                 console.error(error);
