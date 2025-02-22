@@ -82,7 +82,7 @@
     resultText.innerText = "Processing...";
 
     try {
-        const response = await fetch("https://ai-image-api.onrender.com/compare", {
+        const response = await fetch("http://localhost:8080/compare", {
             method: "POST",
             body: formData
         });
