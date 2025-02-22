@@ -77,6 +77,9 @@
       gap: 40px;
       margin-top: 40px;
       flex-wrap: wrap;
+      visibility: hidden; /* Hide initially */
+      opacity: 0;
+      transition: visibility 0s, opacity 0.5s ease;
     }
     .yolo-box {
       border-radius: 8px;
@@ -168,6 +171,7 @@
     async function uploadImages() {
       const fileInput = document.getElementById("imageInput");
       const loader = document.getElementById("loader");
+      const yoloContainer = document.getElementById("yoloContainer");
       if (!fileInput.files.length) {
         alert("Please select an image for comparison!");
         return;
@@ -194,6 +198,10 @@
         // Exibir as imagens com os tamanhos originais e sem bordas extras
         yolo10Image.style.display = "block";
         yolo7Image.style.display = "block";
+
+        // Centralizar o container das imagens
+        yoloContainer.style.visibility = "visible";
+        yoloContainer.style.opacity = "1";
 
         loader.style.display = "none";
       } catch (error) {
