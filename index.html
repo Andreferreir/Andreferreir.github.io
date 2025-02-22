@@ -28,6 +28,15 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+        #imagePreviewContainer {
+            margin-top: 20px;
+            text-align: center;
+        }
+        #imagePreview {
+            max-width: 150px; /* Limita o tamanho da miniatura */
+            height: auto;
+            border-radius: 8px;
+        }
     </style>
 </head>
 <body>
@@ -37,6 +46,10 @@
     <!-- Seletor de imagem no topo -->
     <div>
         <input type="file" id="imageInput" accept="image/*" onchange="previewImage()">
+        <div id="imagePreviewContainer">
+            <p>Preview Image:</p>
+            <img id="imagePreview" src="" alt="Image Preview" style="display:none;">
+        </div>
         <button onclick="uploadImages()">Upload & Compare</button>
     </div>
 
@@ -70,18 +83,13 @@
     <script>
         function previewImage() {
             const fileInput = document.getElementById("imageInput");
-            const imagePreviewA = document.getElementById("imagePreviewA");
-            const imagePreviewB = document.getElementById("imagePreviewB");
-
+            const imagePreview = document.getElementById("imagePreview");
+            
             if (fileInput.files.length > 0) {
                 const reader = new FileReader();
                 reader.onload = function(event) {
-                    const imageSrc = event.target.result;
-                    imagePreviewA.src = imageSrc;
-                    imagePreviewB.src = imageSrc;
-
-                    imagePreviewA.style.display = "block";
-                    imagePreviewB.style.display = "block";
+                    imagePreview.src = event.target.result;
+                    imagePreview.style.display = "block"; // Mostra a miniatura
                 };
                 reader.readAsDataURL(fileInput.files[0]);
             }
