@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Model Comparison</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"> <!-- Font Awesome -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet"> <!-- Poppins font -->
     <style>
         body {
             font-family: 'Poppins', sans-serif;
@@ -117,13 +117,14 @@
 
     <h1>AI Model Image Comparison</h1>
 
+    <!-- Seletor de imagem no topo -->
     <div>
         <input type="file" id="imageInput" accept="image/*" onchange="previewImage()">
         <div id="imagePreviewContainer">
             <p>Preview Image:</p>
             <div class="image-container">
                 <img id="imagePreview" src="" alt="Image Preview" style="display:none;">
-                <div id="loader"><i class="fas fa-spinner"></i></div>
+                <div id="loader"><i class="fas fa-spinner"></i></div> <!-- Loader sobre a imagem -->
             </div>
         </div>
         <button onclick="uploadImages()">Upload & Compare</button>
@@ -159,15 +160,16 @@
             const fileInput = document.getElementById("imageInput");
             const imagePreview = document.getElementById("imagePreview");
             const loader = document.getElementById("loader");
-
+            
+            // Quando a imagem for selecionada, mostra a miniatura e o loader
             if (fileInput.files.length > 0) {
-                loader.style.display = "block";
+                loader.style.display = "block"; // Exibe o loader
 
                 const reader = new FileReader();
                 reader.onload = function(event) {
                     imagePreview.src = event.target.result;
-                    imagePreview.style.display = "block";
-                    loader.style.display = "none";
+                    imagePreview.style.display = "block"; // Mostra a miniatura
+                    loader.style.display = "none"; // Esconde o loader após carregar a imagem
                 };
                 reader.readAsDataURL(fileInput.files[0]);
             }
@@ -180,18 +182,21 @@
             const resultText = document.getElementById("resultText");
             const loader = document.getElementById("loader");
 
+            // Certifica-se de que uma imagem foi selecionada
             if (!fileInput.files.length) {
                 alert("Please select an image for comparison!");
                 return;
             }
 
             const formData = new FormData();
-            formData.append("image", fileInput.files[0]);
+            formData.append("image", fileInput.files[0]); // Envia apenas uma imagem
 
+            // Exibe o loader
             loader.style.display = "block";
             resultText.innerText = "Processing...";
 
             try {
+                // Envia a imagem para a API
                 const response = await fetch("http://localhost:8080/compare", {
                     method: "POST",
                     body: formData
@@ -202,18 +207,19 @@
                 const data = await response.json();
                 resultText.innerText = "Comparison Completed!";
 
+                // Atualiza as imagens processadas
                 imagePreviewA.src = data.imageA;
                 imagePreviewB.src = data.imageB;
 
+                // Esconde o loader
                 loader.style.display = "none";
+                // Exibe as imagens processadas
                 document.getElementById("processedImageA").style.display = "block";
                 document.getElementById("processedImageB").style.display = "block";
-
-                // Show the result container after images are loaded
-                document.getElementById("resultContainer").style.display = "block";
             } catch (error) {
                 resultText.innerText = "Error processing images!";
                 console.error(error);
+                // Esconde o loader em caso de erro
                 loader.style.display = "none";
             }
         }
