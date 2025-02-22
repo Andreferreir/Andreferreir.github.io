@@ -4,8 +4,14 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>AI Model Comparison</title>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet" />
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet" />
+  <link
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    rel="stylesheet"
+  />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap"
+    rel="stylesheet"
+  />
   <style>
     * { box-sizing: border-box; }
     body {
@@ -21,7 +27,7 @@
       margin: 20px 0 40px;
       color: #333;
     }
-    /* Image selector and preview */
+    /* Image Selector and Preview */
     #imagePreviewContainer {
       margin-bottom: 20px;
     }
@@ -63,11 +69,15 @@
       font-size: 2em;
       color: #007bff;
     }
-    /* API response container takes up more page space */
+    /* Processed Images Container always visible */
     #apiResponseContainer {
       margin: 30px auto;
       max-width: 1000px;
-      display: none;
+      min-height: 300px;
+      /* Optional: add a subtle border/background to denote the area */
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      padding: 10px;
     }
     #apiResponseContainer .image-container {
       display: inline-block;
@@ -78,6 +88,7 @@
       border: 1px solid #ccc;
       border-radius: 4px;
       display: block;
+      margin: 0 auto;
     }
   </style>
 </head>
@@ -95,6 +106,7 @@
     </div>
     <button onclick="uploadImages()">Upload & Compare</button>
   </div>
+
   <!-- API Response Container (Processed Images) -->
   <div id="apiResponseContainer">
     <div class="image-container">
@@ -104,6 +116,7 @@
       <img id="processedImageB" alt="Processed Model B" />
     </div>
   </div>
+
   <script>
     function previewImage() {
       const fileInput = document.getElementById('imageInput');
@@ -144,7 +157,6 @@
         processedImageB.src = data.imageB;
         processedImageA.style.display = 'block';
         processedImageB.style.display = 'block';
-        document.getElementById('apiResponseContainer').style.display = 'block';
         loader.style.display = 'none';
       } catch (error) {
         console.error(error);
