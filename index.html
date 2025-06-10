@@ -3,46 +3,40 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Gestor de Passwords</title>
+  <title>Gestor de Passwords por Site</title>
   <style>
     body { font-family: Arial, sans-serif; margin: 2rem; }
     h1 { margin-bottom: 1rem; }
-    button { padding: 0.5rem 1rem; margin-right: 0.5rem; }
-    input { padding: 0.5rem; width: 3rem; }
-    pre { background: #f4f4f4; padding: 1rem; margin-top: 1rem; white-space: pre-wrap; }
-    .section { margin-bottom: 2rem; }
+    .panel { border: 1px solid #ccc; padding: 1rem; margin-bottom: 1rem; border-radius: 8px; }
+    .panel-header { display: flex; justify-content: space-between; align-items: center; }
+    .panel-header h3 { margin: 0; }
+    .panel-body { margin-top: 0.5rem; }
+    button { padding: 0.5rem 1rem; margin: 0.25rem 0; }
+    input[type="text"] { padding: 0.5rem; width: 200px; }
+    pre { background: #f4f4f4; padding: 1rem; white-space: pre-wrap; }
     .error { color: red; }
   </style>
 </head>
 <body>
-  <h1>Gestor de Passwords Automático</h1>
+  <h1>Gestor de Passwords por Site</h1>
 
-  <div class="section">
-    <h2>Gerar nova password</h2>
-    <button id="btn-generate">Gerar</button>
-    <pre id="out-generate"></pre>
+  <div class="panel" id="panel-add">
+    <div class="panel-header">
+      <h3>Adicionar novo Site</h3>
+    </div>
+    <div class="panel-body">
+      <input type="text" id="input-site" placeholder="Ex: facebook.com" />
+      <button id="btn-add">Adicionar</button>
+      <pre id="out-add"></pre>
+    </div>
   </div>
 
-  <div class="section">
-    <h2>Listar passwords encriptadas</h2>
-    <button id="btn-list">Listar</button>
-    <pre id="out-list"></pre>
-  </div>
-
-  <div class="section">
-    <h2>Desencriptar por ID</h2>
-    <label for="decrypt-id">ID:</label>
-    <input type="number" id="decrypt-id" value="1" min="1" />
-    <button id="btn-decrypt">Desencriptar</button>
-    <pre id="out-decrypt"></pre>
-  </div>
+  <div id="panels-container"></div>
 
   <script>
-    // Define a base URL da API (ajusta conforme onde o teu backend corre)
     const apiBase = 'http://localhost:3000';
 
-    // Função de fetch segura para capturar erros e mostrar mensagens
-    async function safeFetch(url, opts) {
+    async function safeFetch(url, opts = {}) {
       try {
         const res = await fetch(url, opts);
         if (!res.ok) {
@@ -56,39 +50,85 @@
       }
     }
 
-    document.getElementById('btn-generate').addEventListener('click', async () => {
-      const out = document.getElementById('out-generate');
-      out.textContent = 'A processar...';
-      const result = await safeFetch(`${apiBase}/api/password`, { method: 'POST' });
-      if (result.error) {
-        out.innerHTML = `<span class="error">${result.error}</span>`;
-      } else {
-        out.textContent = JSON.stringify(result.data, null, 2);
-      }
-    });
+    function getSites() {
+      const list = localStorage.getItem('sites');
+      return list ? JSON.parse(list) : [];
+    }
 
-    document.getElementById('btn-list').addEventListener('click', async () => {
-      const out = document.getElementById('out-list');
-      out.textContent = 'A processar...';
-      const result = await safeFetch(`${apiBase}/api/passwords`, {});
-      if (result.error) {
-        out.innerHTML = `<span class="error">${result.error}</span>`;
-      } else {
-        out.textContent = JSON.stringify(result.data, null, 2);
-      }
-    });
+    function saveSites(sites) {
+      localStorage.setItem('sites', JSON.stringify(sites));
+    }
 
-    document.getElementById('btn-decrypt').addEventListener('click', async () => {
-      const id = document.getElementById('decrypt-id').value;
-      const out = document.getElementById('out-decrypt');
-      out.textContent = 'A processar...';
-      const result = await safeFetch(`${apiBase}/api/passwords/${id}/decrypt`, {});
-      if (result.error) {
-        out.innerHTML = `<span class="error">${result.error}</span>`;
-      } else {
-        out.textContent = JSON.stringify(result.data, null, 2);
+    function render() {
+      const container = document.getElementById('panels-container');
+      container.innerHTML = '';
+      const sites = getSites();
+      sites.forEach(site => {
+        const panel = document.createElement('div');
+        panel.className = 'panel';
+        panel.innerHTML = `
+          <div class="panel-header">
+            <h3>${site}</h3>
+            <button data-site="${site}" class="btn-remove">X</button>
+          </div>
+          <div class="panel-body">
+            <button data-site="${site}" class="btn-generate">Gerar Password</button>
+            <pre id="out-${site}"></pre>
+          </div>
+        `;
+        container.appendChild(panel);
+      });
+      attachPanelListeners();
+    }
+
+    function attachPanelListeners() {
+      document.querySelectorAll('.btn-generate').forEach(btn => {
+        btn.onclick = async () => {
+          const site = btn.getAttribute('data-site');
+          const out = document.getElementById(`out-${site}`);
+          out.textContent = 'A processar...';
+          const result = await safeFetch(`${apiBase}/api/password`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ service: site })
+          });
+          if (result.error) out.innerHTML = `<span class="error">${result.error}</span>`;
+          else out.textContent = JSON.stringify(result.data, null, 2);
+        };
+      });
+      document.querySelectorAll('.btn-remove').forEach(btn => {
+        btn.onclick = () => {
+          const site = btn.getAttribute('data-site');
+          let sites = getSites();
+          sites = sites.filter(s => s !== site);
+          saveSites(sites);
+          render();
+        };
+      });
+    }
+
+    document.getElementById('btn-add').onclick = () => {
+      const input = document.getElementById('input-site');
+      const site = input.value.trim();
+      const out = document.getElementById('out-add');
+      if (!site) {
+        out.innerHTML = `<span class="error">Indica um site válido.</span>`;
+        return;
       }
-    });
+      let sites = getSites();
+      if (sites.includes(site)) {
+        out.innerHTML = `<span class="error">Site já existe.</span>`;
+        return;
+      }
+      sites.push(site);
+      saveSites(sites);
+      input.value = '';
+      out.textContent = 'Adicionado!';
+      render();
+    };
+
+    // Inicia
+    render();
   </script>
 </body>
 </html>
