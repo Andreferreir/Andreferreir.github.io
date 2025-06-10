@@ -138,11 +138,28 @@
           }
         };
         panel.querySelector('.btn-decrypt').onclick = async () => {
-          const enc = panel.querySelector('.input-decrypt').value.trim(); if (!enc) { out.textContent='Coloca texto encriptado.'; return; }
-          const admin = prompt('Password administrador:'); if (!admin) return;
+          const enc = panel.querySelector('.input-decrypt').value.trim();
+          if (!enc) {
+            out.textContent = 'Coloca texto encriptado.';
+            return;
+          }
+          const admin = prompt('Password administrador:');
+          if (!admin) return;
+        
           out.textContent = 'Desencriptando...';
-          const r = await safeFetch(`${apiBase}/api/decrypt`, { method: 'POST', body: JSON.stringify({ encrypted: enc, admin }) });
-          out.textContent = r.error ? `Erro: ${r.error}` : `Plain: ${r.data.password}`;
+          // Envia `admin` e `cipher` (e não `encrypted`)
+          const r = await safeFetch(
+            `${apiBase}/api/decrypt`,
+            {
+              method: 'POST',
+              body: JSON.stringify({ admin, cipher: enc })
+            }
+          );
+          if (r.error) {
+            out.textContent = `Erro: ${r.error}`;
+          } else {
+            out.textContent = `Plain: ${r.data.password}`;
+          }
         };
       });
     }
