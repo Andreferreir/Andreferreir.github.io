@@ -37,23 +37,23 @@
   </div>
 
   <script>
-    const apiBase = '';
+    const apiBase = 'http://localhost:3000/';
 
     document.getElementById('btn-generate').addEventListener('click', async () => {
-      const res = await fetch(`/api/password`, { method: 'POST' });
+      const res = await fetch(`${apiBase}/api/password`, { method: 'POST' });
       const data = await res.json();
       document.getElementById('out-generate').textContent = JSON.stringify(data, null, 2);
     });
 
     document.getElementById('btn-list').addEventListener('click', async () => {
-      const res = await fetch(`/api/passwords`);
+      const res = await fetch(`${apiBase}/api/passwords`);
       const data = await res.json();
       document.getElementById('out-list').textContent = JSON.stringify(data, null, 2);
     });
 
     document.getElementById('btn-decrypt').addEventListener('click', async () => {
       const id = document.getElementById('decrypt-id').value;
-      const res = await fetch(`/api/passwords/${id}/decrypt`);
+      const res = await fetch(`${apiBase}/api/passwords/${id}/decrypt`);
       const data = await res.json();
       document.getElementById('out-decrypt').textContent = JSON.stringify(data, null, 2);
     });
