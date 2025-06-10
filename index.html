@@ -131,7 +131,6 @@
           out.textContent = r.error ? `Erro: ${r.error}` : 'Histórico limpo.';
         };
         panel.querySelector('.btn-remove').onclick = () => {
-          const admin = prompt('Password administrador:'); if (!admin) return;
           // assume backend panel removal
           if (confirm('Tem a certeza de remover o painel?')) {
             const s = getSites().filter(x=>x!==site); saveSites(s); renderPanels();
@@ -143,8 +142,8 @@
             out.textContent = 'Coloca texto encriptado.';
             return;
           }
-          const admin = prompt('Password administrador:');
-          if (!admin) return;
+          //const admin = prompt('Password administrador:');
+          //if (!admin) return;
         
           out.textContent = 'Desencriptando...';
           // Envia `admin` e `cipher` (e não `encrypted`)
