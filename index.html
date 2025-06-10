@@ -9,8 +9,9 @@
     h1 { margin-bottom: 1rem; }
     button { padding: 0.5rem 1rem; margin-right: 0.5rem; }
     input { padding: 0.5rem; width: 3rem; }
-    pre { background: #f4f4f4; padding: 1rem; margin-top: 1rem; }
+    pre { background: #f4f4f4; padding: 1rem; margin-top: 1rem; white-space: pre-wrap; }
     .section { margin-bottom: 2rem; }
+    .error { color: red; }
   </style>
 </head>
 <body>
@@ -37,25 +38,56 @@
   </div>
 
   <script>
+    // Define a base URL da API (ajusta conforme onde o teu backend corre)
     const apiBase = 'http://localhost:3000';
 
+    // Função de fetch segura para capturar erros e mostrar mensagens
+    async function safeFetch(url, opts) {
+      try {
+        const res = await fetch(url, opts);
+        if (!res.ok) {
+          const text = await res.text();
+          return { error: `Erro ${res.status}: ${text}` };
+        }
+        const data = await res.json();
+        return { data };
+      } catch (e) {
+        return { error: e.message };
+      }
+    }
+
     document.getElementById('btn-generate').addEventListener('click', async () => {
-      const res = await fetch(`${apiBase}/api/password`, { method: 'POST' });
-      const data = await res.json();
-      document.getElementById('out-generate').textContent = JSON.stringify(data, null, 2);
+      const out = document.getElementById('out-generate');
+      out.textContent = 'A processar...';
+      const result = await safeFetch(`${apiBase}/api/password`, { method: 'POST' });
+      if (result.error) {
+        out.innerHTML = `<span class="error">${result.error}</span>`;
+      } else {
+        out.textContent = JSON.stringify(result.data, null, 2);
+      }
     });
 
     document.getElementById('btn-list').addEventListener('click', async () => {
-      const res = await fetch(`${apiBase}/api/passwords`);
-      const data = await res.json();
-      document.getElementById('out-list').textContent = JSON.stringify(data, null, 2);
+      const out = document.getElementById('out-list');
+      out.textContent = 'A processar...';
+      const result = await safeFetch(`${apiBase}/api/passwords`, {});
+      if (result.error) {
+        out.innerHTML = `<span class="error">${result.error}</span>`;
+      } else {
+        out.textContent = JSON.stringify(result.data, null, 2);
+      }
     });
 
     document.getElementById('btn-decrypt').addEventListener('click', async () => {
       const id = document.getElementById('decrypt-id').value;
-      const res = await fetch(`${apiBase}/api/passwords/${id}/decrypt`);
-      const data = await res.json();
-      document.getElementById('out-decrypt').textContent = JSON.stringify(data, null, 2);
+      const out = document.getElementById('out-decrypt');
+      out.textContent = 'A processar...';
+      const result = await safeFetch(`${apiBase}/api/passwords/${id}/decrypt`, {});
+      if (result.error) {
+        out.innerHTML = `<span class="error">${result.error}</span>`;
+      } else {
+        out.textContent = JSON.stringify(result.data, null, 2);
+      }
     });
   </script>
 </body>
