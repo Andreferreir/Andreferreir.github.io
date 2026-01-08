@@ -9,18 +9,17 @@
 
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #eef2f3; display: flex; justify-content: center; padding: 20px; }
-        .card { background: white; padding: 25px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 100%; max-width: 1000px; }
+        .card { background: white; padding: 25px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 100%; max-width: 900px; }
         .grid-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
-        input { padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-size: 14px; }
-        label { font-size: 12px; color: #666; margin-bottom: -10px; margin-left: 5px; }
+        input { padding: 12px; border: 1px solid #ddd; border-radius: 5px; font-size: 14px; }
         button { background: #007bff; color: white; border: none; padding: 12px; border-radius: 5px; cursor: pointer; font-weight: bold; transition: 0.3s; }
         button:hover { background: #0056b3; }
         table { width: 100%; border-collapse: collapse; margin-top: 25px; background: white; }
-        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #eee; font-size: 13px; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #eee; font-size: 14px; }
         th { background: #f8f9fa; color: #333; }
         .btn-delete { background: #ff4757; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer; }
         #status { text-align: center; margin-bottom: 15px; font-weight: bold; color: #2c3e50; }
-        .badge { background: #e3f2fd; color: #0d47a1; padding: 3px 8px; border-radius: 10px; font-weight: bold; text-transform: capitalize; }
+        .badge { background: #e3f2fd; color: #0d47a1; padding: 4px 10px; border-radius: 12px; font-weight: bold; text-transform: capitalize; font-size: 12px; }
     </style>
 </head>
 <body>
@@ -30,23 +29,15 @@
     <div id="status">A verificar ligação...</div>
 
     <div class="grid-inputs">
-        <div style="display:flex; flex-direction:column; gap:5px;">
-            <label>Data e Hora do Briefing</label>
-            <input type="datetime-local" id="c_date">
-        </div>
-        <div style="display:flex; flex-direction:column; gap:5px;">
-            <label>Email do Piloto</label>
-            <input type="email" id="c_email" placeholder="email@exemplo.com">
-        </div>
+        <input type="email" id="c_email" placeholder="Email do Piloto">
         <input type="text" id="c_kitid" placeholder="Kit ID">
-        <input type="text" id="c_user" placeholder="Nome do Piloto">
+        <input type="text" id="c_user" placeholder="Nome do Piloto" style="grid-column: span 2;">
         <button onclick="adicionar()" style="grid-column: span 2;">Efetuar Registo</button>
     </div>
 
     <table id="tabelaDados">
         <thead>
             <tr>
-                <th>Data/Hora</th>
                 <th>Email</th>
                 <th>Kit ID</th>
                 <th>Piloto</th>
@@ -61,7 +52,7 @@
 <script>
     // 1. CONFIGURAÇÃO (COLE AS SUAS CHAVES AQUI)
     const firebaseConfig = {
-         apiKey: "AIzaSyCE-56sZnfFY-0auEmnD1i3PMFHrT936Yc",
+        apiKey: "AIzaSyCE-56sZnfFY-0auEmnD1i3PMFHrT936Yc",
   authDomain: "ipads-77c1b.firebaseapp.com",
   projectId: "ipads-77c1b",
   storageBucket: "ipads-77c1b.firebasestorage.app",
@@ -74,19 +65,8 @@
     const db = firebase.firestore();
     const statusDiv = document.getElementById("status");
 
-    // FUNÇÃO PARA PREENCHER O INPUT DATETIME-LOCAL COM O AGORA
-    function atualizarDataInput() {
-        const agora = new Date();
-        // Ajuste para o fuso horário local (formato YYYY-MM-DDTHH:mm)
-        agora.setMinutes(agora.getMinutes() - agora.getTimezoneOffset());
-        document.getElementById("c_date").value = agora.toISOString().slice(0, 16);
-    }
-
-    // Executa ao abrir
-    window.onload = atualizarDataInput;
-
-    // 2. LER DADOS EM TEMPO REAL
-    db.collection("t").orderBy("timestamp_sistema", "desc").onSnapshot((snapshot) => {
+    // 2. LER DADOS EM TEMPO REAL (Ordenados pela data de inserção)
+    db.collection("t").orderBy("date", "desc").onSnapshot((snapshot) => {
         const tbody = document.querySelector("#tabelaDados tbody");
         tbody.innerHTML = "";
         
@@ -94,12 +74,8 @@
             const item = doc.data();
             const id = doc.id;
             
-            // Formatar a data para exibição mais bonita na tabela
-            const dataExibicao = item.date ? item.date.replace('T', ' ') : '-';
-
             const row = tbody.insertRow();
             row.innerHTML = `
-                <td>${dataExibicao}</td>
                 <td>${item.email || '-'}</td>
                 <td>${item['kit id'] || '-'}</td>
                 <td>${item.user || '-'}</td>
@@ -109,65 +85,60 @@
         });
         statusDiv.innerText = "Sincronizado com Firebase";
     }, (error) => {
-        statusDiv.innerText = "Erro de Permissão! Verifique as Rules.";
-        statusDiv.style.color = "red";
+        console.log(error);
+        statusDiv.innerText = "Erro ao carregar dados.";
     });
 
-    // 3. ADICIONAR COM POPUP DE UTILIZADOR
+    // 3. ADICIONAR COM VALIDAÇÃO E DATA AUTOMÁTICA NO CAMPO "date"
     function adicionar() {
         const authUser = prompt("Quem está a realizar este briefing? (rodrigo/tiago)");
-        
-        if (!authUser) return; // Se cancelar o prompt
-        const userLower = authUser.toLowerCase().trim();
-
-        if (userLower !== "rodrigo" && userLower !== "tiago") {
-            alert("Acesso Negado: '" + authUser + "' não tem permissão para adicionar.");
-            return;
-        }
-
-        const v_date = document.getElementById("c_date").value;
-        const v_email = document.getElementById("c_email").value;
-        const v_kitid = document.getElementById("c_kitid").value;
-        const v_user = document.getElementById("c_user").value;
-
-        if(!v_date || !v_email || !v_user) return alert("Por favor, preencha todos os campos obrigatórios.");
-
-        statusDiv.innerText = "A guardar na nuvem...";
-
-        db.collection("t").add({
-            date: v_date,
-            email: v_email,
-            "kit id": v_kitid,
-            user: v_user,
-            briefing_by: userLower,
-            timestamp_sistema: firebase.firestore.FieldValue.serverTimestamp()
-        })
-        .then(() => {
-            statusDiv.innerText = "Adicionado com sucesso por " + userLower;
-            // Limpa campos exceto a data (que reiniciamos para o momento atual)
-            document.getElementById("c_email").value = "";
-            document.getElementById("c_kitid").value = "";
-            document.getElementById("c_user").value = "";
-            atualizarDataInput();
-        })
-        .catch(err => alert("Erro ao gravar: " + err.message));
-    }
-
-    // 4. REMOVER COM POPUP DE UTILIZADOR
-    function remover(id) {
-        const authUser = prompt("Confirme o seu nome de utilizador para apagar:");
-        
         if (!authUser) return;
         const userLower = authUser.toLowerCase().trim();
 
         if (userLower !== "rodrigo" && userLower !== "tiago") {
-            alert("Acesso Negado: Não tem permissão para eliminar.");
+            alert("Acesso Negado: Utilizador não autorizado.");
             return;
         }
 
-        if(confirm("Deseja mesmo eliminar este registo permanentemente?")) {
-            db.collection("t").doc(id).delete()
-            .then(() => statusDiv.innerText = "Registo removido.");
+        const v_email = document.getElementById("c_email").value;
+        const v_kitid = document.getElementById("c_kitid").value;
+        const v_user = document.getElementById("c_user").value;
+
+        if(!v_email || !v_user) return alert("Preencha o Email e o Nome do Piloto.");
+
+        statusDiv.innerText = "A guardar...";
+
+        // Gravação na Firebase
+        db.collection("t").add({
+            email: v_email,
+            "kit id": v_kitid,
+            user: v_user,
+            briefing_by: userLower,
+            // AQUI ESTÁ A DATA: O Firebase gera automaticamente o timestamp
+            date: firebase.firestore.FieldValue.serverTimestamp() 
+        })
+        .then(() => {
+            statusDiv.innerText = "Adicionado por " + userLower;
+            document.getElementById("c_email").value = "";
+            document.getElementById("c_kitid").value = "";
+            document.getElementById("c_user").value = "";
+        })
+        .catch(err => alert("Erro: " + err.message));
+    }
+
+    // 4. REMOVER COM VALIDAÇÃO
+    function remover(id) {
+        const authUser = prompt("Confirme o seu nome para apagar:");
+        if (!authUser) return;
+        const userLower = authUser.toLowerCase().trim();
+
+        if (userLower !== "rodrigo" && userLower !== "tiago") {
+            alert("Não autorizado.");
+            return;
+        }
+
+        if(confirm("Eliminar registo permanentemente?")) {
+            db.collection("t").doc(id).delete();
         }
     }
 </script>
