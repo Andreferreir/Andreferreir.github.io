@@ -1,16 +1,144 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="pt">
 <head>
     <meta charset="UTF-8">
-    <title>Log Concatenator</title>
+    <title>Gestão de Dados - Coleção T</title>
+    
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: #eef2f3; display: flex; justify-content: center; padding: 20px; }
+        .card { background: white; padding: 25px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 100%; max-width: 900px; }
+        .grid-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
+        input { padding: 10px; border: 1px solid #ddd; border-radius: 5px; }
+        button { background: #007bff; color: white; border: none; padding: 12px; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        button:hover { background: #0056b3; }
+        table { width: 100%; border-collapse: collapse; margin-top: 25px; background: white; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #eee; font-size: 14px; }
+        th { background: #f8f9fa; }
+        .btn-delete { background: #ff4757; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer; }
+        #status { text-align: center; margin-bottom: 15px; font-size: 14px; color: #666; }
+    </style>
 </head>
 <body>
-<h1>Selecione a pasta de logs</h1>
-<form method="post" action="/concat" enctype="multipart/form-data">
-    <!-- webkitdirectory permite seleção de pasta em Chrome/Edge -->
-    <input type="file" name="files" webkitdirectory directory multiple />
-    <br/><br/>
-    <button type="submit">Concatenar</button>
-</form>
+
+<div class="card">
+    <h2>Registo de Dados - Coleção: t</h2>
+    <div id="status">A ligar à nuvem...</div>
+
+    <div class="grid-inputs">
+        <input type="text" id="c_date" placeholder="Data (Ex: 2024-05-20)">
+        <input type="text" id="c_email" placeholder="Email">
+        <input type="text" id="c_kitid" placeholder="Kit ID">
+        <input type="text" id="c_user" placeholder="Utilizador">
+        <button onclick="adicionar()" style="grid-column: span 2;">Adicionar à Nuvem</button>
+    </div>
+
+    <table id="tabelaDados">
+        <thead>
+            <tr>
+                <th>Data</th>
+                <th>Email</th>
+                <th>Kit ID</th>
+                <th>User</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            </tbody>
+    </table>
+</div>
+
+<script>
+    // ---------------------------------------------------------------
+    // 1. AS TUAS CHAVES DO FIREBASE (SUBSTITUI PELAS TUAS)
+    // ---------------------------------------------------------------
+    const firebaseConfig = {
+        apiKey: "AIzaSyCE-56sZnfFY-0auEmnD1i3PMFHrT936Yc",
+  authDomain: "ipads-77c1b.firebaseapp.com",
+  projectId: "ipads-77c1b",
+  storageBucket: "ipads-77c1b.firebasestorage.app",
+  messagingSenderId: "332708198774",
+  appId: "1:332708198774:web:994832fcf1e7a4eec96257",
+  measurementId: "G-MGL5RHFZ1N"
+    };
+
+    // Inicialização
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    const statusDiv = document.getElementById("status");
+
+    // ---------------------------------------------------------------
+    // 2. LER DADOS EM TEMPO REAL
+    // ---------------------------------------------------------------
+    // Note: usamos .collection("t") porque é o nome da tua coleção
+    db.collection("t").onSnapshot((snapshot) => {
+        const tbody = document.querySelector("#tabelaDados tbody");
+        tbody.innerHTML = "";
+        
+        if (snapshot.empty) {
+            statusDiv.innerText = "Ligado. A coleção 't' está vazia.";
+        } else {
+            statusDiv.innerText = "Dados atualizados da nuvem.";
+        }
+
+        snapshot.forEach((doc) => {
+            const item = doc.data();
+            const id = doc.id;
+            
+            const row = tbody.insertRow();
+            row.innerHTML = `
+                <td>${item.date || '-'}</td>
+                <td>${item.email || '-'}</td>
+                <td>${item['kit id'] || '-'}</td>
+                <td>${item.user || '-'}</td>
+                <td><button class="btn-delete" onclick="remover('${id}')">Apagar</button></td>
+            `;
+        });
+    }, (error) => {
+        console.error("Erro:", error);
+        statusDiv.innerText = "Erro de acesso: Verifique as Regras do Firestore.";
+        statusDiv.style.color = "red";
+    });
+
+    // ---------------------------------------------------------------
+    // 3. ADICIONAR NOVO REGISTO
+    // ---------------------------------------------------------------
+    function adicionar() {
+        const v_date = document.getElementById("c_date").value;
+        const v_email = document.getElementById("c_email").value;
+        const v_kitid = document.getElementById("c_kitid").value;
+        const v_user = document.getElementById("c_user").value;
+
+        if(!v_email) return alert("Por favor, preencha pelo menos o email.");
+
+        statusDiv.innerText = "A guardar...";
+
+        db.collection("t").add({
+            date: v_date,
+            email: v_email,
+            "kit id": v_kitid, // Nome com espaço como tens no Firestore
+            user: v_user,
+            timestamp_sistema: firebase.firestore.FieldValue.serverTimestamp()
+        })
+        .then(() => {
+            statusDiv.innerText = "Registo adicionado!";
+            document.querySelectorAll("input").forEach(i => i.value = "");
+        })
+        .catch(err => alert("Erro ao salvar: " + err.message));
+    }
+
+    // ---------------------------------------------------------------
+    // 4. REMOVER REGISTO
+    // ---------------------------------------------------------------
+    function remover(id) {
+        if(confirm("Deseja apagar este registo da nuvem?")) {
+            db.collection("t").doc(id).delete()
+            .then(() => statusDiv.innerText = "Registo apagado.");
+        }
+    }
+</script>
+
 </body>
 </html>
