@@ -2,7 +2,7 @@
 <html lang="pt">
 <head>
     <meta charset="UTF-8">
-    <title>Gestão de Briefing - Cloud</title>
+    <title>Registo de Recolha de Ipads</title>
     
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
@@ -26,19 +26,19 @@
 <body>
 
 <div class="card">
-    <h2>Registo de Briefing (Coleção t)</h2>
-    <div id="status">A verificar ligação...</div>
+    <h2>Registo de Briefing</h2>
+    <div id="status">Verify connection...</div>
 
     <div class="grid-inputs">
         <div style="display:flex; flex-direction:column; gap:5px;">
             <input type="datetime-local" id="c_date">
         </div>
         <div style="display:flex; flex-direction:column; gap:5px;">
-            <input type="email" id="c_email" placeholder="email@exemplo.com">
+            <input type="email" id="c_email" placeholder="johndoe@tap.pt">
         </div>
         <input type="text" id="c_kitid" placeholder="Kit ID">
-        <input type="text" id="c_user" placeholder="Nome do Piloto">
-        <button onclick="adicionar()" style="grid-column: span 2;">Regist</button>
+        <input type="text" id="c_user" placeholder="Pilot name">
+        <button onclick="adicionar()" style="grid-column: span 2;">Save</button>
     </div>
 
     <table id="tabelaDados">
@@ -57,33 +57,29 @@
 </div>
 
 <script>
-    // 1. CONFIGURAÇÃO (COLE AS SUAS CHAVES AQUI)
     const firebaseConfig = {
          apiKey: "AIzaSyCE-56sZnfFY-0auEmnD1i3PMFHrT936Yc",
-  authDomain: "ipads-77c1b.firebaseapp.com",
-  projectId: "ipads-77c1b",
-  storageBucket: "ipads-77c1b.firebasestorage.app",
-  messagingSenderId: "332708198774",
-  appId: "1:332708198774:web:994832fcf1e7a4eec96257",
-  measurementId: "G-MGL5RHFZ1N"
+         authDomain: "ipads-77c1b.firebaseapp.com",
+         projectId: "ipads-77c1b",
+         storageBucket: "ipads-77c1b.firebasestorage.app",
+         messagingSenderId: "332708198774",
+         appId: "1:332708198774:web:994832fcf1e7a4eec96257",
+         measurementId: "G-MGL5RHFZ1N"
     };
 
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
     const statusDiv = document.getElementById("status");
 
-    // FUNÇÃO PARA PREENCHER O INPUT DATETIME-LOCAL COM O AGORA
     function atualizarDataInput() {
         const agora = new Date();
-        // Ajuste para o fuso horário local (formato YYYY-MM-DDTHH:mm)
+        
         agora.setMinutes(agora.getMinutes() - agora.getTimezoneOffset());
         document.getElementById("c_date").value = agora.toISOString().slice(0, 16);
     }
-
-    // Executa ao abrir
+    
     window.onload = atualizarDataInput;
-
-    // 2. LER DADOS EM TEMPO REAL
+    
     db.collection("t").orderBy("timestamp_sistema", "desc").onSnapshot((snapshot) => {
         const tbody = document.querySelector("#tabelaDados tbody");
         tbody.innerHTML = "";
@@ -91,8 +87,7 @@
         snapshot.forEach((doc) => {
             const item = doc.data();
             const id = doc.id;
-            
-            // Formatar a data para exibição mais bonita na tabela
+        
             const dataExibicao = item.date ? item.date.replace('T', ' ') : '-';
 
             const row = tbody.insertRow();
@@ -105,21 +100,20 @@
                 <td><button class="btn-delete" onclick="remover('${id}')">Apagar</button></td>
             `;
         });
-        statusDiv.innerText = "Sincronizado com Firebase";
+        statusDiv.innerText = "Synced";
     }, (error) => {
         statusDiv.innerText = "Erro de Permissão! Verifique as Rules.";
         statusDiv.style.color = "red";
     });
 
-    // 3. ADICIONAR COM POPUP DE UTILIZADOR
     function adicionar() {
-        const authUser = prompt("Quem está a realizar este briefing? (rodrigo/tiago)");
+        const authUser = prompt("Provide admin password: ");
         
         if (!authUser) return; // Se cancelar o prompt
         const userLower = authUser.toLowerCase().trim();
 
         if (userLower !== "rodrigo" && userLower !== "tiago") {
-            alert("Acesso Negado: '" + authUser + "' não tem permissão para adicionar.");
+            alert("Acess denied to user: '" + authUser + "' no permission to add!");
             return;
         }
 
@@ -130,7 +124,7 @@
 
         if(!v_date || !v_email || !v_user) return alert("Por favor, preencha todos os campos obrigatórios.");
 
-        statusDiv.innerText = "A guardar na nuvem...";
+        statusDiv.innerText = "Storing";
 
         db.collection("t").add({
             date: v_date,
@@ -142,28 +136,27 @@
         })
         .then(() => {
             statusDiv.innerText = "Adicionado com sucesso por " + userLower;
-            // Limpa campos exceto a data (que reiniciamos para o momento atual)
+           
             document.getElementById("c_email").value = "";
             document.getElementById("c_kitid").value = "";
             document.getElementById("c_user").value = "";
             atualizarDataInput();
         })
-        .catch(err => alert("Erro ao gravar: " + err.message));
+        .catch(err => alert("Error saving the file: " + err.message));
     }
 
-    // 4. REMOVER COM POPUP DE UTILIZADOR
     function remover(id) {
-        const authUser = prompt("Confirme o seu nome de utilizador para apagar:");
+        const authUser = prompt("Provide admin password: ");
         
         if (!authUser) return;
         const userLower = authUser.toLowerCase().trim();
 
         if (userLower !== "rodrigo" && userLower !== "tiago") {
-            alert("Acesso Negado: Não tem permissão para eliminar.");
+            alert("Access denied! Wrong password...");
             return;
         }
 
-        if(confirm("Deseja mesmo eliminar este registo permanentemente?")) {
+        if(confirm("Delete entry forever ?")) {
             db.collection("t").doc(id).delete()
             .then(() => statusDiv.innerText = "Registo removido.");
         }
@@ -172,5 +165,6 @@
 
 </body>
 </html>
+
 
 
