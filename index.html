@@ -3,85 +3,76 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AeroHelp - Centro de Suporte</title>
-    
+    <title>AeroHelp - Gestão Flexível</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    
     <style>
-        /* Animação suave para as respostas */
-        .answer-content {
-            transition: all 0.3s ease-out;
-            max-height: 0;
-            opacity: 0;
-            overflow: hidden;
-        }
-        .answer-content.open {
-            max-height: 500px;
-            opacity: 1;
-            margin-top: 1rem;
-        }
+        .answer-content { transition: all 0.3s ease-out; max-height: 0; opacity: 0; overflow: hidden; }
+        .answer-content.open { max-height: 700px; opacity: 1; margin-top: 1rem; }
         .rotate-icon { transition: transform 0.3s; }
         .rotate-icon.open { transform: rotate(180deg); }
-        
-        /* Fundo com gradiente suave a lembrar o céu */
-        body {
-            background: linear-gradient(180deg, #f0f9ff 0%, #e0f2fe 100%);
-        }
+        body { background: linear-gradient(180deg, #f0f9ff 0%, #e0f2fe 100%); }
     </style>
 </head>
-<body class="min-h-screen font-sans text-gray-800">
+<body class="min-h-screen font-sans text-gray-800 pb-20">
 
-    <div class="bg-white shadow-md pb-10 pt-8 px-4 border-b-4 border-blue-500">
+    <div class="bg-white shadow-md pb-10 pt-8 px-4 border-b-4 border-blue-500 text-center">
         <div class="max-w-4xl mx-auto flex justify-between items-center mb-8">
-            <div class="flex items-center gap-3">
+            <div class="flex items-center gap-3 text-left">
                 <div class="bg-blue-600 p-2 rounded-lg text-white">
                     <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3.5c-.5-.5-2.5 0-4 1.5L13.5 8.5 5.3 6.7c-1.1-.3-2.2.3-2.8 1.4-.5.9-.4 2.1.3 2.8l5.4 5.4-3.4 3.4c-.4.4-.4 1.2 0 1.7.5.5 1.3.5 1.7 0l3.4-3.4 5.4 5.4c.7.7 1.9.8 2.8.3 1.1-.6 1.7-1.7 1.4-2.8Z"/></svg>
                 </div>
-                <h1 class="text-3xl font-extrabold text-blue-900 tracking-tight">AeroHelp <span class="text-blue-500 text-lg font-medium">| Suporte</span></h1>
+                <h1 class="text-3xl font-extrabold text-blue-900 tracking-tight">AeroHelp</h1>
             </div>
             
-            <button onclick="toggleAdminMode()" id="adminToggleBtn" class="p-2 rounded-full bg-slate-100 text-slate-400 hover:bg-blue-100 hover:text-blue-600 transition shadow-sm">
+            <button onclick="toggleAdminMode()" id="adminToggleBtn" class="p-3 rounded-full bg-slate-100 text-slate-400 hover:bg-blue-600 hover:text-white transition shadow-md">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
             </button>
         </div>
 
         <div class="max-w-2xl mx-auto relative">
-            <div class="absolute left-4 top-4 text-blue-400">
-                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-            </div>
-            <input 
-                type="text" 
-                id="searchInput"
-                placeholder="Pesquise por voos, bagagem ou check-in..." 
-                class="w-full pl-12 pr-4 py-4 rounded-2xl border-2 border-blue-50 focus:border-blue-400 focus:ring-0 focus:outline-none shadow-lg transition-all text-lg"
-                onkeyup="filterFAQs()"
-            >
+            <input type="text" id="searchInput" placeholder="Pesquise por tema ou palavra-chave..." 
+                class="w-full pl-6 pr-4 py-4 rounded-2xl border-2 border-transparent focus:border-blue-400 outline-none shadow-xl text-lg transition-all"
+                onkeyup="renderFAQs()">
         </div>
     </div>
 
     <main class="max-w-4xl mx-auto px-4 py-10">
         
-        <div class="flex gap-3 mb-10 overflow-x-auto pb-4 justify-center" id="categoryContainer"></div>
+        <div class="flex gap-3 mb-10 overflow-x-auto pb-4 justify-start sm:justify-center" id="categoryContainer"></div>
 
-        <div id="adminPanel" class="hidden mb-10 p-8 bg-white border-2 border-dashed border-blue-300 rounded-3xl shadow-xl">
-            <h2 class="text-xl font-bold text-blue-900 mb-6 flex items-center gap-2">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
-                Registar Nova Informação
-            </h2>
+        <div id="adminPanel" class="hidden mb-12 p-8 bg-white border-2 border-blue-200 rounded-3xl shadow-2xl relative">
+            <h2 class="text-xl font-bold text-blue-900 mb-6 flex items-center gap-2">Gestão de Conteúdo</h2>
             
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <select id="newCategory" class="p-3 border rounded-xl bg-slate-50 focus:bg-white outline-none">
-                    <option value="Reservas">Reservas</option>
-                    <option value="Bagagem">Bagagem</option>
-                    <option value="No Aeroporto">No Aeroporto</option>
-                </select>
-                <input type="text" id="newKeywords" placeholder="Palavras-chave (ex: mala, peso)" class="p-3 border rounded-xl bg-slate-50 outline-none">
-                <input type="text" id="newQuestion" placeholder="Qual é a pergunta?" class="md:col-span-2 p-3 border rounded-xl bg-slate-50 outline-none">
-                <textarea id="newAnswer" placeholder="Escreva a resposta detalhada..." class="md:col-span-2 p-3 border rounded-xl bg-slate-50 h-32 outline-none"></textarea>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div class="flex flex-col gap-2">
+                    <label class="text-sm font-bold text-gray-600 uppercase ml-1">Escolher Tema</label>
+                    <select id="newCategory" onchange="checkNewCategory(this.value)" class="p-3 border-2 border-gray-100 rounded-xl bg-slate-50 focus:border-blue-400 outline-none transition-all">
+                        </select>
+                </div>
+
+                <div id="newCategoryInputWrapper" class="hidden flex flex-col gap-2">
+                    <label class="text-sm font-bold text-orange-600 uppercase ml-1">Nome do Novo Tema</label>
+                    <input type="text" id="customCategoryName" placeholder="Ex: Voos Privados" class="p-3 border-2 border-orange-200 rounded-xl bg-orange-50 focus:border-orange-400 outline-none transition-all">
+                </div>
+
+                <div class="flex flex-col gap-2 md:col-span-1">
+                    <label class="text-sm font-bold text-gray-600 uppercase ml-1">Keywords</label>
+                    <input type="text" id="newKeywords" placeholder="mala, peso, urgente" class="p-3 border-2 border-gray-100 rounded-xl bg-slate-50 outline-none focus:border-blue-400">
+                </div>
+
+                <div class="flex flex-col gap-2 md:col-span-2">
+                    <label class="text-sm font-bold text-gray-600 uppercase ml-1">Pergunta</label>
+                    <input type="text" id="newQuestion" placeholder="Qual a dúvida?" class="p-3 border-2 border-gray-100 rounded-xl bg-slate-50 outline-none focus:border-blue-400">
+                </div>
+
+                <div class="flex flex-col gap-2 md:col-span-2">
+                    <label class="text-sm font-bold text-gray-600 uppercase ml-1">Resposta</label>
+                    <textarea id="newAnswer" placeholder="Explicação completa..." class="p-3 border-2 border-gray-100 rounded-xl bg-slate-50 h-32 outline-none focus:border-blue-400"></textarea>
+                </div>
             </div>
             
-            <button onclick="addNewFAQ()" class="mt-6 bg-blue-600 text-white font-bold py-3 px-10 rounded-xl hover:bg-blue-700 hover:shadow-lg transform active:scale-95 transition w-full">
-                Publicar no Painel
+            <button onclick="addNewFAQ()" class="mt-8 bg-blue-600 text-white font-bold py-4 px-10 rounded-2xl hover:bg-blue-700 shadow-lg transform active:scale-95 transition w-full">
+                Guardar e Publicar
             </button>
         </div>
 
@@ -90,32 +81,57 @@
     </main>
 
     <script>
-        // Dados iniciais com tema de aviação
+        // DADOS
         let faqs = [
-            { id: 1, category: 'Bagagem', question: 'Qual o peso máximo da mala de mão?', answer: 'Cada passageiro pode levar uma mala de mão de até 10kg com dimensões máximas de 55x40x20cm.', keywords: 'mala peso kg mão bagagem' },
-            { id: 2, category: 'Reservas', question: 'Como posso alterar a data do meu voo?', answer: 'Pode alterar a data através da secção "Gerir Reserva" no site ou app até 4 horas antes da partida.', keywords: 'alterar data mudar voo reserva' },
-            { id: 3, category: 'No Aeroporto', question: 'Com quanto tempo de antecedência devo chegar?', answer: 'Recomendamos a chegada ao aeroporto 2 horas antes para voos nacionais e 3 horas para voos internacionais.', keywords: 'tempo horas aeroporto chegar antecedencia' },
-            { id: 4, category: 'Bagagem', question: 'Posso levar líquidos na mala de mão?', answer: 'Sim, desde que em recipientes individuais de até 100ml, todos dentro de um saco transparente de 1 litro.', keywords: 'liquidos agua shampoo perfume' }
+            { id: 1, category: 'Bagagem', question: 'Qual o peso máximo da mala de mão?', answer: 'Cada passageiro pode levar uma mala de mão de até 10kg.', keywords: 'mala peso kg' },
+            { id: 2, category: 'Reservas', question: 'Como alterar a data do voo?', answer: 'Pode alterar no menu "Gerir Reserva" até 4h antes.', keywords: 'data voo reserva' }
         ];
 
-        const categories = ['Todas', 'Reservas', 'Bagagem', 'No Aeroporto'];
+        let categories = ['Reservas', 'Bagagem', 'No Aeroporto'];
         let currentCategory = 'Todas';
         let isAdmin = false;
 
-        document.addEventListener('DOMContentLoaded', () => {
-            renderCategories();
-            renderFAQs();
-        });
+        // INICIAR
+        window.onload = () => {
+            refreshUI();
+        };
 
-        function renderCategories() {
+        function refreshUI() {
+            renderCategoryFilters();
+            renderCategoryDropdown();
+            renderFAQs();
+        }
+
+        // 1. RENDERIZAR FILTROS (BOTÕES)
+        function renderCategoryFilters() {
             const container = document.getElementById('categoryContainer');
-            container.innerHTML = categories.map(cat => `
-                <button onclick="setCategory('${cat}')" class="px-6 py-2 rounded-xl text-sm font-bold transition-all whitespace-nowrap shadow-sm ${currentCategory === cat ? 'bg-blue-600 text-white' : 'bg-white text-blue-600 hover:bg-blue-50 border border-blue-100'}">
+            const allCats = ['Todas', ...categories];
+            container.innerHTML = allCats.map(cat => `
+                <button onclick="setCategory('${cat}')" class="px-6 py-2 rounded-xl text-sm font-bold transition-all whitespace-nowrap shadow-sm border ${currentCategory === cat ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-blue-600 border-blue-100 hover:bg-blue-50'}">
                     ${cat}
                 </button>
             `).join('');
         }
 
+        // 2. RENDERIZAR DROPDOWN NO ADMIN (COM OPÇÃO DE NOVO)
+        function renderCategoryDropdown() {
+            const select = document.getElementById('newCategory');
+            let options = categories.map(cat => `<option value="${cat}">${cat}</option>`).join('');
+            options += `<option value="NEW_THEME" class="text-orange-600 font-bold">+ Criar Novo Tema</option>`;
+            select.innerHTML = options;
+        }
+
+        // 3. MOSTRAR CAMPO DE NOVO TEMA SE NECESSÁRIO
+        function checkNewCategory(val) {
+            const wrapper = document.getElementById('newCategoryInputWrapper');
+            if(val === 'NEW_THEME') {
+                wrapper.classList.remove('hidden');
+            } else {
+                wrapper.classList.add('hidden');
+            }
+        }
+
+        // 4. FILTRAR E MOSTRAR LISTA
         function renderFAQs() {
             const container = document.getElementById('faqList');
             const search = document.getElementById('searchInput').value.toLowerCase();
@@ -127,17 +143,15 @@
             });
 
             container.innerHTML = filtered.map(f => `
-                <div class="bg-white rounded-2xl shadow-sm border border-blue-50 overflow-hidden hover:shadow-md transition-shadow">
+                <div class="bg-white rounded-2xl shadow-sm border border-blue-50 overflow-hidden hover:shadow-md transition-all">
                     <button onclick="toggleAnswer(${f.id})" class="w-full text-left px-6 py-5 flex justify-between items-center group">
                         <span class="font-bold text-blue-900 group-hover:text-blue-600 transition-colors">${f.question}</span>
                         <svg id="icon-${f.id}" class="rotate-icon text-blue-300" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
                     </button>
                     <div id="ans-${f.id}" class="answer-content bg-slate-50/50 px-6 border-t border-slate-50">
-                        <div class="pb-6 pt-4 text-gray-600 leading-relaxed italic">
-                            "${f.answer}"
-                            <div class="mt-4 flex items-center gap-2">
-                                <span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[10px] font-black uppercase">${f.category}</span>
-                            </div>
+                        <div class="pb-6 pt-4 text-gray-600 leading-relaxed">
+                            ${f.answer}
+                            <div class="mt-4"><span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[10px] font-black uppercase tracking-widest">${f.category}</span></div>
                         </div>
                     </div>
                 </div>
@@ -146,49 +160,56 @@
 
         function setCategory(cat) {
             currentCategory = cat;
-            renderCategories();
-            renderFAQs();
+            refreshUI();
         }
 
         function toggleAnswer(id) {
             const content = document.getElementById(`ans-${id}`);
             const icon = document.getElementById(`icon-${id}`);
             const isOpen = content.classList.contains('open');
-            
             document.querySelectorAll('.answer-content').forEach(el => el.classList.remove('open'));
             document.querySelectorAll('.rotate-icon').forEach(el => el.classList.remove('open'));
-            
-            if (!isOpen) {
-                content.classList.add('open');
-                icon.classList.add('open');
-            }
+            if (!isOpen) { content.classList.add('open'); icon.classList.add('open'); }
         }
-
-        function filterFAQs() { renderFAQs(); }
 
         function toggleAdminMode() {
             isAdmin = !isAdmin;
-            const panel = document.getElementById('adminPanel');
-            const btn = document.getElementById('adminToggleBtn');
-            panel.classList.toggle('hidden');
-            btn.classList.toggle('bg-blue-600');
-            btn.classList.toggle('text-white');
+            document.getElementById('adminPanel').classList.toggle('hidden');
+            document.getElementById('adminToggleBtn').classList.toggle('bg-blue-600');
+            document.getElementById('adminToggleBtn').classList.toggle('text-white');
         }
 
+        // 5. LÓGICA DE ADICIONAR (COM NOVO TEMA)
         function addNewFAQ() {
             const q = document.getElementById('newQuestion').value;
             const a = document.getElementById('newAnswer').value;
-            const c = document.getElementById('newCategory').value;
             const k = document.getElementById('newKeywords').value;
+            let c = document.getElementById('newCategory').value;
 
-            if (!q || !a) return alert("Dados incompletos.");
+            // Se for um novo tema
+            if (c === 'NEW_THEME') {
+                const customCat = document.getElementById('customCategoryName').value.trim();
+                if(!customCat) return alert("Por favor, digite o nome do novo tema.");
+                
+                // Adiciona às categorias se não existir
+                if(!categories.includes(customCat)) {
+                    categories.push(customCat);
+                }
+                c = customCat;
+            }
+
+            if (!q || !a) return alert("Preencha a pergunta e a resposta.");
 
             faqs.unshift({ id: Date.now(), category: c, question: q, answer: a, keywords: k });
             
+            // Limpar formulário
             document.getElementById('newQuestion').value = '';
             document.getElementById('newAnswer').value = '';
-            renderFAQs();
-            alert("Informação de voo adicionada!");
+            document.getElementById('customCategoryName').value = '';
+            document.getElementById('newCategoryInputWrapper').classList.add('hidden');
+            
+            refreshUI();
+            alert(`Sucesso! Gravado em ${c}`);
         }
     </script>
 </body>
