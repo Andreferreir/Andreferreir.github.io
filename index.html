@@ -1,173 +1,228 @@
-<!DOCTYPE html>
-<html lang="pt">
-<head>
-    <meta charset="UTF-8">
-    <title>iPad retrival registry</title>
+import React, { useState } from 'react';
+import { Search, Plus, ChevronDown, ChevronUp, Lock, Unlock, X } from 'lucide-react';
+
+// --- 1. DADOS INICIAIS (Simulando a Base de Dados) ---
+const initialData = [
+  {
+    id: 1,
+    category: 'Pagamentos',
+    question: 'Aceitam MBWay?',
+    answer: 'Sim, aceitamos MBWay, cartões de crédito Visa/Mastercard e Referência Multibanco.',
+    keywords: 'mbway dinheiro pagar'
+  },
+  {
+    id: 2,
+    category: 'Entregas',
+    question: 'Quanto tempo demora a entrega?',
+    answer: 'Para Portugal Continental, as entregas demoram entre 24 a 48 horas úteis.',
+    keywords: 'envio ctt transportadora tempo'
+  },
+  {
+    id: 3,
+    category: 'Conta',
+    question: 'Como recupero a minha password?',
+    answer: 'Na página de login, clique em "Esqueci-me da senha". Receberá um email para redefinir.',
+    keywords: 'login senha acesso'
+  }
+];
+
+const categories = ['Todas', 'Pagamentos', 'Entregas', 'Conta'];
+
+export default function FAQPage() {
+  // --- 2. ESTADOS (A memória da página) ---
+  const [faqs, setFaqs] = useState(initialData);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('Todas');
+  const [isAdminMode, setIsAdminMode] = useState(false); // Simula o login de admin
+  const [openQuestionId, setOpenQuestionId] = useState(null); // Qual pergunta está aberta
+  const [showAddModal, setShowAddModal] = useState(false);
+
+  // Estados para o formulário de nova pergunta
+  const [newQuestion, setNewQuestion] = useState({ category: 'Pagamentos', question: '', answer: '', keywords: '' });
+
+  // --- 3. LÓGICA ---
+  
+  // Filtrar as perguntas com base na pesquisa E na categoria
+  const filteredFaqs = faqs.filter((faq) => {
+    const matchesSearch = 
+      faq.question.toLowerCase().includes(searchTerm.toLowerCase()) || 
+      faq.keywords.toLowerCase().includes(searchTerm.toLowerCase());
     
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    const matchesCategory = selectedCategory === 'Todas' || faq.category === selectedCategory;
 
-    <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #eef2f3; display: flex; justify-content: center; padding: 20px; }
-        .card { background: white; padding: 25px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 100%; max-width: 1000px; }
-        .grid-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
-        input { padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-size: 14px; }
-        label { font-size: 12px; color: #666; margin-bottom: -10px; margin-left: 5px; }
-        button { background: #007bff; color: white; border: none; padding: 12px; border-radius: 5px; cursor: pointer; font-weight: bold; transition: 0.3s; }
-        button:hover { background: #0056b3; }
-        table { width: 100%; border-collapse: collapse; margin-top: 25px; background: white; }
-        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #eee; font-size: 13px; }
-        th { background: #f8f9fa; color: #333; }
-        .btn-delete { background: #ff4757; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer; }
-        #status { text-align: center; margin-bottom: 15px; font-weight: bold; color: #2c3e50; }
-        .badge { background: #e3f2fd; color: #0d47a1; padding: 3px 8px; border-radius: 10px; font-weight: bold; text-transform: capitalize; }
-    </style>
-</head>
-<body>
+    return matchesSearch && matchesCategory;
+  });
 
-<div class="card">
-    <h2>Briefing registry</h2>
-    <div id="status">Verify connection...</div>
-
-    <div class="grid-inputs">
-        <div style="display:flex; flex-direction:column; gap:5px;">
-            <input type="datetime-local" id="c_date">
-        </div>
-        <div style="display:flex; flex-direction:column; gap:5px;">
-            <input type="email" id="c_email" placeholder="johndoe@tap.pt">
-        </div>
-        <input type="text" id="c_kitid" placeholder="Kit ID">
-        <input type="text" id="c_user" placeholder="Pilot name">
-        <button onclick="adicionar()" style="grid-column: span 2;">Save</button>
-    </div>
-
-    <table id="tabelaDados">
-        <thead>
-            <tr>
-                <th>Date/Time</th>
-                <th>Email</th>
-                <th>Kit ID</th>
-                <th>Pilot</th>
-                <th>Briefing by</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody></tbody>
-    </table>
-</div>
-
-<script>
-    const firebaseConfig = {
-         apiKey: "AIzaSyCE-56sZnfFY-0auEmnD1i3PMFHrT936Yc",
-         authDomain: "ipads-77c1b.firebaseapp.com",
-         projectId: "ipads-77c1b",
-         storageBucket: "ipads-77c1b.firebasestorage.app",
-         messagingSenderId: "332708198774",
-         appId: "1:332708198774:web:994832fcf1e7a4eec96257",
-         measurementId: "G-MGL5RHFZ1N"
+  // Adicionar nova pergunta
+  const handleAddFaq = () => {
+    if(!newQuestion.question || !newQuestion.answer) return alert("Preencha os campos!");
+    
+    const newEntry = {
+      id: Date.now(), // Gera um ID único
+      ...newQuestion
     };
-
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
-    const statusDiv = document.getElementById("status");
-
-    function atualizarDataInput() {
-        const agora = new Date();
-        
-        agora.setMinutes(agora.getMinutes() - agora.getTimezoneOffset());
-        document.getElementById("c_date").value = agora.toISOString().slice(0, 16);
-    }
     
-    window.onload = atualizarDataInput;
-    
-    db.collection("t").orderBy("timestamp_sistema", "desc").onSnapshot((snapshot) => {
-        const tbody = document.querySelector("#tabelaDados tbody");
-        tbody.innerHTML = "";
+    setFaqs([newEntry, ...faqs]); // Adiciona ao topo da lista
+    setShowAddModal(false); // Fecha o modal
+    setNewQuestion({ category: 'Pagamentos', question: '', answer: '', keywords: '' }); // Limpa form
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-50 text-gray-800 font-sans">
+      
+      {/* --- HEADER --- */}
+      <header className="bg-white shadow-sm py-8 px-4">
+        <div className="max-w-3xl mx-auto flex justify-between items-center mb-6">
+          <h1 className="text-3xl font-bold text-blue-900">Como podemos ajudar?</h1>
+          
+          {/* Botão Secreto de Admin (Simulação) */}
+          <button 
+            onClick={() => setIsAdminMode(!isAdminMode)}
+            className={`p-2 rounded-full transition-colors ${isAdminMode ? 'bg-red-100 text-red-600' : 'bg-gray-100 text-gray-400'}`}
+            title="Área Reservada (Simulação)"
+          >
+            {isAdminMode ? <Unlock size={20} /> : <Lock size={20} />}
+          </button>
+        </div>
+
+        {/* Barra de Pesquisa */}
+        <div className="max-w-3xl mx-auto relative">
+          <Search className="absolute left-4 top-3.5 text-gray-400" size={20} />
+          <input 
+            type="text" 
+            placeholder="Pesquise por tema (ex: mbway, entrega...)" 
+            className="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none shadow-sm transition-all"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
+      </header>
+
+      {/* --- CONTEÚDO PRINCIPAL --- */}
+      <main className="max-w-3xl mx-auto px-4 py-8">
         
-        snapshot.forEach((doc) => {
-            const item = doc.data();
-            const id = doc.id;
-        
-            const dataExibicao = item.date ? item.date.replace('T', ' ') : '-';
+        {/* Filtros de Categoria */}
+        <div className="flex gap-2 mb-8 overflow-x-auto pb-2">
+          {categories.map(cat => (
+            <button
+              key={cat}
+              onClick={() => setSelectedCategory(cat)}
+              className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                selectedCategory === cat 
+                  ? 'bg-blue-600 text-white shadow-md' 
+                  : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-100'
+              }`}
+            >
+              {cat}
+            </button>
+          ))}
+        </div>
 
-            const row = tbody.insertRow();
-            row.innerHTML = `
-                <td>${dataExibicao}</td>
-                <td>${item.email || '-'}</td>
-                <td>${item['kit id'] || '-'}</td>
-                <td>${item.user || '-'}</td>
-                <td><span class="badge">${item.briefing_by || '-'}</span></td>
-                <td><button class="btn-delete" onclick="remover('${id}')">Apagar</button></td>
-            `;
-        });
-        statusDiv.innerText = "Synced";
-    }, (error) => {
-        statusDiv.innerText = "Erro de Permissão! Verifique as Rules.";
-        statusDiv.style.color = "red";
-    });
+        {/* Área de Admin: Botão de Adicionar */}
+        {isAdminMode && (
+          <div className="mb-6 p-4 bg-blue-50 border border-blue-100 rounded-xl flex justify-between items-center">
+            <span className="text-blue-800 font-medium">Modo Administrador Ativo</span>
+            <button 
+              onClick={() => setShowAddModal(true)}
+              className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
+            >
+              <Plus size={18} /> Nova Pergunta
+            </button>
+          </div>
+        )}
 
-    function adicionar() {
-        const authUser = prompt("briefed by: ");
-        
-        if (!authUser) return; // Se cancelar o prompt
-        const userLower = authUser.toLowerCase().trim();
+        {/* Lista de FAQs */}
+        <div className="space-y-4">
+          {filteredFaqs.length > 0 ? (
+            filteredFaqs.map((faq) => (
+              <div key={faq.id} className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                <button 
+                  onClick={() => setOpenQuestionId(openQuestionId === faq.id ? null : faq.id)}
+                  className="w-full text-left px-6 py-4 flex justify-between items-center hover:bg-gray-50 transition-colors"
+                >
+                  <span className="font-semibold text-lg text-gray-800">{faq.question}</span>
+                  {openQuestionId === faq.id ? <ChevronUp className="text-blue-500" /> : <ChevronDown className="text-gray-400" />}
+                </button>
+                
+                {openQuestionId === faq.id && (
+                  <div className="px-6 pb-6 pt-2 text-gray-600 leading-relaxed border-t border-gray-50 bg-gray-50/50">
+                    {faq.answer}
+                    <div className="mt-3 text-xs text-gray-400 uppercase tracking-wider font-semibold">
+                      {faq.category}
+                    </div>
+                  </div>
+                )}
+              </div>
+            ))
+          ) : (
+            <div className="text-center py-10 text-gray-400">
+              Nenhuma pergunta encontrada para esta pesquisa.
+            </div>
+          )}
+        </div>
+      </main>
 
-        if (userLower !== "rodrigo" && userLower !== "tiago") {
-            alert("Acess denied to user: '" + authUser + "' no permission to add!");
-            return;
-        }
+      {/* --- MODAL DE ADICIONAR (Só aparece para Admin) --- */}
+      {showAddModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-2xl w-full max-w-md p-6 shadow-2xl">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-bold">Adicionar FAQ</h2>
+              <button onClick={() => setShowAddModal(false)}><X className="text-gray-400 hover:text-gray-600" /></button>
+            </div>
+            
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Categoria</label>
+                <select 
+                  className="w-full p-2 border rounded-lg bg-white"
+                  value={newQuestion.category}
+                  onChange={e => setNewQuestion({...newQuestion, category: e.target.value})}
+                >
+                  {categories.filter(c => c !== 'Todas').map(c => <option key={c} value={c}>{c}</option>)}
+                </select>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Pergunta</label>
+                <input 
+                  type="text" 
+                  className="w-full p-2 border rounded-lg"
+                  value={newQuestion.question}
+                  onChange={e => setNewQuestion({...newQuestion, question: e.target.value})}
+                />
+              </div>
 
-        const v_date = document.getElementById("c_date").value;
-        const v_email = document.getElementById("c_email").value;
-        const v_kitid = document.getElementById("c_kitid").value;
-        const v_user = document.getElementById("c_user").value;
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Resposta</label>
+                <textarea 
+                  className="w-full p-2 border rounded-lg h-24"
+                  value={newQuestion.answer}
+                  onChange={e => setNewQuestion({...newQuestion, answer: e.target.value})}
+                />
+              </div>
 
-        if(!v_date || !v_email || !v_user) return alert("Please, fill all fields.");
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Keywords (para pesquisa)</label>
+                <input 
+                  type="text" 
+                  placeholder="Ex: dinheiro, urgente"
+                  className="w-full p-2 border rounded-lg"
+                  value={newQuestion.keywords}
+                  onChange={e => setNewQuestion({...newQuestion, keywords: e.target.value})}
+                />
+              </div>
 
-        statusDiv.innerText = "Storing";
-
-        db.collection("t").add({
-            date: v_date,
-            email: v_email,
-            "kit id": v_kitid,
-            user: v_user,
-            briefing_by: userLower,
-            timestamp_sistema: firebase.firestore.FieldValue.serverTimestamp()
-        })
-        .then(() => {
-            statusDiv.innerText = "Adicionado com sucesso por " + userLower;
-           
-            document.getElementById("c_email").value = "";
-            document.getElementById("c_kitid").value = "";
-            document.getElementById("c_user").value = "";
-            atualizarDataInput();
-        })
-        .catch(err => alert("Error saving the file: " + err.message));
-    }
-
-    function remover(id) {
-        const authUser = prompt("Provide admin password: ");
-        
-        if (!authUser) return;
-        const userLower = authUser.toLowerCase().trim();
-
-        if (userLower !== "rodrigo" && userLower !== "tiago") {
-            alert("Access denied! Wrong password...");
-            return;
-        }
-
-        if(confirm("Delete entry forever ?")) {
-            db.collection("t").doc(id).delete()
-            .then(() => statusDiv.innerText = "Registo removido.");
-        }
-    }
-</script>
-
-</body>
-</html>
-
-
-
-
-
-
+              <button 
+                onClick={handleAddFaq}
+                className="w-full bg-blue-600 text-white py-3 rounded-lg font-bold hover:bg-blue-700 transition"
+              >
+                Guardar Pergunta
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
