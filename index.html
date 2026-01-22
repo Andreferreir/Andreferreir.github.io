@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AeroHelp - Gestão Flexível</title>
+    <title>AeroHelp - Gestão Permanente</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         .answer-content { transition: all 0.3s ease-out; max-height: 0; opacity: 0; overflow: hidden; }
@@ -18,14 +18,17 @@
     <div class="bg-white shadow-md pb-10 pt-8 px-4 border-b-4 border-blue-500 text-center">
         <div class="max-w-4xl mx-auto flex justify-between items-center mb-8">
             <div class="flex items-center gap-3 text-left">
-                <div class="bg-blue-600 p-2 rounded-lg text-white">
+                <div class="bg-blue-600 p-2 rounded-lg text-white shadow-lg">
                     <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3.5c-.5-.5-2.5 0-4 1.5L13.5 8.5 5.3 6.7c-1.1-.3-2.2.3-2.8 1.4-.5.9-.4 2.1.3 2.8l5.4 5.4-3.4 3.4c-.4.4-.4 1.2 0 1.7.5.5 1.3.5 1.7 0l3.4-3.4 5.4 5.4c.7.7 1.9.8 2.8.3 1.1-.6 1.7-1.7 1.4-2.8Z"/></svg>
                 </div>
-                <h1 class="text-3xl font-extrabold text-blue-900 tracking-tight">AeroHelp</h1>
+                <div>
+                    <h1 class="text-3xl font-extrabold text-blue-900 tracking-tight">AeroHelp</h1>
+                    <p class="text-xs text-blue-400 font-bold uppercase tracking-widest">Base de Conhecimento</p>
+                </div>
             </div>
             
-            <button onclick="toggleAdminMode()" id="adminToggleBtn" class="p-3 rounded-full bg-slate-100 text-slate-400 hover:bg-blue-600 hover:text-white transition shadow-md">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+            <button onclick="toggleAdminMode()" id="adminToggleBtn" class="p-3 rounded-full bg-slate-100 text-slate-400 hover:bg-blue-600 hover:text-white transition shadow-md border border-transparent">
+                <svg id="lockIcon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
             </button>
         </div>
 
@@ -40,69 +43,82 @@
         
         <div class="flex gap-3 mb-10 overflow-x-auto pb-4 justify-start sm:justify-center" id="categoryContainer"></div>
 
-        <div id="adminPanel" class="hidden mb-12 p-8 bg-white border-2 border-blue-200 rounded-3xl shadow-2xl relative">
-            <h2 class="text-xl font-bold text-blue-900 mb-6 flex items-center gap-2">Gestão de Conteúdo</h2>
+        <div id="adminPanel" class="hidden mb-12 p-8 bg-white border-2 border-blue-400 rounded-3xl shadow-2xl relative animate-in fade-in zoom-in duration-300">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-xl font-bold text-blue-900 flex items-center gap-2">
+                    <span class="bg-blue-100 p-1 rounded">✈️</span> Adicionar Informação
+                </h2>
+                <button onclick="toggleAdminMode()" class="text-gray-400 hover:text-red-500 transition">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+            </div>
             
             <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div class="flex flex-col gap-2">
-                    <label class="text-sm font-bold text-gray-600 uppercase ml-1">Escolher Tema</label>
+                    <label class="text-xs font-black text-blue-900/40 uppercase ml-1 tracking-widest">Categoria</label>
                     <select id="newCategory" onchange="checkNewCategory(this.value)" class="p-3 border-2 border-gray-100 rounded-xl bg-slate-50 focus:border-blue-400 outline-none transition-all">
                         </select>
                 </div>
 
                 <div id="newCategoryInputWrapper" class="hidden flex flex-col gap-2">
-                    <label class="text-sm font-bold text-orange-600 uppercase ml-1">Nome do Novo Tema</label>
-                    <input type="text" id="customCategoryName" placeholder="Ex: Voos Privados" class="p-3 border-2 border-orange-200 rounded-xl bg-orange-50 focus:border-orange-400 outline-none transition-all">
+                    <label class="text-xs font-black text-orange-500 uppercase ml-1 tracking-widest">Nome do Novo Tema</label>
+                    <input type="text" id="customCategoryName" placeholder="Ex: Check-in VIP" class="p-3 border-2 border-orange-200 rounded-xl bg-orange-50 focus:border-orange-400 outline-none transition-all">
                 </div>
 
                 <div class="flex flex-col gap-2 md:col-span-1">
-                    <label class="text-sm font-bold text-gray-600 uppercase ml-1">Keywords</label>
-                    <input type="text" id="newKeywords" placeholder="mala, peso, urgente" class="p-3 border-2 border-gray-100 rounded-xl bg-slate-50 outline-none focus:border-blue-400">
+                    <label class="text-xs font-black text-blue-900/40 uppercase ml-1 tracking-widest">Keywords de Pesquisa</label>
+                    <input type="text" id="newKeywords" placeholder="mala, peso, limites" class="p-3 border-2 border-gray-100 rounded-xl bg-slate-50 outline-none focus:border-blue-400">
                 </div>
 
                 <div class="flex flex-col gap-2 md:col-span-2">
-                    <label class="text-sm font-bold text-gray-600 uppercase ml-1">Pergunta</label>
-                    <input type="text" id="newQuestion" placeholder="Qual a dúvida?" class="p-3 border-2 border-gray-100 rounded-xl bg-slate-50 outline-none focus:border-blue-400">
+                    <label class="text-xs font-black text-blue-900/40 uppercase ml-1 tracking-widest">Pergunta</label>
+                    <input type="text" id="newQuestion" placeholder="Ex: Posso levar animais?" class="p-3 border-2 border-gray-100 rounded-xl bg-slate-50 outline-none focus:border-blue-400">
                 </div>
 
                 <div class="flex flex-col gap-2 md:col-span-2">
-                    <label class="text-sm font-bold text-gray-600 uppercase ml-1">Resposta</label>
-                    <textarea id="newAnswer" placeholder="Explicação completa..." class="p-3 border-2 border-gray-100 rounded-xl bg-slate-50 h-32 outline-none focus:border-blue-400"></textarea>
+                    <label class="text-xs font-black text-blue-900/40 uppercase ml-1 tracking-widest">Resposta</label>
+                    <textarea id="newAnswer" placeholder="Descreva os detalhes aqui..." class="p-3 border-2 border-gray-100 rounded-xl bg-slate-50 h-32 outline-none focus:border-blue-400"></textarea>
                 </div>
             </div>
             
-            <button onclick="addNewFAQ()" class="mt-8 bg-blue-600 text-white font-bold py-4 px-10 rounded-2xl hover:bg-blue-700 shadow-lg transform active:scale-95 transition w-full">
+            <button onclick="addNewFAQ()" class="mt-8 bg-blue-600 text-white font-bold py-4 px-10 rounded-2xl hover:bg-blue-700 shadow-lg transform active:scale-95 transition-all w-full flex justify-center items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
                 Guardar e Publicar
             </button>
         </div>
 
-        <div id="faqList" class="space-y-4"></div>
+        <div id="faqList" class="space-y-4 animate-in slide-in-from-bottom-4 duration-500"></div>
 
     </main>
 
     <script>
-        // DADOS
-        let faqs = [
+        // 1. CARREGAR DADOS DO LOCALSTORAGE OU USAR DEFAULT
+        let defaultFaqs = [
             { id: 1, category: 'Bagagem', question: 'Qual o peso máximo da mala de mão?', answer: 'Cada passageiro pode levar uma mala de mão de até 10kg.', keywords: 'mala peso kg' },
             { id: 2, category: 'Reservas', question: 'Como alterar a data do voo?', answer: 'Pode alterar no menu "Gerir Reserva" até 4h antes.', keywords: 'data voo reserva' }
         ];
 
-        let categories = ['Reservas', 'Bagagem', 'No Aeroporto'];
+        let faqs = JSON.parse(localStorage.getItem('aero_faqs')) || defaultFaqs;
+        let categories = JSON.parse(localStorage.getItem('aero_cats')) || ['Reservas', 'Bagagem', 'No Aeroporto'];
+        
         let currentCategory = 'Todas';
         let isAdmin = false;
 
-        // INICIAR
-        window.onload = () => {
-            refreshUI();
-        };
+        window.onload = () => { refreshUI(); };
 
         function refreshUI() {
             renderCategoryFilters();
             renderCategoryDropdown();
             renderFAQs();
+            saveData();
         }
 
-        // 1. RENDERIZAR FILTROS (BOTÕES)
+        function saveData() {
+            localStorage.setItem('aero_faqs', JSON.stringify(faqs));
+            localStorage.setItem('aero_cats', JSON.stringify(categories));
+        }
+
+        // --- RENDERIZAÇÃO ---
         function renderCategoryFilters() {
             const container = document.getElementById('categoryContainer');
             const allCats = ['Todas', ...categories];
@@ -113,7 +129,6 @@
             `).join('');
         }
 
-        // 2. RENDERIZAR DROPDOWN NO ADMIN (COM OPÇÃO DE NOVO)
         function renderCategoryDropdown() {
             const select = document.getElementById('newCategory');
             let options = categories.map(cat => `<option value="${cat}">${cat}</option>`).join('');
@@ -121,17 +136,6 @@
             select.innerHTML = options;
         }
 
-        // 3. MOSTRAR CAMPO DE NOVO TEMA SE NECESSÁRIO
-        function checkNewCategory(val) {
-            const wrapper = document.getElementById('newCategoryInputWrapper');
-            if(val === 'NEW_THEME') {
-                wrapper.classList.remove('hidden');
-            } else {
-                wrapper.classList.add('hidden');
-            }
-        }
-
-        // 4. FILTRAR E MOSTRAR LISTA
         function renderFAQs() {
             const container = document.getElementById('faqList');
             const search = document.getElementById('searchInput').value.toLowerCase();
@@ -146,18 +150,22 @@
                 <div class="bg-white rounded-2xl shadow-sm border border-blue-50 overflow-hidden hover:shadow-md transition-all">
                     <button onclick="toggleAnswer(${f.id})" class="w-full text-left px-6 py-5 flex justify-between items-center group">
                         <span class="font-bold text-blue-900 group-hover:text-blue-600 transition-colors">${f.question}</span>
-                        <svg id="icon-${f.id}" class="rotate-icon text-blue-300" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                        <svg id="icon-${f.id}" class="rotate-icon text-blue-300 transition-transform duration-300" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
                     </button>
                     <div id="ans-${f.id}" class="answer-content bg-slate-50/50 px-6 border-t border-slate-50">
                         <div class="pb-6 pt-4 text-gray-600 leading-relaxed">
                             ${f.answer}
-                            <div class="mt-4"><span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[10px] font-black uppercase tracking-widest">${f.category}</span></div>
+                            <div class="mt-4 flex justify-between items-center">
+                                <span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-[10px] font-black uppercase tracking-widest">${f.category}</span>
+                                ${isAdmin ? `<button onclick="deleteFAQ(${f.id})" class="text-red-300 hover:text-red-500 text-xs">Eliminar</button>` : ''}
+                            </div>
                         </div>
                     </div>
                 </div>
             `).join('');
         }
 
+        // --- LÓGICA ---
         function setCategory(cat) {
             currentCategory = cat;
             refreshUI();
@@ -172,44 +180,55 @@
             if (!isOpen) { content.classList.add('open'); icon.classList.add('open'); }
         }
 
-        function toggleAdminMode() {
-            isAdmin = !isAdmin;
-            document.getElementById('adminPanel').classList.toggle('hidden');
-            document.getElementById('adminToggleBtn').classList.toggle('bg-blue-600');
-            document.getElementById('adminToggleBtn').classList.toggle('text-white');
+        function checkNewCategory(val) {
+            document.getElementById('newCategoryInputWrapper').classList.toggle('hidden', val !== 'NEW_THEME');
         }
 
-        // 5. LÓGICA DE ADICIONAR (COM NOVO TEMA)
+        function toggleAdminMode() {
+            isAdmin = !isAdmin;
+            const panel = document.getElementById('adminPanel');
+            const btn = document.getElementById('adminToggleBtn');
+            panel.classList.toggle('hidden');
+            btn.classList.toggle('bg-blue-600');
+            btn.classList.toggle('text-white');
+            renderFAQs(); // Re-render para mostrar/esconder botões eliminar
+        }
+
         function addNewFAQ() {
             const q = document.getElementById('newQuestion').value;
             const a = document.getElementById('newAnswer').value;
             const k = document.getElementById('newKeywords').value;
             let c = document.getElementById('newCategory').value;
 
-            // Se for um novo tema
             if (c === 'NEW_THEME') {
                 const customCat = document.getElementById('customCategoryName').value.trim();
-                if(!customCat) return alert("Por favor, digite o nome do novo tema.");
-                
-                // Adiciona às categorias se não existir
-                if(!categories.includes(customCat)) {
-                    categories.push(customCat);
-                }
+                if(!customCat) return alert("Digite o nome do novo tema.");
+                if(!categories.includes(customCat)) categories.push(customCat);
                 c = customCat;
             }
 
             if (!q || !a) return alert("Preencha a pergunta e a resposta.");
 
+            // Adiciona aos dados
             faqs.unshift({ id: Date.now(), category: c, question: q, answer: a, keywords: k });
             
-            // Limpar formulário
+            // --- AÇÃO DE FECHAR O FORMULÁRIO ---
+            toggleAdminMode(); // Fecha o painel e limpa o estado de Admin
+            
+            // Limpar campos para a próxima vez
             document.getElementById('newQuestion').value = '';
             document.getElementById('newAnswer').value = '';
             document.getElementById('customCategoryName').value = '';
             document.getElementById('newCategoryInputWrapper').classList.add('hidden');
             
             refreshUI();
-            alert(`Sucesso! Gravado em ${c}`);
+        }
+
+        function deleteFAQ(id) {
+            if(confirm('Deseja eliminar esta pergunta?')) {
+                faqs = faqs.filter(f => f.id !== id);
+                refreshUI();
+            }
         }
     </script>
 </body>
