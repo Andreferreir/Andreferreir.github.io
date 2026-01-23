@@ -3,157 +3,182 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AeroHelp v3.0 - TAP Style</title>
+    <title>AeroHelp v3.1 - Corporate Portal</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    
     <style>
-        /* Variáveis de Cores TAP */
+        /* Variáveis de Identidade Visual */
         :root {
             --tap-green: #00874d;
+            --tap-light-green: #e5f3ed;
             --tap-red: #e31937;
-            --tap-gray: #f2f2f2;
+            --bg-body: #f7f9fa;
         }
 
-        /* Configuração Tailwind para cores customizadas */
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: var(--bg-body);
+            color: #1a1a1a;
+        }
+
+        /* Classes Customizadas Tailwind */
         @layer utilities {
-            .bg-tap-green { background-color: var(--tap-green); }
-            .bg-tap-red { background-color: var(--tap-red); }
             .text-tap-green { color: var(--tap-green); }
-            .text-tap-red { color: var(--tap-red); }
+            .bg-tap-green { background-color: var(--tap-green); }
             .border-tap-green { border-color: var(--tap-green); }
-            .border-tap-red { border-color: var(--tap-red); }
+            .text-tap-red { color: var(--tap-red); }
+            .bg-tap-red { background-color: var(--tap-red); }
+            
+            /* Sombra suave estilo Apple/Corporate */
+            .shadow-soft { box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05); }
         }
 
-        body { background: linear-gradient(180deg, #f4f4f4 0%, #eeeeee 100%); }
-
-        /* Animações do Accordion */
-        .answer-content { 
-            transition: all 0.3s ease-out; 
-            max-height: 0; 
-            opacity: 0; 
-            overflow: hidden; 
+        /* Animação do Accordion */
+        .answer-wrapper {
+            display: grid;
+            grid-template-rows: 0fr;
+            transition: grid-template-rows 0.3s ease-out;
         }
-        .answer-content.open { 
-            max-height: 1000px; 
-            opacity: 1; 
-            margin-top: 1rem; 
+        .answer-wrapper.open {
+            grid-template-rows: 1fr;
+        }
+        .answer-inner {
+            overflow: hidden;
         }
 
-        .rotate-icon { transition: transform 0.3s; }
-        .rotate-icon.open { transform: rotate(180deg); }
+        /* Scrollbar oculta mas funcional para as categorias */
+        .hide-scroll::-webkit-scrollbar { display: none; }
+        .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
 
-        /* Scrollbar suave para categorias */
-        #categoryContainer::-webkit-scrollbar { height: 4px; }
-        #categoryContainer::-webkit-scrollbar-thumb { background: #ccc; border-radius: 10px; }
+        /* Estilo dos botões de categoria inativos */
+        .btn-ghost-tap {
+            background-color: rgba(0, 0, 0, 0.05); /* Cinza transparente */
+            color: #666;
+        }
+        .btn-ghost-tap:hover {
+            background-color: rgba(0, 0, 0, 0.1);
+            color: #000;
+        }
     </style>
 </head>
-<body class="min-h-screen font-sans text-gray-800 pb-20">
+<body class="min-h-screen pb-20">
 
-    <header class="bg-white shadow-md pb-10 pt-8 px-4 border-b-4 border-tap-red text-center relative z-10">
-        <div class="max-w-4xl mx-auto flex justify-between items-center mb-8">
-            <div class="flex items-center gap-3 text-left">
-                <div class="bg-tap-green p-2 rounded-lg text-white shadow-lg">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3.5c-.5-.5-2.5 0-4 1.5L13.5 8.5 5.3 6.7c-1.1-.3-2.2.3-2.8 1.4-.5.9-.4 2.1.3 2.8l5.4 5.4-3.4 3.4c-.4.4-.4 1.2 0 1.7.5.5 1.3.5 1.7 0l3.4-3.4 5.4 5.4c.7.7 1.9.8 2.8.3 1.1-.6 1.7-1.7 1.4-2.8Z"/></svg>
-                </div>
-                <div>
-                    <h1 class="text-3xl font-extrabold text-tap-green tracking-tight italic">Aero<span class="text-tap-red">Help</span> <span class="text-sm not-italic text-gray-400 font-normal">v3.0</span></h1>
-                    <p class="text-[10px] text-gray-400 font-bold uppercase tracking-[0.2em]">TAP Knowledge Portal</p>
+    <header class="bg-white sticky top-0 z-50 border-b border-gray-200 shadow-sm">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 h-20 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="relative group cursor-default">
+                    <h1 class="text-2xl font-black tracking-tight text-tap-green">
+                        Aero<span class="text-tap-red">Help</span>
+                    </h1>
+                    <span class="absolute -bottom-3 left-0 text-[9px] font-bold text-gray-400 uppercase tracking-widest group-hover:text-tap-green transition-colors">Internal Knowledge v3.1</span>
                 </div>
             </div>
-            
-            <button id="adminToggleBtn" class="p-3 rounded-full bg-slate-100 text-slate-400 hover:bg-tap-green hover:text-white transition shadow-md border border-transparent" title="Modo Admin">
-                <svg id="lockIcon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+
+            <button id="adminToggleBtn" onclick="toggleAdminMode()" class="flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider text-gray-400 hover:bg-gray-100 hover:text-tap-green transition-all" title="Alternar Modo Edição">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"></path></svg>
+                <span id="adminText">Gerir</span>
             </button>
         </div>
 
-        <div class="max-w-2xl mx-auto relative px-2">
-            <input type="text" id="searchInput" placeholder="Como podemos ajudar hoje?" 
-                class="w-full pl-6 pr-4 py-4 rounded-full border-2 border-gray-100 focus:border-tap-green outline-none shadow-xl text-lg transition-all">
+        <div class="bg-tap-green py-8 px-4 relative overflow-hidden">
+            <div class="absolute top-0 right-0 -mr-10 -mt-10 w-64 h-64 bg-white opacity-5 rounded-full blur-3xl"></div>
+            
+            <div class="max-w-2xl mx-auto relative z-10">
+                <div class="relative group">
+                    <input type="text" id="searchInput" placeholder="Olá. Como podemos ajudar hoje?" 
+                        class="w-full pl-12 pr-4 py-4 rounded-xl border-0 shadow-lg text-gray-800 placeholder-gray-400 focus:ring-4 focus:ring-green-400/30 transition-all text-lg font-medium">
+                    <svg class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
+                </div>
+            </div>
         </div>
     </header>
 
-    <main class="max-w-4xl mx-auto px-4 py-8">
+    <main class="max-w-5xl mx-auto px-4 sm:px-6 py-8">
         
-        <div class="flex gap-3 mb-10 overflow-x-auto pb-4 justify-start sm:justify-center px-2" id="categoryContainer"></div>
+        <nav class="flex gap-2 overflow-x-auto hide-scroll pb-2 mb-8 border-b border-gray-100" id="categoryContainer">
+            </nav>
 
-        <section id="adminPanel" class="hidden mb-12 p-8 bg-white border-2 border-tap-green rounded-3xl shadow-2xl animate-in fade-in zoom-in duration-300">
-            <div class="flex justify-between items-center mb-6">
-                <h2 class="text-xl font-bold text-tap-green flex items-center gap-2">
-                    <span class="bg-green-100 p-1 rounded">✈️</span> Adicionar Novo Conteúdo
-                </h2>
-                <button onclick="toggleAdminMode()" class="text-gray-400 hover:text-tap-red transition font-bold text-sm">CANCELAR</button>
+        <section id="adminPanel" class="hidden mb-10 bg-white rounded-2xl p-6 border border-gray-200 shadow-soft animate-in slide-in-from-top-4 duration-300">
+            <div class="flex justify-between items-center mb-6 pb-4 border-b border-gray-100">
+                <h3 class="font-bold text-gray-800 flex items-center gap-2">
+                    <span class="w-2 h-6 bg-tap-green rounded-full"></span>
+                    Adicionar Nova Pergunta
+                </h3>
             </div>
             
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                <div class="flex flex-col gap-2">
-                    <label class="text-xs font-black text-gray-400 uppercase ml-1">Categoria</label>
-                    <select id="newCategory" onchange="checkNewCategory(this.value)" class="p-3 border-2 border-gray-100 rounded-xl bg-slate-50 outline-none focus:border-tap-green"></select>
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+                <div class="md:col-span-4 flex flex-col gap-2">
+                    <label class="text-xs font-bold text-gray-500 uppercase">Categoria</label>
+                    <select id="newCategory" onchange="checkNewCategory(this.value)" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg focus:border-tap-green focus:ring-1 focus:ring-tap-green outline-none transition font-medium text-gray-700"></select>
+                    
+                    <input type="text" id="customCategoryName" placeholder="Nome do novo tema..." class="hidden mt-2 w-full p-3 bg-white border-2 border-tap-green/20 text-tap-green placeholder-green-700/30 rounded-lg outline-none font-bold animate-pulse focus:animate-none">
                 </div>
-                <div id="newCategoryInputWrapper" class="hidden flex flex-col gap-2">
-                    <label class="text-xs font-black text-tap-red uppercase ml-1">Nome do Novo Tema</label>
-                    <input type="text" id="customCategoryName" class="p-3 border-2 border-red-100 rounded-xl bg-red-50 outline-none focus:border-tap-red">
+
+                <div class="md:col-span-8 flex flex-col gap-2">
+                    <label class="text-xs font-bold text-gray-500 uppercase">Palavras-chave (Tags)</label>
+                    <input type="text" id="newKeywords" placeholder="Ex: bagagem, porão, proibido (separar por espaços)" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg focus:border-tap-green outline-none transition">
                 </div>
-                <div class="flex flex-col gap-2 md:col-span-1">
-                    <label class="text-xs font-black text-gray-400 uppercase ml-1">Tags (Palavras-chave)</label>
-                    <input type="text" id="newKeywords" placeholder="Ex: malas, porão" class="p-3 border-2 border-gray-100 rounded-xl bg-slate-50 outline-none focus:border-tap-green">
+
+                <div class="md:col-span-12 flex flex-col gap-2">
+                    <label class="text-xs font-bold text-gray-500 uppercase">Pergunta</label>
+                    <input type="text" id="newQuestion" placeholder="Escreva a pergunta frequente..." class="w-full p-3 bg-gray-50 border border-gray-200 rounded-lg focus:border-tap-green outline-none transition font-semibold">
                 </div>
-                <div class="flex flex-col gap-2 md:col-span-2">
-                    <label class="text-xs font-black text-gray-400 uppercase ml-1">Pergunta</label>
-                    <input type="text" id="newQuestion" class="p-3 border-2 border-gray-100 rounded-xl bg-slate-50 outline-none focus:border-tap-green">
-                </div>
-                <div class="flex flex-col gap-2 md:col-span-2">
-                    <label class="text-xs font-black text-gray-400 uppercase ml-1">Resposta Detalhada</label>
-                    <textarea id="newAnswer" class="p-3 border-2 border-gray-100 rounded-xl bg-slate-50 h-32 outline-none focus:border-tap-green"></textarea>
+
+                <div class="md:col-span-12 flex flex-col gap-2">
+                    <label class="text-xs font-bold text-gray-500 uppercase">Resposta</label>
+                    <textarea id="newAnswer" placeholder="Escreva a resposta detalhada..." class="w-full p-3 h-32 bg-gray-50 border border-gray-200 rounded-lg focus:border-tap-green outline-none transition resize-none"></textarea>
                 </div>
             </div>
-            <button onclick="addNewFAQ()" class="mt-8 bg-tap-green text-white font-bold py-4 px-10 rounded-2xl hover:bg-green-700 shadow-lg transform active:scale-95 transition-all w-full">
-                Publicar no AeroHelp
-            </button>
+
+            <div class="mt-6 flex justify-end">
+                <button onclick="addNewFAQ()" class="bg-tap-green text-white font-bold py-3 px-8 rounded-lg hover:bg-green-800 transition shadow-lg shadow-green-900/10 flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+                    Publicar
+                </button>
+            </div>
         </section>
 
-        <div id="faqList" class="space-y-4 min-h-[300px]"></div>
+        <div id="faqList" class="space-y-4">
+            </div>
+
     </main>
 
     <script>
-        /**
-         * LÓGICA DE DADOS (DataManager)
-         */
+        // --- GESTÃO DE DADOS (LocalStorage) ---
         const DataManager = {
             init() {
-                if (!localStorage.getItem('aero_faqs')) {
+                if (!localStorage.getItem('aero_faqs_v3')) {
                     const defaultData = [
-                        { id: 1, category: 'Bagagem', question: 'Qual o peso máximo da mala de mão?', answer: 'Na TAP, a mala de mão pode ter até 10kg em classe económica e 2x10kg em classe executiva.', keywords: 'mala peso kg hand baggage' },
-                        { id: 2, category: 'Check-in', question: 'Quando abre o check-in online?', answer: 'O check-in online abre 36 horas antes da partida do voo.', keywords: 'checkin tempo hora' }
+                        { id: 1715001, category: 'Bagagem', question: 'Qual o peso máximo da mala de mão?', answer: 'A mala de mão pode pesar até 10kg na Classe Económica e 10kg na Executiva (sendo permitidos 2 volumes). As dimensões máximas são 55x40x20cm.', keywords: 'mala peso mao cabin' },
+                        { id: 1715002, category: 'Check-in', question: 'Com quanta antecedência abre o check-in online?', answer: 'O check-in online abre 36 horas antes da partida do voo (ou 24 horas para voos de/para os EUA).', keywords: 'checkin tempo hora online' },
+                        { id: 1715003, category: 'A Bordo', question: 'Existem refeições incluídas no voo?', answer: 'Sim, dependendo da tarifa e duração do voo. Em voos de longo curso, as refeições quentes estão incluídas.', keywords: 'comer refeição comida bordo' }
                     ];
-                    localStorage.setItem('aero_faqs', JSON.stringify(defaultData));
+                    localStorage.setItem('aero_faqs_v3', JSON.stringify(defaultData));
                 }
-                if (!localStorage.getItem('aero_cats')) {
-                    localStorage.setItem('aero_cats', JSON.stringify(['Check-in', 'Bagagem']));
-                }
+                
+                // Extrai categorias únicas das perguntas existentes para garantir consistência
+                this.syncCategories();
             },
-            getFaqs: () => JSON.parse(localStorage.getItem('aero_faqs')) || [],
-            setFaqs: (data) => localStorage.setItem('aero_faqs', JSON.stringify(data)),
+
+            getFaqs: () => JSON.parse(localStorage.getItem('aero_faqs_v3')) || [],
             
-            getCats: () => JSON.parse(localStorage.getItem('aero_cats')) || [],
-            
-            addCat: (name) => {
-                const cats = JSON.parse(localStorage.getItem('aero_cats')) || [];
-                if (!cats.includes(name)) {
-                    cats.push(name);
-                    localStorage.setItem('aero_cats', JSON.stringify(cats));
-                }
+            setFaqs: (data) => {
+                localStorage.setItem('aero_faqs_v3', JSON.stringify(data));
+                DataManager.syncCategories(); // Atualiza categorias sempre que os dados mudam
             },
             
-            // Nova função para remover categoria
-            removeCat: (name) => {
-                let cats = JSON.parse(localStorage.getItem('aero_cats')) || [];
-                cats = cats.filter(c => c !== name);
-                localStorage.setItem('aero_cats', JSON.stringify(cats));
+            getCats: () => JSON.parse(localStorage.getItem('aero_cats_v3')) || [],
+
+            syncCategories: () => {
+                const faqs = JSON.parse(localStorage.getItem('aero_faqs_v3')) || [];
+                // Cria um Set com as categorias únicas presentes nas perguntas
+                const uniqueCats = [...new Set(faqs.map(item => item.category))].sort();
+                localStorage.setItem('aero_cats_v3', JSON.stringify(uniqueCats));
             }
         };
 
-        /**
-         * LÓGICA DE INTERFACE (App)
-         */
+        // --- STATE & UI ---
         let currentCategory = 'Todas';
         let isAdmin = false;
 
@@ -161,73 +186,89 @@
             DataManager.init();
             renderUI();
             
-            document.getElementById('searchInput').onkeyup = renderFAQs;
-            document.getElementById('adminToggleBtn').onclick = toggleAdminMode;
+            // Listeners
+            document.getElementById('searchInput').addEventListener('input', renderFAQs);
         };
 
         function renderUI() {
-            renderCategoryFilters();
-            renderCategoryDropdown();
+            renderCategoryTabs();
+            renderCategorySelect();
             renderFAQs();
         }
 
-        function renderCategoryFilters() {
+        function renderCategoryTabs() {
             const container = document.getElementById('categoryContainer');
             const cats = ['Todas', ...DataManager.getCats()];
             
             container.innerHTML = cats.map(cat => {
-                // Estilo condicional corrigido para cinza transparente quando inativo
-                const activeClass = 'bg-tap-green text-white shadow-md border-tap-green';
-                const inactiveClass = 'bg-gray-200/50 text-gray-500 border-transparent hover:bg-gray-200';
-
+                const isActive = currentCategory === cat;
+                // Estilo TAP: Verde sólido se ativo, Cinza Transparente se inativo
+                const btnClass = isActive 
+                    ? 'bg-tap-green text-white shadow-md ring-2 ring-offset-2 ring-tap-green' 
+                    : 'btn-ghost-tap hover:bg-gray-200';
+                
                 return `
                 <button onclick="setCategory('${cat}')" 
-                    class="px-6 py-2 rounded-full text-sm font-bold transition-all border whitespace-nowrap ${currentCategory === cat ? activeClass : inactiveClass}">
+                    class="${btnClass} px-5 py-2.5 rounded-lg text-sm font-bold transition-all whitespace-nowrap select-none">
                     ${cat}
                 </button>
             `}).join('');
         }
 
-        function renderCategoryDropdown() {
+        function renderCategorySelect() {
             const select = document.getElementById('newCategory');
-            let options = DataManager.getCats().map(cat => `<option value="${cat}">${cat}</option>`).join('');
-            options += `<option value="NEW_THEME" class="text-tap-red font-bold">+ Criar Novo Tema</option>`;
-            select.innerHTML = options;
+            const cats = DataManager.getCats();
+            let html = cats.map(c => `<option value="${c}">${c}</option>`).join('');
+            html += `<option value="NEW_THEME" class="font-bold text-tap-red">+ Criar Novo Tema</option>`;
+            select.innerHTML = html;
         }
 
         function renderFAQs() {
             const container = document.getElementById('faqList');
-            const search = document.getElementById('searchInput').value.toLowerCase();
+            const term = document.getElementById('searchInput').value.toLowerCase();
             const faqs = DataManager.getFaqs();
 
             const filtered = faqs.filter(f => {
-                const matchSearch = f.question.toLowerCase().includes(search) || f.keywords.toLowerCase().includes(search);
-                const matchCat = currentCategory === 'Todas' || f.category === currentCategory;
-                return matchSearch && matchCat;
+                const matchesTerm = f.question.toLowerCase().includes(term) || f.keywords.toLowerCase().includes(term);
+                const matchesCat = currentCategory === 'Todas' || f.category === currentCategory;
+                return matchesTerm && matchesCat;
             });
 
             if (filtered.length === 0) {
-                container.innerHTML = `<div class="text-center py-20 text-gray-400 italic">
-                    ${faqs.length === 0 ? 'Ainda não existem perguntas. Adicione uma no painel Admin.' : 'Nenhum resultado encontrado.'}
-                </div>`;
+                container.innerHTML = `
+                    <div class="text-center py-20 opacity-50">
+                        <p class="text-xl font-bold text-gray-400">Nada encontrado</p>
+                        <p class="text-sm text-gray-400">Tente outra pesquisa ou categoria.</p>
+                    </div>`;
                 return;
             }
 
             container.innerHTML = filtered.map(f => `
-                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:border-tap-green/30 transition-all group">
-                    <button onclick="toggleAnswer(${f.id})" class="w-full text-left px-6 py-5 flex justify-between items-center">
-                        <span class="font-bold text-gray-700 group-hover:text-tap-green transition-colors pr-4">${f.question}</span>
-                        <svg id="icon-${f.id}" class="rotate-icon text-gray-300 transition-transform shrink-0" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                <div class="bg-white border border-gray-200 rounded-xl overflow-hidden hover:shadow-md transition-shadow duration-300 group">
+                    <button onclick="toggleAccordion(${f.id})" class="w-full text-left px-6 py-5 flex justify-between items-center bg-white">
+                        <div class="flex flex-col gap-1">
+                            <span class="text-[10px] font-black tracking-wider uppercase text-gray-400 mb-1 flex items-center gap-2">
+                                ${f.category}
+                            </span>
+                            <span class="text-lg font-bold text-gray-800 group-hover:text-tap-green transition-colors leading-tight">
+                                ${f.question}
+                            </span>
+                        </div>
+                        <div id="icon-${f.id}" class="text-gray-300 group-hover:text-tap-green transition-transform duration-300">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                        </div>
                     </button>
-                    <div id="ans-${f.id}" class="answer-content bg-slate-50/50 px-6">
-                        <div class="pb-6 pt-2 text-gray-600 leading-relaxed">
-                            ${f.answer}
-                            <div class="mt-4 flex justify-between items-center border-t border-gray-100 pt-4">
-                                <span class="px-3 py-1 bg-green-100 text-tap-green rounded-full text-[10px] font-black uppercase tracking-wider">${f.category}</span>
-                                
-                                <button onclick="deleteFAQ(${f.id})" class="flex items-center gap-1 text-tap-red hover:bg-red-50 px-3 py-1 rounded transition text-xs font-bold uppercase tracking-wider ${isAdmin ? '' : 'hidden'}">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-                                    Eliminar
+                    
+                    <div id="ans-${f.id}" class="answer-wrapper bg-gray-50">
+                        <div class="answer-inner px-6 pb-6 pt-2">
+                            <div class="prose prose-sm text-gray-600 max-w-none leading-relaxed">
+                                ${f.answer}
+                            </div>
+                            
+                            <div class="${isAdmin ? 'flex' : 'hidden'} justify-end mt-4 pt-4 border-t border-gray-200/60">
+                                <button onclick="deleteFAQ(${f.id})" class="text-xs font-bold text-tap-red hover:bg-red-50 px-3 py-2 rounded transition flex items-center gap-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+                                    ELIMINAR PERGUNTA
                                 </button>
                             </div>
                         </div>
@@ -236,105 +277,117 @@
             `).join('');
         }
 
-        // --- FUNÇÕES DE INTERAÇÃO ---
+        // --- AÇÕES ---
+
+        function toggleAccordion(id) {
+            const wrapper = document.getElementById(`ans-${id}`);
+            const icon = document.getElementById(`icon-${id}`);
+            const isOpen = wrapper.classList.contains('open');
+
+            // Fechar todos os outros (Accordion behavior)
+            document.querySelectorAll('.answer-wrapper').forEach(el => el.classList.remove('open'));
+            document.querySelectorAll('[id^="icon-"]').forEach(el => el.style.transform = 'rotate(0deg)');
+
+            if (!isOpen) {
+                wrapper.classList.add('open');
+                icon.style.transform = 'rotate(180deg)';
+            }
+        }
 
         function setCategory(cat) {
             currentCategory = cat;
             renderUI();
         }
 
-        function toggleAnswer(id) {
-            const content = document.getElementById(`ans-${id}`);
-            const icon = document.getElementById(`icon-${id}`);
-            const isOpen = content.classList.contains('open');
-            
-            // Fecha todos antes de abrir o novo (Opcional, remove se quiser múltiplos abertos)
-            document.querySelectorAll('.answer-content').forEach(el => el.classList.remove('open'));
-            document.querySelectorAll('.rotate-icon').forEach(el => el.classList.remove('open'));
-            
-            if (!isOpen) {
-                content.classList.add('open');
-                icon.classList.add('open');
-            }
-        }
-
         function toggleAdminMode() {
             isAdmin = !isAdmin;
             const panel = document.getElementById('adminPanel');
             const btn = document.getElementById('adminToggleBtn');
-            
-            if(!isAdmin) {
-                panel.classList.add('hidden');
-                btn.classList.remove('bg-tap-green', 'text-white');
-            } else {
+            const txt = document.getElementById('adminText');
+
+            if (isAdmin) {
                 panel.classList.remove('hidden');
-                btn.classList.add('bg-tap-green', 'text-white');
+                btn.classList.add('bg-gray-100', 'text-tap-green');
+                txt.innerText = "Fechar Admin";
+            } else {
+                panel.classList.add('hidden');
+                btn.classList.remove('bg-gray-100', 'text-tap-green');
+                txt.innerText = "Gerir";
             }
             renderFAQs(); // Re-render para mostrar/esconder botões de delete
         }
 
         function checkNewCategory(val) {
-            document.getElementById('newCategoryInputWrapper').classList.toggle('hidden', val !== 'NEW_THEME');
+            const input = document.getElementById('customCategoryName');
+            if (val === 'NEW_THEME') {
+                input.classList.remove('hidden');
+                input.focus();
+            } else {
+                input.classList.add('hidden');
+            }
         }
 
         function addNewFAQ() {
-            const q = document.getElementById('newQuestion').value;
-            const a = document.getElementById('newAnswer').value;
-            const k = document.getElementById('newKeywords').value;
+            const q = document.getElementById('newQuestion').value.trim();
+            const a = document.getElementById('newAnswer').value.trim();
+            const k = document.getElementById('newKeywords').value.trim();
             let c = document.getElementById('newCategory').value;
 
             if (c === 'NEW_THEME') {
-                const custom = document.getElementById('customCategoryName').value.trim();
-                if(!custom) return alert("Indique o nome do novo tema.");
-                DataManager.addCat(custom);
-                c = custom;
+                c = document.getElementById('customCategoryName').value.trim();
+                if (!c) return alert("Por favor, escreva o nome do novo tema.");
             }
 
-            if (!q || !a) return alert("Pergunta e resposta são obrigatórias.");
+            if (!q || !a) return alert("Preencha a pergunta e a resposta.");
 
             const faqs = DataManager.getFaqs();
-            faqs.unshift({ id: Date.now(), category: c, question: q, answer: a, keywords: k });
+            // Adiciona no topo
+            faqs.unshift({
+                id: Date.now(),
+                category: c, // Normaliza a primeira letra maiuscula
+                question: q,
+                answer: a,
+                keywords: k
+            });
+
             DataManager.setFaqs(faqs);
-            
-            // Reset fields
+
+            // Limpeza do Form
             document.getElementById('newQuestion').value = '';
             document.getElementById('newAnswer').value = '';
             document.getElementById('newKeywords').value = '';
             document.getElementById('customCategoryName').value = '';
+            document.getElementById('customCategoryName').classList.add('hidden');
             
-            toggleAdminMode();
-            renderUI(); // Atualiza tudo (incluindo tabs se for nova cat)
+            // Feedback visual e refresh
+            alert("Pergunta adicionada com sucesso!");
+            toggleAdminMode(); // Fecha o admin
+            renderUI();
         }
 
         function deleteFAQ(id) {
-            if(confirm('Tem a certeza que deseja eliminar esta pergunta permanentemente?')) {
-                // 1. Encontrar a pergunta para saber a categoria
-                let faqs = DataManager.getFaqs();
-                const faqToDelete = faqs.find(f => f.id === id);
-                
-                if(!faqToDelete) return; // Erro de segurança
-                const catToCheck = faqToDelete.category;
+            if (!confirm("Tem a certeza que deseja eliminar esta pergunta? Se for a última deste tema, o tema também desaparecerá.")) return;
 
-                // 2. Eliminar a pergunta
-                faqs = faqs.filter(f => f.id !== id);
-                DataManager.setFaqs(faqs);
+            let faqs = DataManager.getFaqs();
+            
+            // 1. Guarda a categoria da pergunta que vai ser apagada para verificar depois
+            const targetFAQ = faqs.find(f => f.id === id);
+            if (!targetFAQ) return;
+            const catToCheck = targetFAQ.category;
 
-                // 3. Verificar se a categoria ficou vazia
-                const remainingInCat = faqs.filter(f => f.category === catToCheck).length;
-                
-                if (remainingInCat === 0) {
-                    // A categoria está vazia, vamos removê-la
-                    DataManager.removeCat(catToCheck);
-                    
-                    // Se o utilizador estava a ver essa categoria, volta para 'Todas'
-                    if (currentCategory === catToCheck) {
-                        currentCategory = 'Todas';
-                    }
-                }
+            // 2. Remove a pergunta
+            faqs = faqs.filter(f => f.id !== id);
+            DataManager.setFaqs(faqs); // Isto já chama o syncCategories internamente
 
-                // 4. Atualizar UI
-                renderUI();
+            // 3. Verifica se ainda existem perguntas nessa categoria
+            const remaining = faqs.filter(f => f.category === catToCheck);
+            
+            // 4. Se a categoria desapareceu e o utilizador estava a vê-la, volta para 'Todas'
+            if (remaining.length === 0 && currentCategory === catToCheck) {
+                currentCategory = 'Todas';
             }
+
+            renderUI();
         }
     </script>
 </body>
