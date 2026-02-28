@@ -1,1244 +1,1324 @@
-import { useState, useEffect, useRef, createContext, useContext } from "react";
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>INCOSE Portugal | Engenharia de Sistemas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet">
+<style>
+/* ─── TOKENS ─────────────────────────────────────────────────────────── */
+:root {
+  --blue:#003580;--blue2:#0055cc;--teal:#007a8a;--teal2:#00b4c8;
+  --cork:#c8a96e;--sand:#f0e8d8;--dark:#080e1e;--card:#0d1530;
+  --card2:#111b38;--white:#fff;--muted:#6b82aa;--border:rgba(255,255,255,0.07);
+  --success:#22c55e;--warn:#f59e0b;--danger:#ef4444;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--dark);color:var(--white);overflow-x:hidden;min-height:100vh;display:flex;flex-direction:column}
+h1,h2,h3,h4,h5{font-family:'Syne',sans-serif}
+a{color:inherit;text-decoration:none}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--dark)}::-webkit-scrollbar-thumb{background:var(--card2);border-radius:3px}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.7)}}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeInLeft{from{opacity:0;transform:translateX(-24px)}to{opacity:1;transform:translateX(0)}}
+@keyframes fadeInRight{from{opacity:0;transform:translateX(24px)}to{opacity:1;transform:translateX(0)}}
+@keyframes slideUp{to{transform:translateY(0)}}
 
-// ─── DESIGN TOKENS ───────────────────────────────────────────────────────────
-const CSS = `
-  @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap');
-  :root {
-    --blue: #003580; --blue2: #0055cc; --teal: #007a8a; --teal2: #00b4c8;
-    --cork: #c8a96e; --sand: #f0e8d8; --dark: #080e1e; --card: #0d1530;
-    --card2: #111b38; --white: #fff; --muted: #6b82aa; --border: rgba(255,255,255,0.07);
-    --success: #22c55e; --warn: #f59e0b; --danger: #ef4444;
-  }
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  html { scroll-behavior: smooth; }
-  body { font-family: 'DM Sans', sans-serif; background: var(--dark); color: var(--white); overflow-x: hidden; }
-  h1,h2,h3,h4,h5 { font-family: 'Syne', sans-serif; }
-  ::-webkit-scrollbar { width: 6px; } ::-webkit-scrollbar-track { background: var(--dark); }
-  ::-webkit-scrollbar-thumb { background: var(--card2); border-radius: 3px; }
-`;
+/* ─── LAYOUT ─────────────────────────────────────────────────────────── */
+.container{max-width:1200px;margin:0 auto;padding:0 2rem;width:100%}
+main{flex:1}
+.page{display:none;padding:3rem 0;animation:fadeInUp .45s ease both}
+.page.active{display:block}
 
-// ─── GLOBAL STATE ─────────────────────────────────────────────────────────────
-const AppCtx = createContext(null);
+/* ─── UTILITY BAR ────────────────────────────────────────────────────── */
+#util-bar{background:rgba(0,20,60,.98);border-bottom:1px solid var(--border);padding:.35rem 2rem;display:flex;align-items:center;justify-content:flex-end;gap:1.2rem;font-size:.76rem}
+#util-bar a{color:var(--muted);transition:color .2s}
+#util-bar a:hover{color:var(--teal2)}
+.lang-toggle{display:flex;border:1px solid var(--border);border-radius:4px;overflow:hidden}
+.lang-toggle button{background:transparent;border:none;padding:.22rem .55rem;color:var(--muted);cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:700;font-size:.72rem;transition:all .2s}
+.lang-toggle button.active{background:var(--teal);color:#fff}
 
-// ─── MOCK DATA ────────────────────────────────────────────────────────────────
-const USERS_DB = {
-  "admin@sespt.pt":   { name:"Sofia Andrade", role:"admin",   quota:true,  avatar:"SA", type:"Admin SESPT" },
-  "membro@incose.pt": { name:"Carlos Mendes", role:"member",  quota:true,  avatar:"CM", type:"Membro Individual" },
-  "cab@embraer.pt":   { name:"Ana Ferreira",  role:"cab",     quota:true,  avatar:"AF", type:"CAB – Embraer" },
-  "estudante@ist.pt": { name:"Tomás Lima",    role:"student", quota:false, avatar:"TL", type:"Membro Estudante" },
-};
-const PASS = "demo123";
+/* ─── HEADER ─────────────────────────────────────────────────────────── */
+header{position:sticky;top:0;z-index:200;background:rgba(8,14,30,.97);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:64px;gap:1rem}
+.logo-group{display:flex;align-items:center;gap:1.1rem;flex-shrink:0}
+.logo-mark{width:38px;height:38px;border-radius:6px;background:var(--blue);display:flex;align-items:center;justify-content:center;font-size:.55rem;font-weight:800;font-family:'Syne',sans-serif;letter-spacing:.5px;color:#fff;border:2px solid rgba(0,85,204,.5);flex-shrink:0}
+.logo-text .main{font-size:.95rem;font-weight:700;font-family:'Syne',sans-serif}
+.logo-text .sub{font-size:.58rem;color:var(--cork);letter-spacing:2px;text-transform:uppercase}
+.logo-divider{width:1px;height:26px;background:var(--border)}
+.logo-sespt{font-size:.62rem;font-weight:700;color:var(--muted);letter-spacing:1px;text-transform:uppercase}
+nav{display:flex;gap:0;overflow-x:auto}
+nav button{padding:0 .85rem;height:64px;background:transparent;border:none;border-bottom:2px solid transparent;color:rgba(255,255,255,.6);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:.82rem;font-weight:500;transition:all .2s;white-space:nowrap}
+nav button:hover{color:#fff}
+nav button.active{color:#fff;border-bottom-color:var(--teal2)}
+.header-cta{flex-shrink:0}
 
-const EVENTS_DATA = [
-  { id:1, title:"INCOSE Portugal Summit 2026", date:"2026-03-15", end:"2026-03-15", location:"Centro de Congressos do Estoril, Lisboa", format:"presencial", type:"summit", desc:"A maior conferência anual do capítulo, com keynotes internacionais, workshops e networking.", price:{ public:120, member:60, student:25 }, capacity:300, registered:187 },
-  { id:2, title:"Webinar: MBSE com SysML v2 – Primeiros passos", date:"2026-03-28", end:"2026-03-28", location:"Online · Zoom", format:"online", type:"webinar", desc:"Introdução prática ao SysML v2 com exemplos reais de sistemas aeroespaciais.", price:{ public:20, member:0, student:0 }, capacity:200, registered:89 },
-  { id:3, title:"ASEP Prep-Course – Lisboa (Primavera)", date:"2026-04-12", end:"2026-04-14", location:"Lisboa · Local a confirmar", format:"presencial", type:"workshop", desc:"3 dias intensivos de preparação para o exame ASEP com instrutores certificados.", price:{ public:400, member:280, student:150 }, capacity:30, registered:22 },
-  { id:4, title:"WG Defense Systems – Reunião Q2", date:"2026-05-24", end:"2026-05-24", location:"Online · Teams", format:"online", type:"wg", desc:"Reunião aberta do Working Group de Defense Systems. Todos podem assistir.", price:{ public:0, member:0, student:0 }, capacity:100, registered:34 },
-  { id:5, title:"Workshop: Requirements Engineering para ESA", date:"2026-06-10", end:"2026-06-11", location:"Porto · Hotel Sheraton", format:"presencial", type:"workshop", desc:"Workshop focado nos standards ECSS para engenharia de requisitos em projetos espaciais.", price:{ public:350, member:220, student:120 }, capacity:25, registered:18 },
-];
+/* ─── BUTTONS ────────────────────────────────────────────────────────── */
+.btn{display:inline-flex;align-items:center;gap:.4rem;font-family:'DM Sans',sans-serif;font-weight:600;cursor:pointer;border:none;border-radius:6px;transition:all .2s;text-decoration:none;white-space:nowrap}
+.btn-sm{padding:.32rem .8rem;font-size:.76rem}
+.btn-md{padding:.62rem 1.3rem;font-size:.86rem}
+.btn-lg{padding:.8rem 1.9rem;font-size:.93rem}
+.btn-primary{background:var(--blue);color:#fff}
+.btn-primary:hover{background:var(--blue2);transform:translateY(-1px)}
+.btn-teal{background:var(--teal);color:#fff}
+.btn-teal:hover{background:var(--teal2);color:#fff;transform:translateY(-1px)}
+.btn-ghost{background:transparent;color:rgba(255,255,255,.65);border:1px solid var(--border)}
+.btn-ghost:hover{color:#fff;border-color:rgba(255,255,255,.25)}
+.btn-success{background:rgba(34,197,94,.15);color:var(--success);border:1px solid rgba(34,197,94,.3)}
+.btn-danger{background:rgba(239,68,68,.12);color:var(--danger);border:1px solid rgba(239,68,68,.25)}
+.btn-danger:hover{background:rgba(239,68,68,.2)}
+.btn-full{width:100%;justify-content:center}
 
-const JOBS_DATA = [
-  { id:1, company:"Embraer Portugal", logo:"EMB", title:"Systems Engineer – Aerostructures", location:"Évora", type:"Full-time", tags:["MBSE","SysML","Aerostructures"], desc:"Integração de sistemas de estruturas aeronáuticas no novo programa de jatos executivos.", posted:"2026-02-15", cab:true },
-  { id:2, company:"EDP Renewables", logo:"EDP", title:"Lead SE – Offshore Wind Division", location:"Lisboa", type:"Full-time", tags:["Requisitos","Interface Mgmt","Offshore"], desc:"Liderança técnica da equipa de SE para o programa WindFloat Atlantic 2.0.", posted:"2026-02-20", cab:true },
-  { id:3, company:"IST / INESC-ID", logo:"IST", title:"Investigador Doutoramento – MBSE", location:"Lisboa / Remoto", type:"Bolsa FCT", tags:["PhD","MBSE","Investigação"], desc:"Bolsa FCT para doutoramento em Model-Based Systems Engineering aplicado a sistemas ciber-físicos.", posted:"2026-02-22", cab:false },
-  { id:4, company:"Thales Alenia Space", logo:"TAS", title:"Systems Architect – Space Segment", location:"Porto", type:"Full-time", tags:["Space","ECSS","CSEP preferido"], desc:"Arquitetura de sistemas para segmento espacial em programa de observação da Terra.", posted:"2026-02-25", cab:true },
-  { id:5, company:"Critical Software", logo:"CSW", title:"SE Consultant – Automotive", location:"Coimbra / Remoto", type:"Full-time", tags:["ISO 26262","SOTIF","Requisitos"], desc:"Consultoria em engenharia de sistemas para projetos de veículos autónomos.", posted:"2026-02-26", cab:true },
-  { id:6, company:"Hovione", logo:"HOV", title:"Validation Systems Engineer", location:"Lisboa", type:"Full-time", tags:["GxP","V&V","Farmacêutico"], desc:"Engenheiro de validação para linha de produção farmacêutica contínua.", posted:"2026-02-27", cab:false },
-];
+/* ─── CARDS ─────────────────────────────────────────────────────────── */
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;transition:all .25s}
+.card:hover{border-color:rgba(0,180,200,.22)}
+.card-flat{background:var(--card);border:1px solid var(--border);border-radius:12px}
 
-const DOCS_DATA = [
-  { id:1, title:"INCOSE SE Handbook v5.0 (PT)", type:"PDF", size:"12.4 MB", category:"handbook", restricted:true, icon:"📘", date:"2025-12" },
-  { id:2, title:"Template: Requirements Baseline", type:"DOCX", size:"340 KB", category:"template", restricted:true, icon:"📋", date:"2025-11" },
-  { id:3, title:"Template: System Architecture (SysML)", type:"ZIP", size:"2.1 MB", category:"template", restricted:true, icon:"🏗️", date:"2025-10" },
-  { id:4, title:"Webinar: Introdução ao MBSE (Nov 2025)", type:"MP4", size:"1.2 GB", category:"webinar", restricted:true, icon:"🎥", date:"2025-11" },
-  { id:5, title:"Webinar: SysML v2 Overview (Jan 2026)", type:"MP4", size:"890 MB", category:"webinar", restricted:true, icon:"🎥", date:"2026-01" },
-  { id:6, title:"Guia: ASEP Exam Preparation (PT)", type:"PDF", size:"8.7 MB", category:"guide", restricted:true, icon:"🎓", date:"2026-01" },
-  { id:7, title:"Estatutos SESPT 2025", type:"PDF", size:"420 KB", category:"legal", restricted:false, icon:"📜", date:"2025-09" },
-  { id:8, title:"Relatório Anual 2025", type:"PDF", size:"3.2 MB", category:"legal", restricted:false, icon:"📊", date:"2026-01" },
-];
+/* ─── TAGS / BADGES ──────────────────────────────────────────────────── */
+.badge{display:inline-flex;align-items:center;padding:.14rem .48rem;border-radius:4px;font-size:.67rem;font-weight:600;letter-spacing:.4px}
+.badge-default{background:rgba(255,255,255,.05);color:var(--muted);border:1px solid var(--border)}
+.badge-teal{background:rgba(0,180,200,.12);color:var(--teal2);border:1px solid rgba(0,180,200,.25)}
+.badge-blue{background:rgba(0,85,204,.15);color:#7ab2ff;border:1px solid rgba(0,85,204,.3)}
+.badge-cork{background:rgba(200,169,110,.12);color:var(--cork);border:1px solid rgba(200,169,110,.25)}
+.badge-green{background:rgba(34,197,94,.1);color:var(--success);border:1px solid rgba(34,197,94,.2)}
+.badge-warn{background:rgba(245,158,11,.1);color:var(--warn);border:1px solid rgba(245,158,11,.2)}
 
-const NEWS_DATA = [
-  { id:1, title:"Portugal lidera WG INCOSE sobre Offshore Renewables", category:"Destaque", date:"2026-02-24", excerpt:"A WindFloat Atlantic tornou-se caso de estudo internacional. O capítulo português coordena agora o WG dedicado a sistemas de energia renovável offshore com parceiros de 12 países.", icon:"🌊", pinned:true },
-  { id:2, title:"Embraer Évora junta-se ao Corporate Advisory Board", category:"CAB", date:"2026-02-18", excerpt:"A fabricante aeronáutica reforça a presença industrial no capítulo, trazendo experiência em sistemas aeroespaciais complexos.", icon:"✈️", pinned:false },
-  { id:3, title:"3ª turma CSEP em Portugal: 12 aprovados", category:"Certificação", date:"2026-02-10", excerpt:"Recordes de aprovação no prep-course de dezembro de 2025. A taxa de aprovação foi de 92%, acima da média global INCOSE.", icon:"🏅", pinned:false },
-  { id:4, title:"INCOSE Portugal no INCOSE IS 2026 – Las Vegas", category:"Internacional", date:"2026-01-30", excerpt:"Três membros do capítulo português apresentaram papers no Symposium anual. Portugal ganhou visibilidade no ecossistema global.", icon:"🌍", pinned:false },
-];
+/* ─── ALERTS ─────────────────────────────────────────────────────────── */
+.alert{border-radius:8px;padding:.7rem 1rem;font-size:.82rem;display:flex;gap:.5rem;align-items:flex-start;margin-bottom:1rem}
+.alert-info{background:rgba(0,180,200,.08);border:1px solid rgba(0,180,200,.25);color:var(--teal2)}
+.alert-warn{background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.25);color:var(--warn)}
+.alert-success{background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.25);color:var(--success)}
+.alert-error{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);color:var(--danger)}
 
-// ─── TRANSLATIONS ─────────────────────────────────────────────────────────────
-const T = {
-  pt: {
-    nav: { home:"Início", about:"Sobre Nós", events:"Eventos", knowledge:"Knowledge", jobs:"Carreiras", membership:"Adesão", admin:"Backoffice", dashboard:"Dashboard", login:"Login / Registo", logout:"Terminar sessão" },
-    hero: { badge:"Capítulo oficial INCOSE em Portugal", h1a:"Engenharia de Sistemas", h1b:"com raízes atlânticas", p:"A comunidade portuguesa de profissionais INCOSE. Formação certificada, networking, Working Groups ativos e representação no ecossistema global de Systems Engineering.", cta1:"Tornar-me sócio", cta2:"Ver eventos" },
-    footer_legal: "O Capítulo INCOSE Portugal é legalmente representado e operado pela SESPT – Sociedade de Engenharia de Sistemas de Portugal, NIF [inserir número].",
-  },
-  en: {
-    nav: { home:"Home", about:"About", events:"Events", knowledge:"Knowledge", jobs:"Careers", membership:"Join", admin:"Backoffice", dashboard:"Dashboard", login:"Login / Register", logout:"Sign out" },
-    hero: { badge:"Official INCOSE Chapter in Portugal", h1a:"Systems Engineering", h1b:"with Atlantic roots", p:"The Portuguese community of INCOSE professionals. Certified training, networking, active Working Groups and representation in the global SE ecosystem.", cta1:"Become a member", cta2:"See events" },
-    footer_legal: "The INCOSE Portugal Chapter is legally represented and operated by SESPT – Sociedade de Engenharia de Sistemas de Portugal, NIF [to be inserted].",
-  }
-};
+/* ─── FORMS ─────────────────────────────────────────────────────────── */
+.form-group{margin-bottom:.85rem}
+.form-group label{display:block;font-size:.73rem;font-weight:600;color:var(--muted);margin-bottom:.32rem;letter-spacing:.4px}
+.form-group input,.form-group select,.form-group textarea{width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:6px;padding:.62rem 1rem;color:#fff;font-family:'DM Sans',sans-serif;font-size:.87rem;transition:border-color .2s;outline:none}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--teal)}
+.form-group textarea{resize:vertical;min-height:80px}
+.form-group select option{background:var(--card);color:#fff}
 
-// ─── STYLES OBJECT ────────────────────────────────────────────────────────────
-const S = {
-  // Layout
-  page: { minHeight:"100vh", display:"flex", flexDirection:"column" },
-  container: { maxWidth:1200, margin:"0 auto", padding:"0 2rem", width:"100%" },
-  
-  // Utility bar
-  utilBar: { background:"rgba(0,20,60,0.98)", borderBottom:"1px solid var(--border)", padding:"0.35rem 2rem", display:"flex", alignItems:"center", justifyContent:"flex-end", gap:"1.2rem", fontSize:"0.76rem" },
-  
-  // Header
-  header: { position:"sticky", top:0, zIndex:200, background:"rgba(8,14,30,0.97)", backdropFilter:"blur(20px)", borderBottom:"1px solid var(--border)", padding:"0 2rem", display:"flex", alignItems:"center", justifyContent:"space-between", height:66, gap:"1rem" },
-  logoMark: { width:40, height:40, borderRadius:6, background:"var(--blue)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:"0.6rem", fontWeight:800, color:"#fff", fontFamily:"'Syne', sans-serif", letterSpacing:0.5, flexShrink:0, border:"2px solid rgba(0,85,204,0.5)" },
-  
-  // Nav
-  navLink: (active) => ({ padding:"0 0.85rem", height:66, display:"flex", alignItems:"center", color: active ? "#fff" : "rgba(255,255,255,0.6)", textDecoration:"none", fontSize:"0.83rem", fontWeight:500, borderBottom: active ? "2px solid var(--teal2)" : "2px solid transparent", cursor:"pointer", transition:"all 0.2s", background:"none", border:"none", borderBottom: active ? "2px solid var(--teal2)" : "2px solid transparent", fontFamily:"'DM Sans', sans-serif", whiteSpace:"nowrap" }),
-  
-  // Buttons
-  btn: (variant="primary", size="md") => {
-    const base = { display:"inline-flex", alignItems:"center", gap:"0.4rem", fontFamily:"'DM Sans', sans-serif", fontWeight:600, cursor:"pointer", border:"none", borderRadius:6, transition:"all 0.2s", textDecoration:"none" };
-    const sizes = { sm:{ padding:"0.35rem 0.85rem", fontSize:"0.78rem" }, md:{ padding:"0.65rem 1.4rem", fontSize:"0.88rem" }, lg:{ padding:"0.8rem 2rem", fontSize:"0.95rem" } };
-    const variants = {
-      primary: { background:"var(--blue)", color:"#fff" },
-      teal: { background:"var(--teal)", color:"#fff" },
-      ghost: { background:"transparent", color:"rgba(255,255,255,0.65)", border:"1px solid var(--border)" },
-      danger: { background:"rgba(239,68,68,0.15)", color:"var(--danger)", border:"1px solid rgba(239,68,68,0.3)" },
-      success: { background:"rgba(34,197,94,0.15)", color:"var(--success)", border:"1px solid rgba(34,197,94,0.3)" },
-    };
-    return { ...base, ...sizes[size], ...variants[variant] };
-  },
-  
-  // Cards
-  card: (hover=true) => ({ background:"var(--card)", border:"1px solid var(--border)", borderRadius:12, transition: hover ? "all 0.25s" : "none" }),
-  
-  // Form
-  input: { width:"100%", background:"rgba(255,255,255,0.05)", border:"1px solid var(--border)", borderRadius:6, padding:"0.65rem 1rem", color:"#fff", fontFamily:"'DM Sans', sans-serif", fontSize:"0.88rem" },
-  label: { display:"block", fontSize:"0.75rem", fontWeight:600, color:"var(--muted)", marginBottom:"0.35rem", letterSpacing:0.5 },
-  
-  // Tags
-  tag: (color="default") => {
-    const colors = { default:{ background:"rgba(255,255,255,0.05)", color:"var(--muted)", border:"1px solid var(--border)" }, teal:{ background:"rgba(0,180,200,0.12)", color:"var(--teal2)", border:"1px solid rgba(0,180,200,0.25)" }, blue:{ background:"rgba(0,85,204,0.15)", color:"#7ab2ff", border:"1px solid rgba(0,85,204,0.3)" }, cork:{ background:"rgba(200,169,110,0.12)", color:"var(--cork)", border:"1px solid rgba(200,169,110,0.25)" }, green:{ background:"rgba(34,197,94,0.1)", color:"var(--success)", border:"1px solid rgba(34,197,94,0.2)" }, warn:{ background:"rgba(245,158,11,0.1)", color:"var(--warn)", border:"1px solid rgba(245,158,11,0.2)" } };
-    return { display:"inline-flex", alignItems:"center", padding:"0.15rem 0.5rem", borderRadius:4, fontSize:"0.68rem", fontWeight:600, letterSpacing:0.5, ...colors[color] };
-  },
-  
-  // Section
-  sectionLabel: { fontSize:"0.68rem", fontWeight:700, letterSpacing:3, textTransform:"uppercase", color:"var(--teal2)", marginBottom:"0.6rem" },
-  sectionTitle: { fontSize:"clamp(1.6rem, 3vw, 2.4rem)", fontWeight:800, letterSpacing:-0.5, lineHeight:1.15, marginBottom:"0.8rem" },
-};
+/* ─── SECTION HEADERS ────────────────────────────────────────────────── */
+.section-label{font-size:.67rem;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--teal2);margin-bottom:.55rem}
+.section-title{font-size:clamp(1.6rem,3vw,2.4rem);font-weight:800;letter-spacing:-.5px;line-height:1.15;margin-bottom:.8rem}
+.grad{background:linear-gradient(135deg,var(--teal2),var(--cork));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.section-sub{font-size:.9rem;color:var(--muted);line-height:1.7;max-width:560px;margin-bottom:2rem}
 
-// ─── HELPER COMPONENTS ────────────────────────────────────────────────────────
-const GradText = ({ children }) => (
-  <span style={{ background:"linear-gradient(135deg, var(--teal2), var(--cork))", WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent" }}>
-    {children}
-  </span>
-);
+/* ─── DIVIDER ────────────────────────────────────────────────────────── */
+hr.divider{border:none;border-top:1px solid var(--border);margin:1rem 0}
 
-const TopBar = (p) => (
-  <div style={{ background:"linear-gradient(135deg, rgba(0,122,138,0.08), rgba(0,53,128,0.05))", border:"1px solid var(--border)", borderRadius:8, padding:p.p||"1rem 1.2rem", ...p.style }}>
-    {p.children}
+/* ─── TOP BOX ────────────────────────────────────────────────────────── */
+.topbox{background:linear-gradient(135deg,rgba(0,122,138,.08),rgba(0,53,128,.05));border:1px solid var(--border);border-radius:8px;padding:1rem 1.2rem}
+
+/* ─── MODAL ─────────────────────────────────────────────────────────── */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.82);z-index:500;align-items:center;justify-content:center;padding:1rem;backdrop-filter:blur(8px)}
+.modal-overlay.open{display:flex}
+.modal-box{background:var(--card);border:1px solid var(--border);border-radius:16px;width:100%;max-width:460px;max-height:90vh;overflow-y:auto;position:relative}
+.modal-top-bar{height:3px;background:linear-gradient(90deg,var(--blue),var(--teal));border-radius:16px 16px 0 0}
+.modal-body{padding:1.5rem 1.8rem}
+.modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.1rem}
+.modal-header h3{font-size:1.15rem;font-weight:700}
+.modal-close{background:transparent;border:none;color:var(--muted);cursor:pointer;font-size:1.1rem;padding:.2rem}
+.modal-tabs{display:flex;border-bottom:1px solid var(--border);margin-bottom:1.2rem}
+.modal-tab{flex:1;background:transparent;border:none;border-bottom:2px solid transparent;padding:.6rem;color:var(--muted);cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600;font-size:.84rem;transition:all .2s}
+.modal-tab.active{color:#fff;border-bottom-color:var(--teal2)}
+.demo-chips{display:flex;gap:.4rem;flex-wrap:wrap;margin-top:.3rem}
+
+/* ─── DASHBOARD TABS ─────────────────────────────────────────────────── */
+.dash-tabs{display:flex;border-bottom:1px solid var(--border);margin-bottom:2rem}
+.dash-tab{background:transparent;border:none;border-bottom:2px solid transparent;padding:.6rem 1.1rem;color:var(--muted);cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600;font-size:.84rem;transition:all .2s}
+.dash-tab.active{color:#fff;border-bottom-color:var(--teal2)}
+.dash-panel{display:none}
+.dash-panel.active{display:block}
+
+/* ─── COOKIE BANNER ─────────────────────────────────────────────────── */
+#cookie-banner{position:fixed;bottom:0;left:0;right:0;z-index:999;background:rgba(8,14,30,.98);border-top:1px solid var(--border);padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;backdrop-filter:blur(16px);transform:translateY(100%);animation:slideUp .5s 1.5s forwards}
+#cookie-banner p{font-size:.81rem;color:var(--muted);max-width:600px}
+
+/* ─── HERO ───────────────────────────────────────────────────────────── */
+#hero{position:relative;min-height:88vh;display:flex;align-items:center;overflow:hidden;background:linear-gradient(135deg,#050c1a 0%,#001040 55%,#002244 100%)}
+.hero-bg-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(0,122,138,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(0,122,138,.05) 1px,transparent 1px);background-size:55px 55px;mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,black 20%,transparent 100%)}
+.hero-glow{position:absolute;top:-20%;right:-5%;width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(0,122,138,.15) 0%,transparent 70%)}
+.hero-content{position:relative;z-index:2;display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center}
+.hero-left{animation:fadeInLeft .7s .1s both}
+.hero-right{animation:fadeInRight .7s .3s both}
+.hero-badge{display:inline-flex;align-items:center;gap:.5rem;background:rgba(0,122,138,.12);border:1px solid rgba(0,180,200,.3);padding:.3rem .85rem;border-radius:20px;font-size:.71rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--teal2);margin-bottom:1.4rem}
+.hero-badge-dot{width:6px;height:6px;border-radius:50%;background:var(--teal2);animation:pulse 2s infinite;flex-shrink:0}
+.hero-h1{font-size:clamp(2rem,4vw,3.5rem);font-weight:800;line-height:1.1;letter-spacing:-1px;margin-bottom:1.2rem}
+.hero-p{font-size:1rem;color:rgba(255,255,255,.6);line-height:1.75;margin-bottom:2rem;max-width:480px}
+.hero-ctas{display:flex;gap:1rem;flex-wrap:wrap}
+.hero-card{background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:16px;padding:1.8rem;backdrop-filter:blur(10px);position:relative}
+.hero-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--blue),var(--teal),var(--cork));border-radius:16px 16px 0 0}
+.hero-stats{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.4rem}
+.stat-num{font-size:1.8rem;font-weight:800;font-family:'Syne',sans-serif;background:linear-gradient(135deg,var(--teal2),var(--cork));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.stat-label{font-size:.71rem;color:var(--muted);margin-top:2px}
+.next-event-box{background:rgba(0,122,138,.1);border:1px solid rgba(0,122,138,.25);border-radius:8px;padding:.9rem}
+.next-event-label{font-size:.62rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--teal2);margin-bottom:.3rem}
+.hero-wave{position:absolute;bottom:0;left:0;right:0;height:80px;opacity:.12}
+
+/* ─── EVENTS ─────────────────────────────────────────────────────────── */
+.filter-bar{display:flex;gap:.4rem;flex-wrap:wrap;align-items:center;margin-bottom:1.5rem}
+.filter-label{font-size:.73rem;color:var(--muted);font-weight:600;margin-right:.2rem}
+.event-row{display:flex;align-items:center;gap:1.4rem;padding:1.2rem 1.5rem}
+.event-date-box{min-width:50px;text-align:center;background:rgba(0,53,128,.2);border:1px solid rgba(0,85,204,.3);border-radius:8px;padding:.5rem .3rem;flex-shrink:0}
+.event-day{font-size:1.4rem;font-weight:800;font-family:'Syne',sans-serif;line-height:1}
+.event-month{font-size:.6rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted)}
+.event-right{text-align:right;flex-shrink:0}
+.event-price{font-size:1.25rem;font-weight:800;font-family:'Syne',sans-serif}
+.event-price-free{color:var(--success)}
+.events-list{display:flex;flex-direction:column;gap:.85rem}
+
+/* ─── JOBS ───────────────────────────────────────────────────────────── */
+.jobs-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.job-card{padding:1.2rem 1.3rem}
+.job-logo{width:42px;height:42px;border-radius:8px;background:rgba(0,53,128,.3);border:1px solid rgba(0,85,204,.2);display:flex;align-items:center;justify-content:center;font-size:.68rem;font-weight:800;color:var(--teal2);flex-shrink:0}
+
+/* ─── KNOWLEDGE ──────────────────────────────────────────────────────── */
+.docs-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}
+.doc-card{padding:1.2rem;cursor:pointer}
+
+/* ─── MEMBERSHIP ─────────────────────────────────────────────────────── */
+.plans-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-bottom:2rem}
+.plan-card{padding:1.8rem;position:relative}
+.plan-card.featured{border-color:rgba(0,180,200,.4)!important}
+.plan-popular{position:absolute;top:-11px;left:50%;transform:translateX(-50%);background:var(--teal);padding:.14rem .75rem;border-radius:10px;font-size:.63rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;white-space:nowrap}
+.plan-price-num{font-size:2.1rem;font-weight:800;font-family:'Syne',sans-serif}
+.plan-benefits{list-style:none;margin-bottom:1.4rem}
+.plan-benefits li{font-size:.81rem;color:rgba(255,255,255,.75);padding:.25rem 0;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:.5rem}
+.plan-benefits li::before{content:'✓';color:var(--teal2);font-size:.68rem;flex-shrink:0}
+
+/* ─── DASHBOARD ──────────────────────────────────────────────────────── */
+.user-hero{display:flex;align-items:center;gap:1.2rem;margin-bottom:2rem}
+.user-avatar{width:54px;height:54px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--teal));display:flex;align-items:center;justify-content:center;font-size:1.2rem;font-weight:800;font-family:'Syne',sans-serif;flex-shrink:0}
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:2rem}
+.stat-box{padding:1.2rem;text-align:center}
+.stat-box .val{font-size:1.3rem;font-weight:800;font-family:'Syne',sans-serif;margin-bottom:.15rem}
+.stat-box .lbl{font-size:.71rem;color:var(--muted)}
+table.dash-table{width:100%;border-collapse:collapse;font-size:.83rem}
+table.dash-table th{padding:.6rem .8rem;text-align:left;font-size:.67rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border)}
+table.dash-table td{padding:.8rem;border-bottom:1px solid var(--border)}
+.cert-row{display:flex;align-items:center;gap:1rem;padding:1rem 1.3rem;margin-bottom:.7rem}
+
+/* ─── ADMIN ──────────────────────────────────────────────────────────── */
+.admin-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:2rem}
+.news-manage-row{display:flex;align-items:center;gap:1rem;padding:1rem 1.3rem;margin-bottom:.65rem}
+
+/* ─── ABOUT ──────────────────────────────────────────────────────────── */
+.about-grid{display:grid;grid-template-columns:2fr 1fr;gap:3rem;margin-top:2rem}
+.wg-grid{display:grid;grid-template-columns:1fr 1fr;gap:.8rem;margin-top:1rem}
+.wg-card{padding:1rem}
+
+/* ─── FOOTER ─────────────────────────────────────────────────────────── */
+footer{background:#030810;border-top:1px solid var(--border);margin-top:auto}
+.footer-cols{max-width:1200px;margin:0 auto;padding:3rem 2rem 1.5rem;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:2.5rem}
+.footer-col h4{font-size:.63rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--cork);margin-bottom:1rem}
+.footer-col p,.footer-col a{font-size:.81rem;color:var(--muted);line-height:1.7}
+.footer-col a{display:block;text-decoration:none;margin-bottom:.38rem;transition:color .2s}
+.footer-col a:hover{color:#fff}
+.footer-social{display:flex;gap:.55rem;margin-top:1rem}
+.social-btn{width:30px;height:30px;border-radius:6px;background:rgba(255,255,255,.05);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:.73rem;cursor:pointer;transition:all .2s}
+.social-btn:hover{background:var(--teal);color:#fff;border-color:var(--teal)}
+.footer-bottom{max-width:1200px;margin:0 auto;padding:.9rem 2rem;border-top:1px solid var(--border);display:flex;justify-content:space-between;flex-wrap:wrap;gap:.5rem;align-items:center}
+.footer-bottom p{font-size:.73rem;color:rgba(255,255,255,.28);line-height:1.55}
+.footer-bottom strong{color:rgba(255,255,255,.38)}
+.footer-links{display:flex;gap:1.2rem}
+.footer-links a{font-size:.71rem;color:rgba(255,255,255,.28);transition:color .2s}
+.footer-links a:hover{color:rgba(255,255,255,.6)}
+
+/* ─── HOME NEWS GRID ─────────────────────────────────────────────────── */
+.news-grid{display:grid;grid-template-columns:2fr 1fr 1fr;gap:1.2rem}
+.news-card{padding:1.2rem;cursor:pointer}
+.news-card-icon{font-size:1.9rem;margin-bottom:.75rem}
+.quick-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-top:2rem}
+.quick-card{padding:1.4rem;text-align:center;cursor:pointer}
+
+/* ─── RESPONSIVE ─────────────────────────────────────────────────────── */
+@media(max-width:900px){
+  .hero-content,.about-grid{grid-template-columns:1fr}
+  .hero-right,.wg-grid-right{display:none}
+  .news-grid,.jobs-grid,.docs-grid,.plans-grid,.stats-row,.admin-stats{grid-template-columns:1fr}
+  .footer-cols{grid-template-columns:1fr 1fr}
+  header{padding:0 1rem}
+  nav button{padding:0 .6rem;font-size:.76rem}
+  #util-bar{display:none}
+  .container{padding:0 1rem}
+  .quick-grid{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- ░░░ COOKIE BANNER ░░░ -->
+<div id="cookie-banner">
+  <p>Usamos cookies para melhorar a sua experiência (RGPD). <a href="#" style="color:var(--teal2)">Política de Privacidade</a></p>
+  <div style="display:flex;gap:.6rem">
+    <button class="btn btn-ghost btn-sm" onclick="closeCookie()">Recusar não essenciais</button>
+    <button class="btn btn-teal btn-sm" onclick="closeCookie()">Aceitar todos</button>
   </div>
-);
+</div>
 
-const Modal = ({ open, onClose, title, children, width=460 }) => {
-  if (!open) return null;
-  return (
-    <div onClick={(e)=>e.target===e.currentTarget&&onClose()} style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.8)", zIndex:500, display:"flex", alignItems:"center", justifyContent:"center", padding:"1rem", backdropFilter:"blur(8px)" }}>
-      <div style={{ background:"var(--card)", border:"1px solid var(--border)", borderRadius:16, width:"100%", maxWidth:width, maxHeight:"90vh", overflowY:"auto", position:"relative" }}>
-        <div style={{ borderTop:"3px solid", borderImage:"linear-gradient(90deg, var(--blue), var(--teal)) 1", borderRadius:"16px 16px 0 0" }} />
-        <div style={{ padding:"1.5rem 1.8rem" }}>
-          <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:"1.2rem" }}>
-            <h3 style={{ fontFamily:"'Syne',sans-serif", fontSize:"1.2rem", fontWeight:700 }}>{title}</h3>
-            <button onClick={onClose} style={{ background:"transparent", border:"none", color:"var(--muted)", cursor:"pointer", fontSize:"1.2rem", padding:"0.2rem" }}>✕</button>
-          </div>
-          {children}
-        </div>
+<!-- ░░░ AUTH MODAL ░░░ -->
+<div class="modal-overlay" id="modal-auth" onclick="if(event.target===this)closeModal('modal-auth')">
+  <div class="modal-box">
+    <div class="modal-top-bar"></div>
+    <div class="modal-body">
+      <div class="modal-header">
+        <h3 id="auth-modal-title">Entrar na plataforma</h3>
+        <button class="modal-close" onclick="closeModal('modal-auth')">✕</button>
       </div>
-    </div>
-  );
-};
-
-const Badge = ({ children, color="default" }) => <span style={S.tag(color)}>{children}</span>;
-
-const Divider = () => <hr style={{ border:"none", borderTop:"1px solid var(--border)", margin:"1rem 0" }} />;
-
-const Alert = ({ type="info", children }) => {
-  const colors = { info:{ bg:"rgba(0,180,200,0.08)", border:"rgba(0,180,200,0.25)", text:"var(--teal2)" }, warn:{ bg:"rgba(245,158,11,0.08)", border:"rgba(245,158,11,0.25)", text:"var(--warn)" }, success:{ bg:"rgba(34,197,94,0.08)", border:"rgba(34,197,94,0.25)", text:"var(--success)" }, error:{ bg:"rgba(239,68,68,0.08)", border:"rgba(239,68,68,0.25)", text:"var(--danger)" } };
-  const c = colors[type];
-  return <div style={{ background:c.bg, border:`1px solid ${c.border}`, borderRadius:8, padding:"0.7rem 1rem", fontSize:"0.83rem", color:c.text, display:"flex", gap:"0.5rem", alignItems:"flex-start" }}>{children}</div>;
-};
-
-// ─── AUTH MODAL ───────────────────────────────────────────────────────────────
-const AuthModal = ({ open, onClose }) => {
-  const { login } = useContext(AppCtx);
-  const [tab, setTab] = useState("login");
-  const [email, setEmail] = useState("membro@incose.pt");
-  const [pass, setPass] = useState("demo123");
-  const [err, setErr] = useState("");
-  const [regData, setRegData] = useState({ name:"", email:"", type:"individual" });
-
-  const doLogin = () => {
-    const u = USERS_DB[email];
-    if (u && pass === PASS) { login({ email, ...u }); onClose(); setErr(""); }
-    else setErr("Email ou password incorretos.");
-  };
-
-  const demoLogins = [
-    { label:"Admin SESPT", email:"admin@sespt.pt" },
-    { label:"Membro Ativo", email:"membro@incose.pt" },
-    { label:"CAB Rep.", email:"cab@embraer.pt" },
-    { label:"Estudante (quota inativa)", email:"estudante@ist.pt" },
-  ];
-
-  return (
-    <Modal open={open} onClose={onClose} title={tab==="login" ? "Entrar na plataforma" : "Criar conta"}>
-      <div style={{ display:"flex", gap:0, borderBottom:"1px solid var(--border)", marginBottom:"1.2rem" }}>
-        {["login","register"].map(t=>(
-          <button key={t} onClick={()=>{ setTab(t); setErr(""); }} style={{ flex:1, background:"transparent", border:"none", borderBottom: tab===t ? "2px solid var(--teal2)" : "2px solid transparent", padding:"0.6rem", color: tab===t ? "#fff" : "var(--muted)", cursor:"pointer", fontFamily:"'DM Sans',sans-serif", fontWeight:600, fontSize:"0.85rem", transition:"all 0.2s" }}>
-            {t==="login" ? "Login" : "Registar"}
-          </button>
-        ))}
+      <div class="modal-tabs">
+        <button class="modal-tab active" onclick="switchAuthTab('login')">Login</button>
+        <button class="modal-tab" onclick="switchAuthTab('register')">Registar</button>
       </div>
 
-      {tab === "login" ? (
-        <>
-          <div style={{ marginBottom:"0.8rem" }}>
-            <label style={S.label}>Email</label>
-            <input style={S.input} value={email} onChange={e=>setEmail(e.target.value)} type="email" />
-          </div>
-          <div style={{ marginBottom:"0.8rem" }}>
-            <label style={S.label}>Password</label>
-            <input style={S.input} value={pass} onChange={e=>setPass(e.target.value)} type="password" />
-          </div>
-          {err && <Alert type="error">⚠ {err}</Alert>}
-          <button style={{ ...S.btn("primary","md"), width:"100%", justifyContent:"center", marginTop:"1rem" }} onClick={doLogin}>Entrar →</button>
-          <Divider/>
-          <p style={{ fontSize:"0.72rem", color:"var(--muted)", marginBottom:"0.6rem", fontWeight:600, letterSpacing:1 }}>DEMO – Clicar para testar:</p>
-          <div style={{ display:"flex", gap:"0.4rem", flexWrap:"wrap" }}>
-            {demoLogins.map(d=>(
-              <button key={d.email} onClick={()=>{ setEmail(d.email); setPass("demo123"); }} style={{ ...S.btn("ghost","sm"), fontSize:"0.7rem" }}>{d.label}</button>
-            ))}
-          </div>
-        </>
-      ) : (
-        <>
-          <Alert type="info">📋 Após o registo, a conta aguarda aprovação da equipa SESPT.</Alert>
-          <div style={{ marginTop:"1rem", marginBottom:"0.8rem" }}>
-            <label style={S.label}>Nome completo</label>
-            <input style={S.input} value={regData.name} onChange={e=>setRegData({...regData,name:e.target.value})} />
-          </div>
-          <div style={{ marginBottom:"0.8rem" }}>
-            <label style={S.label}>Email profissional</label>
-            <input style={S.input} value={regData.email} onChange={e=>setRegData({...regData,email:e.target.value})} type="email" />
-          </div>
-          <div style={{ marginBottom:"0.8rem" }}>
-            <label style={S.label}>Tipo de adesão</label>
-            <select style={{ ...S.input, appearance:"none" }} value={regData.type} onChange={e=>setRegData({...regData,type:e.target.value})}>
-              <option value="individual">Membro Individual (80€/ano)</option>
-              <option value="student">Membro Estudante (30€/ano)</option>
-              <option value="cab">Empresa CAB (800€/ano)</option>
-            </select>
-          </div>
-          <button style={{ ...S.btn("teal","md"), width:"100%", justifyContent:"center", marginTop:"0.5rem" }}>Submeter pedido de adesão →</button>
-        </>
-      )}
-    </Modal>
-  );
-};
-
-// ─── COOKIE BANNER ────────────────────────────────────────────────────────────
-const CookieBanner = ({ onAccept }) => (
-  <div style={{ position:"fixed", bottom:0, left:0, right:0, zIndex:999, background:"rgba(8,14,30,0.98)", borderTop:"1px solid var(--border)", padding:"1rem 2rem", display:"flex", alignItems:"center", justifyContent:"space-between", gap:"1rem", flexWrap:"wrap", backdropFilter:"blur(16px)" }}>
-    <p style={{ fontSize:"0.82rem", color:"var(--muted)", maxWidth:600 }}>
-      Usamos cookies para melhorar a sua experiência e análise de tráfego (RGPD). <a href="#" style={{ color:"var(--teal2)" }}>Política de Privacidade</a>
-    </p>
-    <div style={{ display:"flex", gap:"0.6rem" }}>
-      <button onClick={onAccept} style={S.btn("ghost","sm")}>Recusar não essenciais</button>
-      <button onClick={onAccept} style={S.btn("teal","sm")}>Aceitar todos</button>
-    </div>
-  </div>
-);
-
-// ─── HEADER ───────────────────────────────────────────────────────────────────
-const Header = ({ page, setPage, lang, setLang, user, onOpenAuth }) => {
-  const { logout } = useContext(AppCtx);
-  const t = T[lang].nav;
-  const navItems = [
-    { key:"home", label:t.home },
-    { key:"about", label:t.about },
-    { key:"events", label:t.events },
-    { key:"knowledge", label:t.knowledge },
-    { key:"jobs", label:t.jobs },
-    { key:"membership", label:t.membership },
-    ...(user?.role==="admin" ? [{ key:"admin", label:t.admin }] : []),
-    ...(user ? [{ key:"dashboard", label:t.dashboard }] : []),
-  ];
-
-  return (
-    <>
-      {/* Utility bar */}
-      <div style={S.utilBar}>
-        <div style={{ display:"flex", gap:0, border:"1px solid var(--border)", borderRadius:4, overflow:"hidden" }}>
-          {["pt","en"].map(l=>(
-            <button key={l} onClick={()=>setLang(l)} style={{ background: lang===l ? "var(--teal)" : "transparent", border:"none", padding:"0.2rem 0.55rem", color: lang===l ? "#fff" : "var(--muted)", cursor:"pointer", fontFamily:"'DM Sans',sans-serif", fontWeight:700, fontSize:"0.72rem", transition:"all 0.2s" }}>
-              {l.toUpperCase()}
-            </button>
-          ))}
-        </div>
-        <a href="https://linkedin.com" target="_blank" style={{ color:"var(--muted)", textDecoration:"none", fontSize:"0.75rem" }}>LinkedIn ↗</a>
-        <a href="https://youtube.com" target="_blank" style={{ color:"var(--muted)", textDecoration:"none", fontSize:"0.75rem" }}>YouTube ↗</a>
-        {user ? (
-          <div style={{ display:"flex", alignItems:"center", gap:"0.6rem" }}>
-            <div style={{ width:26, height:26, borderRadius:"50%", background:"var(--teal)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:"0.65rem", fontWeight:800 }}>{user.avatar}</div>
-            <span style={{ color:"rgba(255,255,255,0.7)", fontSize:"0.75rem" }}>{user.name}</span>
-            <button onClick={logout} style={{ ...S.btn("ghost","sm"), fontSize:"0.72rem", padding:"0.2rem 0.6rem" }}>{t.logout}</button>
-          </div>
-        ) : (
-          <button onClick={onOpenAuth} style={{ ...S.btn("primary","sm"), fontSize:"0.72rem", padding:"0.25rem 0.7rem" }}>🔐 {t.login}</button>
-        )}
-      </div>
-
-      {/* Main header */}
-      <header style={S.header}>
-        {/* Logo group */}
-        <div style={{ display:"flex", alignItems:"center", gap:"1.2rem", flexShrink:0 }}>
-          <button onClick={()=>setPage("home")} style={{ display:"flex", alignItems:"center", gap:"0.7rem", background:"none", border:"none", cursor:"pointer" }}>
-            <div style={S.logoMark}>INCOSE</div>
-            <div style={{ lineHeight:1.15 }}>
-              <div style={{ fontSize:"1rem", fontWeight:700, fontFamily:"'Syne',sans-serif", color:"#fff" }}>INCOSE Portugal</div>
-              <div style={{ fontSize:"0.6rem", color:"var(--cork)", letterSpacing:2, textTransform:"uppercase" }}>Capítulo Oficial</div>
-            </div>
-          </button>
-          <div style={{ width:1, height:28, background:"var(--border)" }}/>
-          <span style={{ fontSize:"0.65rem", fontWeight:700, color:"var(--muted)", letterSpacing:1, textTransform:"uppercase" }}>SESPT</span>
-        </div>
-
-        {/* Nav */}
-        <nav style={{ display:"flex", gap:0, overflowX:"auto" }}>
-          {navItems.map(({ key, label }) => (
-            <button key={key} onClick={()=>setPage(key)} style={S.navLink(page===key)}>{label}</button>
-          ))}
-        </nav>
-
-        <button onClick={()=>setPage("membership")} style={S.btn("teal","sm")}>Aderir →</button>
-      </header>
-    </>
-  );
-};
-
-// ─── HOME PAGE ────────────────────────────────────────────────────────────────
-const HomePage = ({ setPage, lang, user, onOpenAuth }) => {
-  const t = T[lang];
-  const [visible, setVisible] = useState(false);
-  useEffect(()=>{ setTimeout(()=>setVisible(true), 50); }, []);
-
-  return (
-    <div>
-      {/* HERO */}
-      <section style={{ position:"relative", minHeight:"88vh", display:"flex", alignItems:"center", overflow:"hidden", background:"linear-gradient(135deg, #050c1a 0%, #001040 55%, #002244 100%)" }}>
-        {/* BG grid */}
-        <div style={{ position:"absolute", inset:0, backgroundImage:"linear-gradient(rgba(0,122,138,0.05) 1px,transparent 1px),linear-gradient(90deg,rgba(0,122,138,0.05) 1px,transparent 1px)", backgroundSize:"55px 55px", maskImage:"radial-gradient(ellipse 80% 80% at 50% 50%, black 20%, transparent 100%)" }}/>
-        <div style={{ position:"absolute", top:"-20%", right:"-5%", width:600, height:600, borderRadius:"50%", background:"radial-gradient(circle, rgba(0,122,138,0.15) 0%, transparent 70%)" }}/>
-        
-        <div style={{ ...S.container, display:"grid", gridTemplateColumns:"1fr 1fr", gap:"4rem", alignItems:"center", position:"relative", zIndex:2 }}>
-          {/* Left */}
-          <div style={{ opacity: visible?1:0, transform: visible?"none":"translateX(-24px)", transition:"all 0.7s 0.1s" }}>
-            <div style={{ display:"inline-flex", alignItems:"center", gap:"0.5rem", background:"rgba(0,122,138,0.12)", border:"1px solid rgba(0,180,200,0.3)", padding:"0.3rem 0.85rem", borderRadius:20, fontSize:"0.72rem", fontWeight:700, letterSpacing:1, textTransform:"uppercase", color:"var(--teal2)", marginBottom:"1.5rem" }}>
-              <span style={{ width:6, height:6, borderRadius:"50%", background:"var(--teal2)", animation:"pulse 2s infinite" }}/>
-              {t.hero.badge}
-            </div>
-            <h1 style={{ fontSize:"clamp(2rem,4vw,3.5rem)", fontWeight:800, lineHeight:1.1, letterSpacing:-1, marginBottom:"1.2rem" }}>
-              {t.hero.h1a}<br/><GradText>{t.hero.h1b}</GradText>
-            </h1>
-            <p style={{ fontSize:"1rem", color:"rgba(255,255,255,0.6)", lineHeight:1.75, marginBottom:"2rem", maxWidth:480 }}>{t.hero.p}</p>
-            <div style={{ display:"flex", gap:"1rem", flexWrap:"wrap" }}>
-              <button onClick={()=>setPage("membership")} style={{ ...S.btn("primary","lg"), boxShadow:"0 4px 24px rgba(0,53,128,0.4)" }}>{t.hero.cta1} →</button>
-              <button onClick={()=>setPage("events")} style={S.btn("ghost","lg")}>{t.hero.cta2}</button>
-            </div>
-          </div>
-
-          {/* Right: stat card */}
-          <div style={{ opacity: visible?1:0, transform: visible?"none":"translateX(24px)", transition:"all 0.7s 0.3s" }}>
-            <div style={{ background:"rgba(255,255,255,0.03)", border:"1px solid var(--border)", borderRadius:16, padding:"1.8rem", backdropFilter:"blur(10px)", position:"relative" }}>
-              <div style={{ position:"absolute", top:0, left:0, right:0, height:2, background:"linear-gradient(90deg, var(--blue), var(--teal), var(--cork))", borderRadius:"16px 16px 0 0" }}/>
-              <div style={{ fontSize:"0.65rem", fontWeight:700, letterSpacing:2, textTransform:"uppercase", color:"var(--muted)", marginBottom:"1.2rem" }}>Capítulo em números</div>
-              <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:"1rem", marginBottom:"1.5rem" }}>
-                {[["240+","Membros ativos"],["18","Empresas CAB"],["32","Eventos 2025"],["4","Working Groups"]].map(([n,l])=>(
-                  <div key={l} style={{ textAlign:"center" }}>
-                    <div style={{ fontSize:"1.8rem", fontWeight:800, fontFamily:"'Syne',sans-serif", background:"linear-gradient(135deg, var(--teal2), var(--cork))", WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent" }}>{n}</div>
-                    <div style={{ fontSize:"0.72rem", color:"var(--muted)", marginTop:2 }}>{l}</div>
-                  </div>
-                ))}
-              </div>
-              <div style={{ background:"rgba(0,122,138,0.1)", border:"1px solid rgba(0,122,138,0.25)", borderRadius:8, padding:"0.9rem" }}>
-                <div style={{ fontSize:"0.62rem", fontWeight:700, letterSpacing:2, textTransform:"uppercase", color:"var(--teal2)", marginBottom:"0.35rem" }}>⚡ Próximo evento</div>
-                <div style={{ fontWeight:600, fontSize:"0.92rem", marginBottom:"0.25rem" }}>INCOSE Portugal Summit 2026</div>
-                <div style={{ fontSize:"0.78rem", color:"var(--muted)" }}>15 de março · Lisboa · Presencial + Online</div>
-                <button onClick={()=>setPage("events")} style={{ ...S.btn("teal","sm"), marginTop:"0.7rem", fontSize:"0.75rem" }}>Inscrever →</button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Wave */}
-        <div style={{ position:"absolute", bottom:0, left:0, right:0, height:80, opacity:0.12 }}>
-          <svg viewBox="0 0 1440 80" preserveAspectRatio="none" style={{ width:"100%", height:"100%" }}>
-            <path d="M0,40 C360,70 720,10 1080,40 C1260,55 1380,30 1440,40 L1440,80 L0,80Z" fill="#003580"/>
-          </svg>
-        </div>
-      </section>
-
-      {/* NEWS preview */}
-      <section style={{ padding:"4rem 0", background:"#050c1a" }}>
-        <div style={S.container}>
-          <div style={{ display:"flex", alignItems:"flex-end", justifyContent:"space-between", marginBottom:"2rem" }}>
-            <div>
-              <p style={S.sectionLabel}>Últimas notícias</p>
-              <h2 style={S.sectionTitle}>Acontece na <GradText>comunidade</GradText></h2>
-            </div>
-            <button onClick={()=>setPage("home")} style={S.btn("ghost","sm")}>Ver todas →</button>
-          </div>
-          <div style={{ display:"grid", gridTemplateColumns:"2fr 1fr 1fr", gap:"1.2rem" }}>
-            {NEWS_DATA.slice(0,3).map((n,i)=>(
-              <div key={n.id} style={{ ...S.card(), padding:"1.2rem", cursor:"pointer" }} onMouseEnter={e=>e.currentTarget.style.borderColor="rgba(0,180,200,0.25)"} onMouseLeave={e=>e.currentTarget.style.borderColor="var(--border)"}>
-                <div style={{ fontSize: i===0?"3rem":"2.2rem", marginBottom:"0.8rem" }}>{n.icon}</div>
-                <Badge color="teal">{n.category}</Badge>
-                <h3 style={{ fontFamily:"'Syne',sans-serif", fontWeight:700, fontSize: i===0?"1.05rem":"0.9rem", margin:"0.5rem 0 0.4rem", lineHeight:1.35 }}>{n.title}</h3>
-                {i===0 && <p style={{ fontSize:"0.83rem", color:"var(--muted)", lineHeight:1.6 }}>{n.excerpt}</p>}
-                <div style={{ fontSize:"0.72rem", color:"rgba(255,255,255,0.3)", marginTop:"0.6rem" }}>{n.date}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* QUICK ACTIONS */}
-      <section style={{ padding:"4rem 0" }}>
-        <div style={S.container}>
-          <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:"1rem" }}>
-            {[
-              { icon:"🎓", title:"Certificação CSEP/ASEP", sub:"Prep-courses e exames", page:"events", color:"var(--blue2)" },
-              { icon:"💼", title:"Job Board SE", sub:"Vagas em empresas CAB", page:"jobs", color:"var(--teal)" },
-              { icon:"📚", title:"Knowledge Base", sub:"Handbook, templates, webinars", page:"knowledge", color:"var(--cork)" },
-              { icon:"🤝", title:"Working Groups", sub:"MBSE · Defense · Space", page:"about", color:"#6366f1" },
-            ].map(item=>(
-              <div key={item.title} onClick={()=>setPage(item.page)} style={{ ...S.card(), padding:"1.4rem", cursor:"pointer", textAlign:"center" }} onMouseEnter={e=>{ e.currentTarget.style.borderColor="rgba(255,255,255,0.15)"; e.currentTarget.style.transform="translateY(-3px)"; }} onMouseLeave={e=>{ e.currentTarget.style.borderColor="var(--border)"; e.currentTarget.style.transform="none"; }}>
-                <div style={{ fontSize:"1.8rem", marginBottom:"0.7rem" }}>{item.icon}</div>
-                <div style={{ fontFamily:"'Syne',sans-serif", fontWeight:700, fontSize:"0.9rem", marginBottom:"0.25rem" }}>{item.title}</div>
-                <div style={{ fontSize:"0.75rem", color:"var(--muted)" }}>{item.sub}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-    </div>
-  );
-};
-
-// ─── EVENTS PAGE ──────────────────────────────────────────────────────────────
-const EventsPage = ({ user, onOpenAuth }) => {
-  const [format, setFormat] = useState("all");
-  const [type, setType] = useState("all");
-  const [selected, setSelected] = useState(null);
-  const [registered, setRegistered] = useState([]);
-
-  const filtered = EVENTS_DATA.filter(e =>
-    (format==="all" || e.format===format) &&
-    (type==="all" || e.type===type)
-  );
-
-  const getPrice = (e) => {
-    if (!user) return e.price.public;
-    if (user.role==="student") return e.price.student;
-    if (user.quota) return e.price.member;
-    return e.price.public;
-  };
-
-  const register = (id) => {
-    if (!user) { return; }
-    setRegistered(r => r.includes(id) ? r : [...r, id]);
-  };
-
-  const typeMap = { summit:"Summit", webinar:"Webinar", workshop:"Workshop", wg:"Working Group" };
-  const formatColor = { presencial:"cork", online:"teal" };
-
-  return (
-    <div style={{ padding:"3rem 0" }}>
-      <div style={S.container}>
-        <p style={S.sectionLabel}>Agenda</p>
-        <h1 style={S.sectionTitle}>Próximos <GradText>Eventos</GradText></h1>
-        <p style={{ color:"var(--muted)", marginBottom:"2rem", fontSize:"0.92rem" }}>Membros com quota ativa têm desconto automático aplicado na inscrição.</p>
-
-        {/* Filters */}
-        <div style={{ display:"flex", gap:"0.5rem", marginBottom:"2rem", flexWrap:"wrap", alignItems:"center" }}>
-          <span style={{ fontSize:"0.75rem", color:"var(--muted)", marginRight:"0.3rem", fontWeight:600 }}>Formato:</span>
-          {[["all","Todos"],["presencial","Presencial"],["online","Online"]].map(([v,l])=>(
-            <button key={v} onClick={()=>setFormat(v)} style={{ ...S.btn(format===v?"teal":"ghost","sm") }}>{l}</button>
-          ))}
-          <span style={{ fontSize:"0.75rem", color:"var(--muted)", marginLeft:"0.5rem", marginRight:"0.3rem", fontWeight:600 }}>Tipo:</span>
-          {[["all","Todos"],["summit","Summit"],["webinar","Webinar"],["workshop","Workshop"],["wg","Working Group"]].map(([v,l])=>(
-            <button key={v} onClick={()=>setType(v)} style={{ ...S.btn(type===v?"teal":"ghost","sm") }}>{l}</button>
-          ))}
-        </div>
-
-        {/* Events list */}
-        <div style={{ display:"flex", flexDirection:"column", gap:"0.9rem" }}>
-          {filtered.map(e => {
-            const price = getPrice(e);
-            const isRegistered = registered.includes(e.id);
-            const d = new Date(e.date);
-            return (
-              <div key={e.id} style={{ ...S.card(), padding:"1.3rem 1.6rem", display:"flex", alignItems:"center", gap:"1.5rem" }} onMouseEnter={ev=>ev.currentTarget.style.borderColor="rgba(0,180,200,0.2)"} onMouseLeave={ev=>ev.currentTarget.style.borderColor="var(--border)"}>
-                <div style={{ minWidth:52, textAlign:"center", background:"rgba(0,53,128,0.2)", border:"1px solid rgba(0,85,204,0.3)", borderRadius:8, padding:"0.5rem 0.3rem", flexShrink:0 }}>
-                  <div style={{ fontSize:"1.4rem", fontWeight:800, fontFamily:"'Syne',sans-serif", lineHeight:1 }}>{d.getDate()}</div>
-                  <div style={{ fontSize:"0.6rem", fontWeight:700, letterSpacing:1, textTransform:"uppercase", color:"var(--muted)" }}>{d.toLocaleString('pt',{month:'short'})}</div>
-                </div>
-                <div style={{ flex:1 }}>
-                  <div style={{ display:"flex", gap:"0.4rem", marginBottom:"0.35rem", flexWrap:"wrap" }}>
-                    <Badge color={formatColor[e.format]}>{e.format}</Badge>
-                    <Badge color="blue">{typeMap[e.type]}</Badge>
-                    {user?.quota && price < e.price.public && <Badge color="green">✓ Preço de membro</Badge>}
-                  </div>
-                  <h3 style={{ fontFamily:"'Syne',sans-serif", fontWeight:700, fontSize:"0.97rem", marginBottom:"0.2rem" }}>{e.title}</h3>
-                  <p style={{ fontSize:"0.78rem", color:"var(--muted)" }}>{e.location}</p>
-                </div>
-                <div style={{ textAlign:"right", flexShrink:0 }}>
-                  <div style={{ fontSize:"1.3rem", fontWeight:800, fontFamily:"'Syne',sans-serif", color: price===0 ? "var(--success)" : "#fff" }}>
-                    {price===0 ? "Grátis" : `${price}€`}
-                  </div>
-                  {user?.quota && price < e.price.public && <div style={{ fontSize:"0.65rem", color:"var(--muted)", textDecoration:"line-through" }}>{e.price.public}€</div>}
-                  <div style={{ display:"flex", gap:"0.4rem", marginTop:"0.5rem", justifyContent:"flex-end" }}>
-                    <button onClick={()=>setSelected(e)} style={S.btn("ghost","sm")}>Detalhes</button>
-                    {isRegistered
-                      ? <button style={S.btn("success","sm")}>✓ Inscrito</button>
-                      : <button onClick={()=> user ? register(e.id) : onOpenAuth()} style={S.btn("primary","sm")}>Inscrever</button>
-                    }
-                  </div>
-                </div>
-              </div>
-            );
-          })}
+      <!-- Login panel -->
+      <div id="auth-login">
+        <div class="form-group"><label>Email</label><input id="login-email" type="email" value="membro@incose.pt"></div>
+        <div class="form-group"><label>Password</label><input id="login-pass" type="password" value="demo123"></div>
+        <div id="login-err" class="alert alert-error" style="display:none">⚠ Email ou password incorretos.</div>
+        <button class="btn btn-primary btn-md btn-full" onclick="doLogin()">Entrar →</button>
+        <hr class="divider">
+        <p style="font-size:.71rem;color:var(--muted);margin-bottom:.55rem;font-weight:600;letter-spacing:1px">DEMO – clique para preencher:</p>
+        <div class="demo-chips">
+          <button class="btn btn-ghost btn-sm" onclick="fillDemo('admin@sespt.pt')">Admin SESPT</button>
+          <button class="btn btn-ghost btn-sm" onclick="fillDemo('membro@incose.pt')">Membro Ativo</button>
+          <button class="btn btn-ghost btn-sm" onclick="fillDemo('cab@embraer.pt')">CAB Rep.</button>
+          <button class="btn btn-ghost btn-sm" onclick="fillDemo('estudante@ist.pt')">Estudante (inativo)</button>
         </div>
       </div>
 
-      {/* Event detail modal */}
-      <Modal open={!!selected} onClose={()=>setSelected(null)} title={selected?.title || ""} width={540}>
-        {selected && (
-          <>
-            <div style={{ display:"flex", gap:"0.4rem", marginBottom:"1rem", flexWrap:"wrap" }}>
-              <Badge color={formatColor[selected.format]}>{selected.format}</Badge>
-              <Badge color="blue">{typeMap[selected.type]}</Badge>
-            </div>
-            <p style={{ fontSize:"0.88rem", color:"rgba(255,255,255,0.7)", lineHeight:1.7, marginBottom:"1rem" }}>{selected.desc}</p>
-            <TopBar>
-              <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:"0.6rem", fontSize:"0.82rem" }}>
-                <div><span style={{ color:"var(--muted)" }}>Data: </span>{selected.date}</div>
-                <div><span style={{ color:"var(--muted)" }}>Local: </span>{selected.location}</div>
-                <div><span style={{ color:"var(--muted)" }}>Vagas: </span>{selected.capacity - selected.registered} restantes</div>
-                <div><span style={{ color:"var(--muted)" }}>Inscritos: </span>{selected.registered}</div>
-              </div>
-            </TopBar>
-            <Divider/>
-            <div style={{ marginBottom:"1rem" }}>
-              <p style={{ fontSize:"0.75rem", fontWeight:600, color:"var(--muted)", letterSpacing:1, marginBottom:"0.5rem" }}>PREÇOS</p>
-              {[["Público geral", selected.price.public],["Membro ativo", selected.price.member],["Estudante", selected.price.student]].map(([l,p])=>(
-                <div key={l} style={{ display:"flex", justifyContent:"space-between", fontSize:"0.85rem", padding:"0.3rem 0", borderBottom:"1px solid var(--border)" }}>
-                  <span style={{ color:"var(--muted)" }}>{l}</span>
-                  <strong style={{ color: p===0 ? "var(--success)" : "#fff" }}>{p===0?"Grátis":`${p}€`}</strong>
-                </div>
-              ))}
-            </div>
-            <div style={{ display:"flex", gap:"0.6rem" }}>
-              <button onClick={()=>{ register(selected.id); setSelected(null); }} style={{ ...S.btn(registered.includes(selected.id)?"success":"primary","md"), flex:1, justifyContent:"center" }}>
-                {registered.includes(selected.id) ? "✓ Já inscrito" : "Inscrever agora"}
-              </button>
-              <button onClick={()=>{
-                const ics = `BEGIN:VCALENDAR\nVERSION:2.0\nBEGIN:VEVENT\nSUMMARY:${selected.title}\nDTSTART:${selected.date.replace(/-/g,'')}T090000Z\nLOCATION:${selected.location}\nEND:VEVENT\nEND:VCALENDAR`;
-                const b = new Blob([ics],{type:"text/calendar"}); const u=URL.createObjectURL(b); const a=document.createElement("a"); a.href=u; a.download="evento.ics"; a.click();
-              }} style={S.btn("ghost","md")}>⬇ .ics</button>
-            </div>
-          </>
-        )}
-      </Modal>
-    </div>
-  );
-};
-
-// ─── JOB BOARD PAGE ───────────────────────────────────────────────────────────
-const JobsPage = ({ user, onOpenAuth }) => {
-  const [search, setSearch] = useState("");
-  const [tag, setTag] = useState("all");
-  const [applied, setApplied] = useState([]);
-  const [newJob, setNewJob] = useState({ title:"", location:"", type:"Full-time", tags:"", desc:"" });
-  const [showPost, setShowPost] = useState(false);
-  const [jobs, setJobs] = useState(JOBS_DATA);
-
-  const allTags = [...new Set(jobs.flatMap(j=>j.tags))];
-  const filtered = jobs.filter(j =>
-    (tag==="all" || j.tags.includes(tag)) &&
-    (j.title.toLowerCase().includes(search.toLowerCase()) || j.company.toLowerCase().includes(search.toLowerCase()))
-  );
-
-  const apply = (id) => {
-    if (!user?.quota) return;
-    setApplied(a => a.includes(id) ? a : [...a, id]);
-  };
-
-  const postJob = () => {
-    if (!newJob.title) return;
-    setJobs(js => [{ ...newJob, id: Date.now(), logo: "NEW", tags: newJob.tags.split(",").map(t=>t.trim()), posted: new Date().toISOString().slice(0,10), cab: true }, ...js]);
-    setNewJob({ title:"", location:"", type:"Full-time", tags:"", desc:"" });
-    setShowPost(false);
-  };
-
-  return (
-    <div style={{ padding:"3rem 0" }}>
-      <div style={S.container}>
-        <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:"1rem", flexWrap:"wrap", gap:"1rem" }}>
-          <div>
-            <p style={S.sectionLabel}>Portal de Carreiras</p>
-            <h1 style={S.sectionTitle}>Job Board <GradText>SE</GradText></h1>
-            <p style={{ color:"var(--muted)", fontSize:"0.88rem" }}>Vagas publicadas por empresas CAB e parceiros. Candidatura 1-click para membros com perfil completo.</p>
-          </div>
-          {(user?.role==="cab" || user?.role==="admin") && (
-            <button onClick={()=>setShowPost(true)} style={S.btn("teal","md")}>+ Publicar vaga</button>
-          )}
-        </div>
-
-        {/* Search + filters */}
-        <div style={{ display:"flex", gap:"0.8rem", marginBottom:"1.2rem", flexWrap:"wrap" }}>
-          <input style={{ ...S.input, maxWidth:320, flex:1 }} placeholder="🔍 Pesquisar cargo ou empresa..." value={search} onChange={e=>setSearch(e.target.value)} />
-        </div>
-        <div style={{ display:"flex", gap:"0.4rem", flexWrap:"wrap", marginBottom:"2rem" }}>
-          <button onClick={()=>setTag("all")} style={S.btn(tag==="all"?"teal":"ghost","sm")}>Todas</button>
-          {allTags.map(t=>(
-            <button key={t} onClick={()=>setTag(t)} style={S.btn(tag===t?"teal":"ghost","sm")}>{t}</button>
-          ))}
-        </div>
-
-        {/* CAB notice */}
-        {!user && <Alert type="info">🔒 Candidatura 1-click disponível para membros com perfil completo. <button onClick={onOpenAuth} style={{ background:"none", border:"none", color:"var(--teal2)", cursor:"pointer", fontWeight:600, fontFamily:"inherit" }}>Fazer login →</button></Alert>}
-        {user && !user.quota && <Alert type="warn">⚠ A sua quota está inativa. Renove a adesão para usar a candidatura 1-click.</Alert>}
-        {user?.quota && <Alert type="success">✓ Perfil ativo – candidatura 1-click disponível em todas as vagas.</Alert>}
-
-        {/* Jobs grid */}
-        <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:"1rem", marginTop:"1.2rem" }}>
-          {filtered.map(j=>(
-            <div key={j.id} style={{ ...S.card(), padding:"1.3rem" }} onMouseEnter={e=>e.currentTarget.style.borderColor="rgba(0,180,200,0.2)"} onMouseLeave={e=>e.currentTarget.style.borderColor="var(--border)"}>
-              <div style={{ display:"flex", gap:"0.9rem", marginBottom:"0.8rem" }}>
-                <div style={{ width:42, height:42, borderRadius:8, background:"rgba(0,53,128,0.3)", border:"1px solid rgba(0,85,204,0.2)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:"0.7rem", fontWeight:800, color:"var(--teal2)", flexShrink:0 }}>{j.logo}</div>
-                <div>
-                  <h4 style={{ fontFamily:"'Syne',sans-serif", fontWeight:700, fontSize:"0.92rem", marginBottom:"0.15rem" }}>{j.title}</h4>
-                  <div style={{ fontSize:"0.78rem", color:"var(--muted)" }}>{j.company} · {j.location}</div>
-                </div>
-              </div>
-              <p style={{ fontSize:"0.8rem", color:"rgba(255,255,255,0.55)", lineHeight:1.55, marginBottom:"0.8rem" }}>{j.desc}</p>
-              <div style={{ display:"flex", gap:"0.35rem", flexWrap:"wrap", marginBottom:"0.8rem" }}>
-                {j.tags.map(t=><span key={t} style={S.tag()}>{t}</span>)}
-                <span style={S.tag(j.type==="Full-time"?"blue":"cork")}>{j.type}</span>
-              </div>
-              <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between" }}>
-                <span style={{ fontSize:"0.68rem", color:"rgba(255,255,255,0.25)" }}>Publicado: {j.posted}</span>
-                {applied.includes(j.id)
-                  ? <button style={S.btn("success","sm")}>✓ Candidatura enviada</button>
-                  : <button onClick={()=> user?.quota ? apply(j.id) : onOpenAuth()} style={S.btn(user?.quota?"primary":"ghost","sm")}>
-                      {user?.quota ? "1-Click Apply ⚡" : "Candidatar →"}
-                    </button>
-                }
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Post job modal */}
-      <Modal open={showPost} onClose={()=>setShowPost(false)} title="Publicar nova vaga" width={500}>
-        {[["Título do cargo","title","text"],["Localização","location","text"],["Tags (separadas por vírgula)","tags","text"]].map(([l,k,t])=>(
-          <div key={k} style={{ marginBottom:"0.8rem" }}>
-            <label style={S.label}>{l}</label>
-            <input style={S.input} type={t} value={newJob[k]} onChange={e=>setNewJob({...newJob,[k]:e.target.value})} />
-          </div>
-        ))}
-        <div style={{ marginBottom:"0.8rem" }}>
-          <label style={S.label}>Tipo</label>
-          <select style={{ ...S.input }} value={newJob.type} onChange={e=>setNewJob({...newJob,type:e.target.value})}>
-            {["Full-time","Part-time","Contrato","Bolsa FCT","Estágio"].map(o=><option key={o}>{o}</option>)}
+      <!-- Register panel -->
+      <div id="auth-register" style="display:none">
+        <div class="alert alert-info">📋 Após registo, a conta aguarda aprovação SESPT.</div>
+        <div class="form-group"><label>Nome completo</label><input type="text" placeholder="O seu nome"></div>
+        <div class="form-group"><label>Email profissional</label><input type="email" placeholder="email@empresa.pt"></div>
+        <div class="form-group"><label>Tipo de adesão</label>
+          <select>
+            <option>Membro Individual (80€/ano)</option>
+            <option>Membro Estudante (30€/ano)</option>
+            <option>Empresa CAB (800€/ano)</option>
           </select>
         </div>
-        <div style={{ marginBottom:"1rem" }}>
-          <label style={S.label}>Descrição</label>
-          <textarea style={{ ...S.input, height:90, resize:"vertical" }} value={newJob.desc} onChange={e=>setNewJob({...newJob,desc:e.target.value})} />
-        </div>
-        <Alert type="warn">⏳ A vaga ficará pendente até aprovação pelo Admin.</Alert>
-        <button onClick={postJob} style={{ ...S.btn("primary","md"), width:"100%", justifyContent:"center", marginTop:"1rem" }}>Submeter para aprovação →</button>
-      </Modal>
-    </div>
-  );
-};
-
-// ─── KNOWLEDGE PAGE ───────────────────────────────────────────────────────────
-const KnowledgePage = ({ user, onOpenAuth }) => {
-  const [cat, setCat] = useState("all");
-  const [search, setSearch] = useState("");
-  const cats = ["all","handbook","template","webinar","guide","legal"];
-  const catLabels = { all:"Todos", handbook:"Handbook", template:"Templates", webinar:"Webinars", guide:"Guias", legal:"Legal / Estatutos" };
-  const filtered = DOCS_DATA.filter(d =>
-    (cat==="all" || d.category===cat) &&
-    d.title.toLowerCase().includes(search.toLowerCase())
-  );
-  const canAccess = (doc) => !doc.restricted || (user?.quota);
-
-  return (
-    <div style={{ padding:"3rem 0" }}>
-      <div style={S.container}>
-        <p style={S.sectionLabel}>Biblioteca</p>
-        <h1 style={S.sectionTitle}>Knowledge <GradText>Base</GradText></h1>
-        <p style={{ color:"var(--muted)", marginBottom:"2rem", fontSize:"0.88rem" }}>Recursos técnicos exclusivos para membros com quota ativa. Documentos públicos disponíveis para todos.</p>
-
-        {!user && <div style={{ marginBottom:"1.5rem" }}><Alert type="warn">🔒 Os materiais técnicos (Handbook, templates, webinars) requerem login e quota ativa. <button onClick={onOpenAuth} style={{ background:"none", border:"none", color:"var(--teal2)", cursor:"pointer", fontWeight:600, fontFamily:"inherit" }}>Entrar →</button></Alert></div>}
-        {user && !user.quota && <div style={{ marginBottom:"1.5rem" }}><Alert type="warn">⚠ A sua quota está inativa. Renove a adesão para aceder aos materiais técnicos.</Alert></div>}
-        {user?.quota && <div style={{ marginBottom:"1.5rem" }}><Alert type="success">✓ Acesso completo – quota ativa até dezembro 2026.</Alert></div>}
-
-        {/* Search + cats */}
-        <div style={{ display:"flex", gap:"0.8rem", marginBottom:"1rem", flexWrap:"wrap" }}>
-          <input style={{ ...S.input, maxWidth:300, flex:1 }} placeholder="🔍 Pesquisar..." value={search} onChange={e=>setSearch(e.target.value)} />
-        </div>
-        <div style={{ display:"flex", gap:"0.4rem", flexWrap:"wrap", marginBottom:"2rem" }}>
-          {cats.map(c=><button key={c} onClick={()=>setCat(c)} style={S.btn(cat===c?"teal":"ghost","sm")}>{catLabels[c]}</button>)}
-        </div>
-
-        {/* Docs grid */}
-        <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:"1rem" }}>
-          {filtered.map(d=>{
-            const access = canAccess(d);
-            return (
-              <div key={d.id} style={{ ...S.card(), padding:"1.2rem", opacity: access ? 1 : 0.6 }} onMouseEnter={e=>e.currentTarget.style.borderColor= access ? "rgba(0,180,200,0.2)" : "var(--border)"} onMouseLeave={e=>e.currentTarget.style.borderColor="var(--border)"}>
-                <div style={{ fontSize:"2rem", marginBottom:"0.7rem" }}>{d.icon}</div>
-                <div style={{ display:"flex", gap:"0.35rem", marginBottom:"0.5rem" }}>
-                  <Badge color="blue">{d.type}</Badge>
-                  {d.restricted && <Badge color={access?"green":"warn"}>{access?"✓ Acesso":"🔒 Membros"}</Badge>}
-                </div>
-                <h4 style={{ fontFamily:"'Syne',sans-serif", fontWeight:700, fontSize:"0.88rem", marginBottom:"0.25rem", lineHeight:1.3 }}>{d.title}</h4>
-                <p style={{ fontSize:"0.72rem", color:"var(--muted)", marginBottom:"0.8rem" }}>{d.size} · {d.date}</p>
-                {access
-                  ? <button style={S.btn("primary","sm")}>⬇ Download</button>
-                  : <button onClick={onOpenAuth} style={S.btn("ghost","sm")}>🔒 {user ? "Renovar quota" : "Fazer login"}</button>
-                }
-              </div>
-            );
-          })}
-        </div>
+        <button class="btn btn-teal btn-md btn-full">Submeter pedido de adesão →</button>
       </div>
-    </div>
-  );
-};
-
-// ─── MEMBERSHIP PAGE ──────────────────────────────────────────────────────────
-const MembershipPage = ({ user, onOpenAuth }) => (
-  <div style={{ padding:"3rem 0" }}>
-    <div style={S.container}>
-      <p style={S.sectionLabel}>Seja sócio</p>
-      <h1 style={S.sectionTitle}>Planos de <GradText>Adesão</GradText></h1>
-      <p style={{ color:"var(--muted)", marginBottom:"3rem", fontSize:"0.92rem", maxWidth:560 }}>
-        Faça parte da comunidade portuguesa de Systems Engineering. Acesso imediato aos recursos, descontos e representação internacional.
-      </p>
-
-      <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:"1.5rem", marginBottom:"2rem" }}>
-        {[
-          { name:"Membro Estudante", price:30, period:"/ano", color:"var(--muted)", desc:"Estudante de universidade portuguesa", benefits:["Acesso à biblioteca","Desconto em eventos","Webinars gravados","Certificate Wallet","Member Directory (opt-in)"] },
-          { name:"Membro Individual", price:80, period:"/ano", color:"var(--teal2)", desc:"Profissional de SE", featured:true, benefits:["Tudo do Estudante","Fórum privado","Voto nas eleições","Desconto acrescido em formações","Acesso ao IS internacional"] },
-          { name:"CAB – Corporate", price:800, period:"/ano", color:"var(--cork)", desc:"Empresa · 5 seats incluídos", benefits:["5 membros incluídos","Perfil empresa no site","Publicar vagas (Job Board)","Repositório doc. estratégicos","Presence no Summit anual"] },
-        ].map(plan=>(
-          <div key={plan.name} style={{ ...S.card(), padding:"1.8rem", border: plan.featured ? "1px solid rgba(0,180,200,0.4)" : "1px solid var(--border)", position:"relative" }}>
-            {plan.featured && <div style={{ position:"absolute", top:"-11px", left:"50%", transform:"translateX(-50%)", background:"var(--teal)", padding:"0.15rem 0.8rem", borderRadius:10, fontSize:"0.65rem", fontWeight:700, letterSpacing:1, textTransform:"uppercase" }}>Mais popular</div>}
-            <div style={{ fontSize:"0.75rem", fontWeight:600, color:"var(--muted)", marginBottom:"0.4rem", letterSpacing:0.5 }}>{plan.desc}</div>
-            <h3 style={{ fontFamily:"'Syne',sans-serif", fontWeight:800, fontSize:"1.1rem", marginBottom:"1rem" }}>{plan.name}</h3>
-            <div style={{ marginBottom:"1.2rem" }}>
-              <span style={{ fontSize:"2.2rem", fontWeight:800, fontFamily:"'Syne',sans-serif", color:plan.color }}>{plan.price}€</span>
-              <span style={{ fontSize:"0.8rem", color:"var(--muted)" }}>{plan.period}</span>
-            </div>
-            <ul style={{ listStyle:"none", marginBottom:"1.5rem" }}>
-              {plan.benefits.map(b=>(
-                <li key={b} style={{ fontSize:"0.82rem", color:"rgba(255,255,255,0.75)", padding:"0.25rem 0", borderBottom:"1px solid var(--border)", display:"flex", alignItems:"center", gap:"0.5rem" }}>
-                  <span style={{ color:"var(--teal2)", fontSize:"0.7rem" }}>✓</span> {b}
-                </li>
-              ))}
-            </ul>
-            <button onClick={onOpenAuth} style={{ ...S.btn(plan.featured?"teal":"ghost","md"), width:"100%", justifyContent:"center" }}>
-              Aderir agora →
-            </button>
-          </div>
-        ))}
-      </div>
-
-      <TopBar>
-        <p style={{ fontSize:"0.82rem", color:"var(--muted)", textAlign:"center" }}>
-          ℹ️ As quotas internacionais INCOSE são pagas separadamente em{" "}
-          <a href="https://www.incose.org" target="_blank" style={{ color:"var(--teal2)" }}>incose.org ↗</a>.
-          A SESPT (NIF a inserir) emite fatura nos termos legais portugueses.
-        </p>
-      </TopBar>
     </div>
   </div>
-);
+</div>
 
-// ─── DASHBOARD ────────────────────────────────────────────────────────────────
-const DashboardPage = ({ user, onOpenAuth }) => {
-  const [tab, setTab] = useState("overview");
-  if (!user) return (
-    <div style={{ padding:"4rem 2rem", textAlign:"center" }}>
-      <div style={{ fontSize:"3rem", marginBottom:"1rem" }}>🔒</div>
-      <h2 style={{ fontFamily:"'Syne',sans-serif", marginBottom:"0.5rem" }}>Área privada</h2>
-      <p style={{ color:"var(--muted)", marginBottom:"1.5rem" }}>Faça login para aceder ao seu dashboard.</p>
-      <button onClick={onOpenAuth} style={S.btn("primary","lg")}>Entrar →</button>
+<!-- ░░░ EVENT DETAIL MODAL ░░░ -->
+<div class="modal-overlay" id="modal-event" onclick="if(event.target===this)closeModal('modal-event')">
+  <div class="modal-box" style="max-width:520px">
+    <div class="modal-top-bar"></div>
+    <div class="modal-body">
+      <div class="modal-header">
+        <h3 id="ev-modal-title">Evento</h3>
+        <button class="modal-close" onclick="closeModal('modal-event')">✕</button>
+      </div>
+      <div id="ev-modal-body"></div>
     </div>
-  );
+  </div>
+</div>
 
-  const tabs = [
-    { key:"overview", label:"Resumo" },
-    { key:"profile", label:"Perfil" },
-    { key:"payments", label:"Pagamentos" },
-    { key:"wallet", label:"Certificate Wallet" },
-  ];
+<!-- ░░░ UTILITY BAR ░░░ -->
+<div id="util-bar">
+  <div class="lang-toggle">
+    <button class="active" onclick="setLang('pt',this)">PT</button>
+    <button onclick="setLang('en',this)">EN</button>
+  </div>
+  <a href="https://linkedin.com" target="_blank">LinkedIn ↗</a>
+  <a href="https://youtube.com" target="_blank">YouTube ↗</a>
+  <span id="util-user-area">
+    <button class="btn btn-primary btn-sm" onclick="openModal('modal-auth')">🔐 Login / Registo</button>
+  </span>
+</div>
 
-  const certs = [
-    { name:"INCOSE Portugal Summit 2025 – Participação", date:"2025-11-15", id:"CERT-2025-001" },
-    { name:"ASEP Prep-Course – Dezembro 2025", date:"2025-12-08", id:"CERT-2025-002" },
-    { name:"Webinar MBSE Intro – Novembro 2025", date:"2025-11-28", id:"CERT-2025-003" },
-  ];
+<!-- ░░░ HEADER ░░░ -->
+<header>
+  <div class="logo-group">
+    <button onclick="navTo('home')" style="display:flex;align-items:center;gap:.7rem;background:none;border:none;cursor:pointer">
+      <div class="logo-mark">INCOSE</div>
+      <div class="logo-text">
+        <div class="main">INCOSE Portugal</div>
+        <div class="sub">Capítulo Oficial</div>
+      </div>
+    </button>
+    <div class="logo-divider"></div>
+    <span class="logo-sespt">SESPT</span>
+  </div>
 
-  const payments = [
-    { desc:"Quota anual 2026 – Membro Individual", amount:"80.00", date:"2026-01-10", status:"pago" },
-    { desc:"Quota anual 2025 – Membro Individual", amount:"80.00", date:"2025-01-12", status:"pago" },
-    { desc:"Summit 2025 – Bilhete membro", amount:"60.00", date:"2025-10-20", status:"pago" },
-  ];
+  <nav id="main-nav">
+    <button class="active" onclick="navTo('home')">Início</button>
+    <button onclick="navTo('about')">Sobre Nós</button>
+    <button onclick="navTo('events')">Eventos</button>
+    <button onclick="navTo('knowledge')">Knowledge</button>
+    <button onclick="navTo('jobs')">Carreiras</button>
+    <button onclick="navTo('membership')">Adesão</button>
+    <button id="nav-dashboard" style="display:none" onclick="navTo('dashboard')">Dashboard</button>
+    <button id="nav-admin" style="display:none" onclick="navTo('admin')">Backoffice</button>
+  </nav>
 
-  return (
-    <div style={{ padding:"2.5rem 0" }}>
-      <div style={S.container}>
-        {/* Header */}
-        <div style={{ display:"flex", alignItems:"center", gap:"1.2rem", marginBottom:"2rem" }}>
-          <div style={{ width:56, height:56, borderRadius:"50%", background:"linear-gradient(135deg, var(--blue), var(--teal))", display:"flex", alignItems:"center", justifyContent:"center", fontSize:"1.3rem", fontWeight:800, fontFamily:"'Syne',sans-serif" }}>{user.avatar}</div>
-          <div>
-            <h1 style={{ fontFamily:"'Syne',sans-serif", fontSize:"1.5rem", fontWeight:800 }}>Olá, {user.name.split(" ")[0]}!</h1>
-            <div style={{ display:"flex", gap:"0.5rem", marginTop:"0.3rem" }}>
-              <Badge color="blue">{user.type}</Badge>
-              <Badge color={user.quota?"green":"warn"}>{user.quota?"✓ Quota ativa 2026":"⚠ Quota inativa"}</Badge>
-            </div>
+  <button class="btn btn-teal btn-sm header-cta" onclick="navTo('membership')">Aderir →</button>
+</header>
+
+<!-- ░░░░░░░░░░  PAGES  ░░░░░░░░░░ -->
+<main>
+
+<!-- ── HOME ── -->
+<div id="page-home" class="page active">
+  <!-- HERO -->
+  <section id="hero">
+    <div class="hero-bg-grid"></div>
+    <div class="hero-glow"></div>
+    <div class="container hero-content">
+      <div class="hero-left">
+        <div class="hero-badge"><span class="hero-badge-dot"></span><span id="hero-badge-txt">Capítulo oficial INCOSE em Portugal</span></div>
+        <h1 class="hero-h1" id="hero-h1">Engenharia de Sistemas<br><span class="grad">com raízes atlânticas</span></h1>
+        <p class="hero-p" id="hero-p">A comunidade portuguesa de profissionais INCOSE. Formação certificada, networking, Working Groups ativos e representação no ecossistema global de Systems Engineering.</p>
+        <div class="hero-ctas">
+          <button class="btn btn-primary btn-lg" style="box-shadow:0 4px 24px rgba(0,53,128,.4)" onclick="navTo('membership')" id="hero-cta1">Tornar-me sócio →</button>
+          <button class="btn btn-ghost btn-lg" onclick="navTo('events')" id="hero-cta2">Ver eventos</button>
+        </div>
+      </div>
+      <div class="hero-right">
+        <div class="hero-card">
+          <div class="section-label" style="margin-bottom:1.1rem">Capítulo em números</div>
+          <div class="hero-stats">
+            <div style="text-align:center"><div class="stat-num">240+</div><div class="stat-label">Membros ativos</div></div>
+            <div style="text-align:center"><div class="stat-num">18</div><div class="stat-label">Empresas CAB</div></div>
+            <div style="text-align:center"><div class="stat-num">32</div><div class="stat-label">Eventos 2025</div></div>
+            <div style="text-align:center"><div class="stat-num">4</div><div class="stat-label">Working Groups</div></div>
+          </div>
+          <div class="next-event-box">
+            <div class="next-event-label">⚡ Próximo evento</div>
+            <div style="font-weight:600;font-size:.9rem;margin-bottom:.2rem">INCOSE Portugal Summit 2026</div>
+            <div style="font-size:.77rem;color:var(--muted)">15 de março · Lisboa · Presencial + Online</div>
+            <button class="btn btn-teal btn-sm" style="margin-top:.65rem" onclick="navTo('events')">Inscrever →</button>
           </div>
         </div>
-
-        {/* Tabs */}
-        <div style={{ display:"flex", gap:0, borderBottom:"1px solid var(--border)", marginBottom:"2rem" }}>
-          {tabs.map(t=>(
-            <button key={t.key} onClick={()=>setTab(t.key)} style={{ background:"transparent", border:"none", borderBottom: tab===t.key ? "2px solid var(--teal2)" : "2px solid transparent", padding:"0.6rem 1.2rem", color: tab===t.key ? "#fff" : "var(--muted)", cursor:"pointer", fontFamily:"'DM Sans',sans-serif", fontWeight:600, fontSize:"0.85rem", transition:"all 0.2s" }}>{t.label}</button>
-          ))}
-        </div>
-
-        {/* Overview tab */}
-        {tab==="overview" && (
-          <div>
-            <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:"1rem", marginBottom:"2rem" }}>
-              {[["3","Certificados","🏅"],["2","Eventos inscritos","📅"],["5","Docs transferidos","📥"],[user.quota?"Ativo":"Inativo","Estado da quota","🔑"]].map(([v,l,i])=>(
-                <div key={l} style={{ ...S.card(false), padding:"1.2rem", textAlign:"center" }}>
-                  <div style={{ fontSize:"1.6rem", marginBottom:"0.3rem" }}>{i}</div>
-                  <div style={{ fontFamily:"'Syne',sans-serif", fontSize:"1.3rem", fontWeight:800, marginBottom:"0.2rem", color: l==="Estado da quota" ? (user.quota?"var(--success)":"var(--warn)") : "#fff" }}>{v}</div>
-                  <div style={{ fontSize:"0.72rem", color:"var(--muted)" }}>{l}</div>
-                </div>
-              ))}
-            </div>
-            {!user.quota && <Alert type="warn">⚠ A sua quota anual expirou. Renove para manter acesso a todos os benefícios.</Alert>}
-          </div>
-        )}
-
-        {/* Profile tab */}
-        {tab==="profile" && (
-          <div style={{ maxWidth:520 }}>
-            {[["Nome completo","name",user.name],["Email","email",user.email],["Tipo de membro","type",user.type],["N.º sócio INCOSE","incose","INC-PT-00342"]].map(([l,k,v])=>(
-              <div key={k} style={{ marginBottom:"1rem" }}>
-                <label style={S.label}>{l}</label>
-                <input style={S.input} defaultValue={v} readOnly={k==="incose"} />
-              </div>
-            ))}
-            <div style={{ marginBottom:"1rem" }}>
-              <label style={S.label}>Opt-in Member Directory</label>
-              <div style={{ display:"flex", alignItems:"center", gap:"0.6rem", marginTop:"0.3rem" }}>
-                <input type="checkbox" defaultChecked style={{ accentColor:"var(--teal)" }}/>
-                <span style={{ fontSize:"0.83rem", color:"rgba(255,255,255,0.7)" }}>Visível para outros membros no diretório</span>
-              </div>
-            </div>
-            <div style={{ marginBottom:"1.5rem" }}>
-              <label style={S.label}>CV / Currículo (para 1-Click Apply)</label>
-              <div style={{ ...S.card(false), padding:"1rem", textAlign:"center", borderStyle:"dashed" }}>
-                <p style={{ fontSize:"0.82rem", color:"var(--muted)" }}>Arraste o CV aqui ou clique para fazer upload</p>
-                <button style={{ ...S.btn("ghost","sm"), marginTop:"0.5rem" }}>⬆ Upload PDF</button>
-              </div>
-            </div>
-            <button style={S.btn("primary","md")}>Guardar alterações</button>
-          </div>
-        )}
-
-        {/* Payments tab */}
-        {tab==="payments" && (
-          <div>
-            <table style={{ width:"100%", borderCollapse:"collapse", fontSize:"0.85rem" }}>
-              <thead>
-                <tr style={{ borderBottom:"1px solid var(--border)" }}>
-                  {["Descrição","Valor","Data","Estado",""].map(h=><th key={h} style={{ padding:"0.6rem 0.8rem", textAlign:"left", fontSize:"0.7rem", fontWeight:700, letterSpacing:1, textTransform:"uppercase", color:"var(--muted)" }}>{h}</th>)}
-                </tr>
-              </thead>
-              <tbody>
-                {payments.map((p,i)=>(
-                  <tr key={i} style={{ borderBottom:"1px solid var(--border)" }}>
-                    <td style={{ padding:"0.8rem", color:"rgba(255,255,255,0.85)" }}>{p.desc}</td>
-                    <td style={{ padding:"0.8rem", fontWeight:700 }}>{p.amount}€</td>
-                    <td style={{ padding:"0.8rem", color:"var(--muted)" }}>{p.date}</td>
-                    <td style={{ padding:"0.8rem" }}><Badge color="green">✓ {p.status}</Badge></td>
-                    <td style={{ padding:"0.8rem" }}><button style={S.btn("ghost","sm")}>Fatura</button></td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-
-        {/* Certificate Wallet tab */}
-        {tab==="wallet" && (
-          <div>
-            <p style={{ color:"var(--muted)", marginBottom:"1.5rem", fontSize:"0.88rem" }}>Certificados gerados automaticamente após check-in em eventos.</p>
-            <div style={{ display:"flex", flexDirection:"column", gap:"0.8rem" }}>
-              {certs.map(c=>(
-                <div key={c.id} style={{ ...S.card(false), padding:"1.1rem 1.4rem", display:"flex", alignItems:"center", gap:"1rem" }}>
-                  <div style={{ fontSize:"1.8rem" }}>🏅</div>
-                  <div style={{ flex:1 }}>
-                    <h4 style={{ fontFamily:"'Syne',sans-serif", fontWeight:700, fontSize:"0.9rem" }}>{c.name}</h4>
-                    <p style={{ fontSize:"0.75rem", color:"var(--muted)" }}>{c.date} · {c.id}</p>
-                  </div>
-                  <button style={S.btn("ghost","sm")}>⬇ PDF</button>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
       </div>
     </div>
-  );
-};
-
-// ─── ADMIN / BACKOFFICE PAGE ───────────────────────────────────────────────────
-const AdminPage = ({ user }) => {
-  const [tab, setTab] = useState("news");
-  const [newsItems, setNewsItems] = useState(NEWS_DATA);
-  const [newArticle, setNewArticle] = useState({ title:"", category:"Destaque", excerpt:"", icon:"📰" });
-  const [pendingJobs] = useState([
-    { id:99, title:"Systems Engineer Jr.", company:"Nova empresa Lda.", status:"pending" },
-  ]);
-  const [users] = useState(Object.entries(USERS_DB).map(([email,u])=>({ email,...u })));
-
-  if (!user || user.role !== "admin") return (
-    <div style={{ padding:"4rem 2rem", textAlign:"center" }}>
-      <div style={{ fontSize:"3rem", marginBottom:"1rem" }}>🚫</div>
-      <h2 style={{ fontFamily:"'Syne',sans-serif" }}>Acesso restrito</h2>
-      <p style={{ color:"var(--muted)", marginTop:"0.5rem" }}>Apenas administradores SESPT têm acesso ao backoffice.</p>
+    <div class="hero-wave">
+      <svg viewBox="0 0 1440 80" preserveAspectRatio="none" style="width:100%;height:100%">
+        <path d="M0,40 C360,70 720,10 1080,40 C1260,55 1380,30 1440,40 L1440,80 L0,80Z" fill="#003580"/>
+      </svg>
     </div>
-  );
+  </section>
 
-  const addArticle = () => {
-    if (!newArticle.title) return;
-    setNewsItems(n => [{ ...newArticle, id: Date.now(), date: new Date().toISOString().slice(0,10), pinned:false }, ...n]);
-    setNewArticle({ title:"", category:"Destaque", excerpt:"", icon:"📰" });
-  };
+  <!-- NEWS preview -->
+  <section style="padding:4rem 0;background:#050c1a">
+    <div class="container">
+      <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:2rem;flex-wrap:wrap;gap:1rem">
+        <div><p class="section-label">Últimas notícias</p><h2 class="section-title">Acontece na <span class="grad">comunidade</span></h2></div>
+        <button class="btn btn-ghost btn-sm">Ver todas →</button>
+      </div>
+      <div class="news-grid" id="home-news"></div>
+    </div>
+  </section>
 
-  const deleteArticle = (id) => setNewsItems(n => n.filter(a => a.id !== id));
-
-  const tabs = [
-    { key:"news", label:"📰 Notícias" },
-    { key:"jobs", label:"💼 Vagas pendentes" },
-    { key:"users", label:"👥 Utilizadores" },
-    { key:"newsletter", label:"✉ Newsletter" },
-  ];
-
-  return (
-    <div style={{ padding:"2.5rem 0" }}>
-      <div style={S.container}>
-        <div style={{ marginBottom:"1.5rem" }}>
-          <p style={S.sectionLabel}>Administração SESPT</p>
-          <h1 style={S.sectionTitle}>Back<GradText>office</GradText></h1>
+  <!-- QUICK ACTIONS -->
+  <section style="padding:4rem 0">
+    <div class="container">
+      <p class="section-label">O que oferecemos</p>
+      <h2 class="section-title">Tudo o que precisa em <span class="grad">SE</span></h2>
+      <div class="quick-grid">
+        <div class="card quick-card" onclick="navTo('events')">
+          <div style="font-size:1.8rem;margin-bottom:.65rem">🎓</div>
+          <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:.88rem;margin-bottom:.2rem">Certificação CSEP/ASEP</div>
+          <div style="font-size:.74rem;color:var(--muted)">Prep-courses e exames</div>
         </div>
-
-        {/* Stats row */}
-        <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:"1rem", marginBottom:"2rem" }}>
-          {[["240","Membros ativos","👥"],["18","Empresas CAB","🏢"],["1","Vagas pendentes","⏳"],["4","Eventos futuros","📅"]].map(([v,l,i])=>(
-            <div key={l} style={{ ...S.card(false), padding:"1rem", display:"flex", gap:"0.8rem", alignItems:"center" }}>
-              <div style={{ fontSize:"1.6rem" }}>{i}</div>
-              <div>
-                <div style={{ fontFamily:"'Syne',sans-serif", fontSize:"1.4rem", fontWeight:800 }}>{v}</div>
-                <div style={{ fontSize:"0.72rem", color:"var(--muted)" }}>{l}</div>
-              </div>
-            </div>
-          ))}
+        <div class="card quick-card" onclick="navTo('jobs')">
+          <div style="font-size:1.8rem;margin-bottom:.65rem">💼</div>
+          <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:.88rem;margin-bottom:.2rem">Job Board SE</div>
+          <div style="font-size:.74rem;color:var(--muted)">Vagas em empresas CAB</div>
         </div>
-
-        {/* Tabs */}
-        <div style={{ display:"flex", gap:0, borderBottom:"1px solid var(--border)", marginBottom:"2rem" }}>
-          {tabs.map(t=>(
-            <button key={t.key} onClick={()=>setTab(t.key)} style={{ background:"transparent", border:"none", borderBottom: tab===t.key ? "2px solid var(--teal2)" : "2px solid transparent", padding:"0.6rem 1.2rem", color: tab===t.key ? "#fff" : "var(--muted)", cursor:"pointer", fontFamily:"'DM Sans',sans-serif", fontWeight:600, fontSize:"0.85rem", transition:"all 0.2s" }}>{t.label}</button>
-          ))}
+        <div class="card quick-card" onclick="navTo('knowledge')">
+          <div style="font-size:1.8rem;margin-bottom:.65rem">📚</div>
+          <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:.88rem;margin-bottom:.2rem">Knowledge Base</div>
+          <div style="font-size:.74rem;color:var(--muted)">Handbook, templates, webinars</div>
         </div>
-
-        {/* News CMS */}
-        {tab==="news" && (
-          <div>
-            <div style={{ ...S.card(false), padding:"1.5rem", marginBottom:"1.5rem" }}>
-              <h3 style={{ fontFamily:"'Syne',sans-serif", fontWeight:700, marginBottom:"1rem" }}>Criar novo artigo</h3>
-              <div style={{ display:"grid", gridTemplateColumns:"2fr 1fr 0.5fr", gap:"0.8rem", marginBottom:"0.8rem" }}>
-                <div>
-                  <label style={S.label}>Título *</label>
-                  <input style={S.input} value={newArticle.title} onChange={e=>setNewArticle({...newArticle,title:e.target.value})} placeholder="Título do artigo..." />
-                </div>
-                <div>
-                  <label style={S.label}>Categoria</label>
-                  <select style={{ ...S.input }} value={newArticle.category} onChange={e=>setNewArticle({...newArticle,category:e.target.value})}>
-                    {["Destaque","CAB","Certificação","Internacional","Eventos"].map(c=><option key={c}>{c}</option>)}
-                  </select>
-                </div>
-                <div>
-                  <label style={S.label}>Ícone</label>
-                  <input style={S.input} value={newArticle.icon} onChange={e=>setNewArticle({...newArticle,icon:e.target.value})} maxLength={2} />
-                </div>
-              </div>
-              <div style={{ marginBottom:"1rem" }}>
-                <label style={S.label}>Resumo / Excerpt</label>
-                <textarea style={{ ...S.input, height:80, resize:"vertical" }} value={newArticle.excerpt} onChange={e=>setNewArticle({...newArticle,excerpt:e.target.value})} placeholder="Breve descrição da notícia..." />
-              </div>
-              <button onClick={addArticle} style={S.btn("teal","md")}>Publicar artigo →</button>
-            </div>
-
-            <h3 style={{ fontFamily:"'Syne',sans-serif", fontWeight:700, marginBottom:"1rem" }}>Artigos publicados</h3>
-            <div style={{ display:"flex", flexDirection:"column", gap:"0.7rem" }}>
-              {newsItems.map(n=>(
-                <div key={n.id} style={{ ...S.card(false), padding:"1rem 1.3rem", display:"flex", alignItems:"center", gap:"1rem" }}>
-                  <div style={{ fontSize:"1.4rem" }}>{n.icon}</div>
-                  <div style={{ flex:1 }}>
-                    <div style={{ display:"flex", gap:"0.4rem", marginBottom:"0.25rem" }}>
-                      <Badge color="teal">{n.category}</Badge>
-                      {n.pinned && <Badge color="cork">📌 Destaque</Badge>}
-                    </div>
-                    <h4 style={{ fontFamily:"'Syne',sans-serif", fontWeight:700, fontSize:"0.88rem" }}>{n.title}</h4>
-                    <p style={{ fontSize:"0.72rem", color:"var(--muted)" }}>{n.date}</p>
-                  </div>
-                  <div style={{ display:"flex", gap:"0.4rem" }}>
-                    <button style={S.btn("ghost","sm")}>✏ Editar</button>
-                    <button onClick={()=>deleteArticle(n.id)} style={S.btn("danger","sm")}>🗑 Apagar</button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Pending jobs */}
-        {tab==="jobs" && (
-          <div>
-            <h3 style={{ fontFamily:"'Syne',sans-serif", fontWeight:700, marginBottom:"1rem" }}>Vagas aguardando aprovação</h3>
-            {pendingJobs.length === 0 ? <p style={{ color:"var(--muted)" }}>Sem vagas pendentes.</p> : pendingJobs.map(j=>(
-              <div key={j.id} style={{ ...S.card(false), padding:"1.2rem 1.4rem", display:"flex", alignItems:"center", gap:"1rem", marginBottom:"0.7rem" }}>
-                <div style={{ flex:1 }}>
-                  <h4 style={{ fontFamily:"'Syne',sans-serif", fontWeight:700, fontSize:"0.9rem" }}>{j.title}</h4>
-                  <p style={{ fontSize:"0.78rem", color:"var(--muted)" }}>{j.company}</p>
-                </div>
-                <Badge color="warn">⏳ Pendente</Badge>
-                <button style={S.btn("success","sm")}>✓ Aprovar</button>
-                <button style={S.btn("danger","sm")}>✕ Rejeitar</button>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* Users */}
-        {tab==="users" && (
-          <div>
-            <h3 style={{ fontFamily:"'Syne',sans-serif", fontWeight:700, marginBottom:"1rem" }}>Gestão de utilizadores</h3>
-            <table style={{ width:"100%", borderCollapse:"collapse", fontSize:"0.83rem" }}>
-              <thead>
-                <tr style={{ borderBottom:"1px solid var(--border)" }}>
-                  {["Nome","Email","Tipo","Quota","Ações"].map(h=><th key={h} style={{ padding:"0.6rem 0.8rem", textAlign:"left", fontSize:"0.68rem", fontWeight:700, letterSpacing:1, textTransform:"uppercase", color:"var(--muted)" }}>{h}</th>)}
-                </tr>
-              </thead>
-              <tbody>
-                {users.map(u=>(
-                  <tr key={u.email} style={{ borderBottom:"1px solid var(--border)" }}>
-                    <td style={{ padding:"0.8rem" }}><div style={{ display:"flex", alignItems:"center", gap:"0.6rem" }}><div style={{ width:28, height:28, borderRadius:"50%", background:"var(--teal)", display:"flex", alignItems:"center", justifyContent:"center", fontSize:"0.7rem", fontWeight:800 }}>{u.avatar}</div>{u.name}</div></td>
-                    <td style={{ padding:"0.8rem", color:"var(--muted)" }}>{u.email}</td>
-                    <td style={{ padding:"0.8rem" }}><Badge color="blue">{u.type}</Badge></td>
-                    <td style={{ padding:"0.8rem" }}><Badge color={u.quota?"green":"warn"}>{u.quota?"Ativa":"Inativa"}</Badge></td>
-                    <td style={{ padding:"0.8rem" }}><button style={S.btn("ghost","sm")}>Gerir</button></td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-
-        {/* Newsletter */}
-        {tab==="newsletter" && (
-          <div style={{ maxWidth:600 }}>
-            <h3 style={{ fontFamily:"'Syne',sans-serif", fontWeight:700, marginBottom:"1rem" }}>Gerador de Newsletter</h3>
-            <p style={{ fontSize:"0.85rem", color:"var(--muted)", marginBottom:"1.5rem" }}>Selecione notícias → Gera HTML automático pronto para Mailchimp.</p>
-            <div style={{ display:"flex", flexDirection:"column", gap:"0.6rem", marginBottom:"1.5rem" }}>
-              {NEWS_DATA.map(n=>(
-                <label key={n.id} style={{ ...S.card(false), padding:"0.9rem 1.1rem", display:"flex", alignItems:"center", gap:"0.8rem", cursor:"pointer" }}>
-                  <input type="checkbox" style={{ accentColor:"var(--teal)" }} />
-                  <span style={{ fontSize:"0.88rem" }}>{n.icon} {n.title}</span>
-                </label>
-              ))}
-            </div>
-            <div style={{ display:"flex", gap:"0.7rem" }}>
-              <button style={S.btn("teal","md")}>⚡ Gerar HTML Newsletter</button>
-              <button style={S.btn("ghost","md")}>📤 Enviar via Mailchimp</button>
-            </div>
-          </div>
-        )}
+        <div class="card quick-card" onclick="navTo('about')">
+          <div style="font-size:1.8rem;margin-bottom:.65rem">🤝</div>
+          <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:.88rem;margin-bottom:.2rem">Working Groups</div>
+          <div style="font-size:.74rem;color:var(--muted)">MBSE · Defense · Space</div>
+        </div>
       </div>
     </div>
-  );
-};
+  </section>
+</div>
 
-// ─── ABOUT PAGE ───────────────────────────────────────────────────────────────
-const AboutPage = () => (
-  <div style={{ padding:"3rem 0" }}>
-    <div style={S.container}>
-      <p style={S.sectionLabel}>Quem somos</p>
-      <h1 style={S.sectionTitle}>Sobre o <GradText>Capítulo</GradText></h1>
-      <div style={{ display:"grid", gridTemplateColumns:"2fr 1fr", gap:"3rem", marginTop:"2rem" }}>
-        <div>
-          <p style={{ color:"rgba(255,255,255,0.75)", lineHeight:1.8, marginBottom:"1.2rem", fontSize:"0.95rem" }}>
-            O INCOSE Portugal é o capítulo oficial da International Council on Systems Engineering em Portugal. 
-            Representado legalmente pela <strong style={{ color:"var(--teal2)" }}>SESPT – Sociedade de Engenharia de Sistemas de Portugal</strong>, 
-            o capítulo reúne profissionais, académicos e empresas comprometidos com a excelência em Engenharia de Sistemas.
-          </p>
-          <p style={{ color:"rgba(255,255,255,0.75)", lineHeight:1.8, marginBottom:"1.5rem", fontSize:"0.95rem" }}>
-            Fundado em 2025, o capítulo cresceu rapidamente para mais de 240 membros e 18 empresas parceiras CAB, 
-            tornando-se um polo de referência na comunidade europeia de SE.
-          </p>
-          <h3 style={{ fontFamily:"'Syne',sans-serif", fontWeight:700, marginBottom:"1rem" }}>Working Groups ativos</h3>
-          <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:"0.8rem" }}>
-            {[["🏗️","MBSE & SysML v2","Modelação de sistemas complexos"],["🛡️","Defense Systems","Sistemas de defesa e segurança"],["🚀","Space Systems","Projetos espaciais ECSS"],["🌱","Sustainability in SE","SE aplicado à sustentabilidade"]].map(([i,t,d])=>(
-              <div key={t} style={{ ...S.card(false), padding:"1rem" }}>
-                <div style={{ fontSize:"1.4rem", marginBottom:"0.4rem" }}>{i}</div>
-                <div style={{ fontFamily:"'Syne',sans-serif", fontWeight:700, fontSize:"0.85rem", marginBottom:"0.2rem" }}>{t}</div>
-                <div style={{ fontSize:"0.75rem", color:"var(--muted)" }}>{d}</div>
-              </div>
-            ))}
+<!-- ── ABOUT ── -->
+<div id="page-about" class="page">
+  <div class="container">
+    <p class="section-label">Quem somos</p>
+    <h1 class="section-title">Sobre o <span class="grad">Capítulo</span></h1>
+    <div class="about-grid">
+      <div>
+        <p style="color:rgba(255,255,255,.75);line-height:1.8;margin-bottom:1.1rem;font-size:.94rem">O INCOSE Portugal é o capítulo oficial da International Council on Systems Engineering em Portugal. Representado legalmente pela <strong style="color:var(--teal2)">SESPT – Sociedade de Engenharia de Sistemas de Portugal</strong>, o capítulo reúne profissionais, académicos e empresas comprometidos com a excelência em Engenharia de Sistemas.</p>
+        <p style="color:rgba(255,255,255,.75);line-height:1.8;margin-bottom:1.5rem;font-size:.94rem">Fundado em 2025, cresceu rapidamente para mais de 240 membros e 18 empresas parceiras CAB, tornando-se polo de referência na comunidade europeia de SE.</p>
+        <h3 style="margin-bottom:.9rem">Working Groups ativos</h3>
+        <div class="wg-grid">
+          <div class="card wg-card"><div style="font-size:1.3rem;margin-bottom:.35rem">🏗️</div><div style="font-family:'Syne',sans-serif;font-weight:700;font-size:.83rem;margin-bottom:.15rem">MBSE &amp; SysML v2</div><div style="font-size:.73rem;color:var(--muted)">Modelação de sistemas complexos</div></div>
+          <div class="card wg-card"><div style="font-size:1.3rem;margin-bottom:.35rem">🛡️</div><div style="font-family:'Syne',sans-serif;font-weight:700;font-size:.83rem;margin-bottom:.15rem">Defense Systems</div><div style="font-size:.73rem;color:var(--muted)">Sistemas de defesa e segurança</div></div>
+          <div class="card wg-card"><div style="font-size:1.3rem;margin-bottom:.35rem">🚀</div><div style="font-family:'Syne',sans-serif;font-weight:700;font-size:.83rem;margin-bottom:.15rem">Space Systems</div><div style="font-size:.73rem;color:var(--muted)">Projetos espaciais ECSS</div></div>
+          <div class="card wg-card"><div style="font-size:1.3rem;margin-bottom:.35rem">🌱</div><div style="font-family:'Syne',sans-serif;font-weight:700;font-size:.83rem;margin-bottom:.15rem">Sustainability in SE</div><div style="font-size:.73rem;color:var(--muted)">SE aplicado à sustentabilidade</div></div>
+        </div>
+      </div>
+      <div>
+        <div class="card-flat" style="padding:1.4rem;margin-bottom:1rem">
+          <h4 style="margin-bottom:1rem">Direção SESPT</h4>
+          <div style="display:flex;flex-direction:column;gap:.1rem">
+            <div style="display:flex;justify-content:space-between;padding:.38rem 0;border-bottom:1px solid var(--border);font-size:.82rem"><span style="font-weight:600">Sofia Andrade</span><span style="color:var(--muted)">Presidente</span></div>
+            <div style="display:flex;justify-content:space-between;padding:.38rem 0;border-bottom:1px solid var(--border);font-size:.82rem"><span style="font-weight:600">João Figueiredo</span><span style="color:var(--muted)">Vice-Presidente</span></div>
+            <div style="display:flex;justify-content:space-between;padding:.38rem 0;border-bottom:1px solid var(--border);font-size:.82rem"><span style="font-weight:600">Marta Costa</span><span style="color:var(--muted)">Tesoureira</span></div>
+            <div style="display:flex;justify-content:space-between;padding:.38rem 0;font-size:.82rem"><span style="font-weight:600">Pedro Nunes</span><span style="color:var(--muted)">Secretário</span></div>
           </div>
         </div>
-        <div>
-          <div style={{ ...S.card(false), padding:"1.5rem", marginBottom:"1rem" }}>
-            <h4 style={{ fontFamily:"'Syne',sans-serif", fontWeight:700, marginBottom:"1rem" }}>Direção SESPT</h4>
-            {[["Sofia Andrade","Presidente"],["João Figueiredo","Vice-Presidente"],["Marta Costa","Tesoureira"],["Pedro Nunes","Secretário"]].map(([n,r])=>(
-              <div key={n} style={{ display:"flex", justifyContent:"space-between", padding:"0.4rem 0", borderBottom:"1px solid var(--border)", fontSize:"0.83rem" }}>
-                <span style={{ fontWeight:600 }}>{n}</span>
-                <span style={{ color:"var(--muted)" }}>{r}</span>
-              </div>
-            ))}
-          </div>
-          <TopBar>
-            <p style={{ fontSize:"0.78rem", color:"var(--muted)", lineHeight:1.6 }}>
-              <strong style={{ color:"rgba(255,255,255,0.6)" }}>Identificação legal:</strong><br/>
-              SESPT – Sociedade de Engenharia de Sistemas de Portugal<br/>
-              NIF: [inserir número]<br/>
-              Sede: Lisboa, Portugal
-            </p>
-          </TopBar>
+        <div class="topbox">
+          <p style="font-size:.78rem;color:var(--muted);line-height:1.65"><strong style="color:rgba(255,255,255,.55)">Identificação legal:</strong><br>SESPT – Sociedade de Engenharia de Sistemas de Portugal<br>NIF: [inserir número]<br>Sede: Lisboa, Portugal</p>
         </div>
       </div>
     </div>
   </div>
-);
+</div>
 
-// ─── FOOTER ───────────────────────────────────────────────────────────────────
-const Footer = ({ lang }) => {
-  const t = T[lang];
-  return (
-    <footer style={{ background:"#030810", borderTop:"1px solid var(--border)", marginTop:"auto" }}>
-      <div style={{ maxWidth:1200, margin:"0 auto", padding:"3rem 2rem 1.5rem", display:"grid", gridTemplateColumns:"2fr 1fr 1fr 1fr", gap:"2.5rem" }}>
-        <div>
-          <div style={{ display:"flex", alignItems:"center", gap:"0.7rem", marginBottom:"0.8rem" }}>
-            <div style={{ ...S.logoMark, width:32, height:32, fontSize:"0.55rem" }}>INC</div>
-            <div style={{ fontFamily:"'Syne',sans-serif", fontWeight:700, fontSize:"0.9rem" }}>INCOSE Portugal</div>
-          </div>
-          <p style={{ fontSize:"0.82rem", color:"var(--muted)", lineHeight:1.7, marginBottom:"1rem" }}>Capítulo oficial INCOSE. Operado pela SESPT desde 2025.</p>
-          <div style={{ display:"flex", gap:"0.6rem" }}>
-            {["in","▶","✉"].map(i=><a key={i} href="#" style={{ width:30, height:30, borderRadius:6, background:"rgba(255,255,255,0.05)", border:"1px solid var(--border)", display:"flex", alignItems:"center", justifyContent:"center", color:"var(--muted)", textDecoration:"none", fontSize:"0.75rem", transition:"all 0.2s" }} onMouseEnter={e=>{ e.target.style.background="var(--teal)"; e.target.style.color="#fff"; }} onMouseLeave={e=>{ e.target.style.background="rgba(255,255,255,0.05)"; e.target.style.color="var(--muted)"; }}>{i}</a>)}
-          </div>
+<!-- ── EVENTS ── -->
+<div id="page-events" class="page">
+  <div class="container">
+    <p class="section-label">Agenda</p>
+    <h1 class="section-title">Próximos <span class="grad">Eventos</span></h1>
+    <p class="section-sub">Membros com quota ativa têm desconto automático. Clique em "Detalhes" para ver preços e inscrever.</p>
+    <div class="filter-bar">
+      <span class="filter-label">Formato:</span>
+      <button class="btn btn-teal btn-sm" data-filter-format="all" onclick="filterEvents('format','all',this)">Todos</button>
+      <button class="btn btn-ghost btn-sm" data-filter-format="presencial" onclick="filterEvents('format','presencial',this)">Presencial</button>
+      <button class="btn btn-ghost btn-sm" data-filter-format="online" onclick="filterEvents('format','online',this)">Online</button>
+      <span class="filter-label" style="margin-left:.6rem">Tipo:</span>
+      <button class="btn btn-teal btn-sm" data-filter-type="all" onclick="filterEvents('type','all',this)">Todos</button>
+      <button class="btn btn-ghost btn-sm" data-filter-type="summit" onclick="filterEvents('type','summit',this)">Summit</button>
+      <button class="btn btn-ghost btn-sm" data-filter-type="webinar" onclick="filterEvents('type','webinar',this)">Webinar</button>
+      <button class="btn btn-ghost btn-sm" data-filter-type="workshop" onclick="filterEvents('type','workshop',this)">Workshop</button>
+      <button class="btn btn-ghost btn-sm" data-filter-type="wg" onclick="filterEvents('type','wg',this)">Working Group</button>
+    </div>
+    <div class="events-list" id="events-list"></div>
+  </div>
+</div>
+
+<!-- ── KNOWLEDGE ── -->
+<div id="page-knowledge" class="page">
+  <div class="container">
+    <p class="section-label">Biblioteca</p>
+    <h1 class="section-title">Knowledge <span class="grad">Base</span></h1>
+    <p class="section-sub">Materiais técnicos exclusivos para membros com quota ativa. Documentos públicos disponíveis para todos.</p>
+    <div id="knowledge-alert"></div>
+    <div style="display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:.9rem">
+      <input id="doc-search" style="background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:6px;padding:.55rem .9rem;color:#fff;font-family:'DM Sans',sans-serif;font-size:.85rem;outline:none;max-width:300px;flex:1" placeholder="🔍 Pesquisar..." oninput="renderDocs()">
+    </div>
+    <div style="display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:1.8rem" id="doc-cats"></div>
+    <div class="docs-grid" id="docs-grid"></div>
+  </div>
+</div>
+
+<!-- ── JOBS ── -->
+<div id="page-jobs" class="page">
+  <div class="container">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.8rem;flex-wrap:wrap;gap:1rem">
+      <div>
+        <p class="section-label">Portal de Carreiras</p>
+        <h1 class="section-title">Job Board <span class="grad">SE</span></h1>
+        <p class="section-sub" style="margin-bottom:0">Vagas publicadas por empresas CAB. Candidatura 1-click para membros com perfil completo.</p>
+      </div>
+      <button id="btn-post-job" class="btn btn-teal btn-md" style="display:none" onclick="showPostJob()">+ Publicar vaga</button>
+    </div>
+    <div id="jobs-alert" style="margin:1rem 0"></div>
+    <div style="display:flex;gap:.8rem;margin-bottom:.9rem;flex-wrap:wrap">
+      <input id="job-search" style="background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:6px;padding:.55rem .9rem;color:#fff;font-family:'DM Sans',sans-serif;font-size:.85rem;outline:none;max-width:300px;flex:1" placeholder="🔍 Pesquisar cargo ou empresa..." oninput="renderJobs()">
+    </div>
+    <div style="display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:1.8rem" id="job-tag-filters"></div>
+    <div class="jobs-grid" id="jobs-grid"></div>
+
+    <!-- Post job form (hidden) -->
+    <div id="post-job-form" style="display:none;margin-top:2rem">
+      <h3 style="margin-bottom:1rem">Publicar nova vaga</h3>
+      <div class="card-flat" style="padding:1.5rem">
+        <div style="display:grid;grid-template-columns:2fr 1fr;gap:.8rem">
+          <div class="form-group"><label>Título do cargo *</label><input id="nj-title" type="text" placeholder="Systems Engineer – ..."></div>
+          <div class="form-group"><label>Localização</label><input id="nj-loc" type="text" placeholder="Lisboa / Remoto"></div>
         </div>
-        <div>
-          <h4 style={{ fontSize:"0.65rem", fontWeight:700, letterSpacing:2, textTransform:"uppercase", color:"var(--cork)", marginBottom:"1rem" }}>Quick Links</h4>
-          {["Sobre Nós","Membership","Eventos","Knowledge Base","Job Board","INCOSE Global ↗"].map(l=><a key={l} href="#" style={{ display:"block", fontSize:"0.82rem", color:"var(--muted)", textDecoration:"none", marginBottom:"0.4rem" }}>{l}</a>)}
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:.8rem">
+          <div class="form-group"><label>Tipo</label><select id="nj-type"><option>Full-time</option><option>Part-time</option><option>Contrato</option><option>Bolsa FCT</option><option>Estágio</option></select></div>
+          <div class="form-group"><label>Tags (separadas por vírgula)</label><input id="nj-tags" type="text" placeholder="MBSE, SysML, Space"></div>
         </div>
-        <div>
-          <h4 style={{ fontSize:"0.65rem", fontWeight:700, letterSpacing:2, textTransform:"uppercase", color:"var(--cork)", marginBottom:"1rem" }}>Contacto SESPT</h4>
-          <p style={{ fontSize:"0.82rem", color:"var(--muted)", lineHeight:1.7 }}>Rua [a completar]<br/>1000-000 Lisboa</p>
-          {["geral@sespt.pt","membership@sespt.pt"].map(e=><a key={e} href={`mailto:${e}`} style={{ display:"block", fontSize:"0.82rem", color:"var(--muted)", textDecoration:"none", marginTop:"0.3rem" }}>{e}</a>)}
-        </div>
-        <div>
-          <h4 style={{ fontSize:"0.65rem", fontWeight:700, letterSpacing:2, textTransform:"uppercase", color:"var(--cork)", marginBottom:"1rem" }}>Legal</h4>
-          {["Política de Privacidade","Termos de Utilização","Política de Cookies","RGPD – Right to be Forgotten","Estatutos SESPT"].map(l=><a key={l} href="#" style={{ display:"block", fontSize:"0.82rem", color:"var(--muted)", textDecoration:"none", marginBottom:"0.4rem" }}>{l}</a>)}
+        <div class="form-group"><label>Descrição da vaga</label><textarea id="nj-desc" placeholder="Descrição detalhada..."></textarea></div>
+        <div class="alert alert-warn">⏳ A vaga ficará pendente até aprovação pelo Admin.</div>
+        <div style="display:flex;gap:.7rem;margin-top:.5rem">
+          <button class="btn btn-primary btn-md" onclick="submitJob()">Submeter para aprovação →</button>
+          <button class="btn btn-ghost btn-md" onclick="document.getElementById('post-job-form').style.display='none'">Cancelar</button>
         </div>
       </div>
-      <div style={{ maxWidth:1200, margin:"0 auto", padding:"1rem 2rem", borderTop:"1px solid var(--border)", display:"flex", justifyContent:"space-between", flexWrap:"wrap", gap:"0.5rem" }}>
-        <p style={{ fontSize:"0.74rem", color:"rgba(255,255,255,0.3)", lineHeight:1.6 }}>
-          <strong style={{ color:"rgba(255,255,255,0.4)" }}>{t.footer_legal}</strong>
-          <br/>© 2026 SESPT. INCOSE® marca registada da INCOSE. incose.pt
-        </p>
-        <div style={{ display:"flex", gap:"1.2rem" }}>
-          {["Mapa do site","Acessibilidade","Contactos"].map(l=><a key={l} href="#" style={{ fontSize:"0.72rem", color:"rgba(255,255,255,0.3)", textDecoration:"none" }}>{l}</a>)}
+    </div>
+  </div>
+</div>
+
+<!-- ── MEMBERSHIP ── -->
+<div id="page-membership" class="page">
+  <div class="container">
+    <p class="section-label">Seja sócio</p>
+    <h1 class="section-title">Planos de <span class="grad">Adesão</span></h1>
+    <p class="section-sub">Faça parte da comunidade portuguesa de Systems Engineering. Acesso imediato aos recursos, descontos e representação internacional.</p>
+    <div class="plans-grid">
+      <div class="card plan-card">
+        <div style="font-size:.73rem;font-weight:600;color:var(--muted);margin-bottom:.35rem">Estudante de universidade portuguesa</div>
+        <h3 style="margin-bottom:.8rem">Membro Estudante</h3>
+        <div style="margin-bottom:1.1rem"><span class="plan-price-num" style="color:var(--muted)">30€</span><span style="font-size:.78rem;color:var(--muted)">/ano</span></div>
+        <ul class="plan-benefits">
+          <li>Acesso à biblioteca</li><li>Desconto em eventos</li><li>Webinars gravados</li><li>Certificate Wallet</li><li>Member Directory (opt-in)</li>
+        </ul>
+        <button class="btn btn-ghost btn-md btn-full" onclick="openModal('modal-auth')">Aderir agora →</button>
+      </div>
+      <div class="card plan-card featured">
+        <div class="plan-popular">Mais popular</div>
+        <div style="font-size:.73rem;font-weight:600;color:var(--muted);margin-bottom:.35rem">Profissional de SE</div>
+        <h3 style="margin-bottom:.8rem">Membro Individual</h3>
+        <div style="margin-bottom:1.1rem"><span class="plan-price-num" style="color:var(--teal2)">80€</span><span style="font-size:.78rem;color:var(--muted)">/ano</span></div>
+        <ul class="plan-benefits">
+          <li>Tudo do Estudante</li><li>Fórum privado</li><li>Voto nas eleições</li><li>Desconto acrescido em formações</li><li>Acesso ao IS internacional</li>
+        </ul>
+        <button class="btn btn-teal btn-md btn-full" onclick="openModal('modal-auth')">Aderir agora →</button>
+      </div>
+      <div class="card plan-card">
+        <div style="font-size:.73rem;font-weight:600;color:var(--muted);margin-bottom:.35rem">Empresa · 5 seats incluídos</div>
+        <h3 style="margin-bottom:.8rem">CAB – Corporate</h3>
+        <div style="margin-bottom:1.1rem"><span class="plan-price-num" style="color:var(--cork)">800€</span><span style="font-size:.78rem;color:var(--muted)">/ano</span></div>
+        <ul class="plan-benefits">
+          <li>5 membros incluídos</li><li>Perfil empresa no site</li><li>Publicar vagas (Job Board)</li><li>Repositório doc. estratégicos</li><li>Presença no Summit anual</li>
+        </ul>
+        <button class="btn btn-ghost btn-md btn-full" onclick="openModal('modal-auth')">Aderir agora →</button>
+      </div>
+    </div>
+    <div class="topbox" style="text-align:center">
+      <p style="font-size:.81rem;color:var(--muted)">ℹ️ As quotas internacionais INCOSE são pagas separadamente em <a href="https://www.incose.org" target="_blank" style="color:var(--teal2)">incose.org ↗</a>. A SESPT emite fatura nos termos legais portugueses.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ── DASHBOARD ── -->
+<div id="page-dashboard" class="page">
+  <div class="container">
+    <div id="dash-locked" style="text-align:center;padding:4rem 0">
+      <div style="font-size:3rem;margin-bottom:1rem">🔒</div>
+      <h2 style="margin-bottom:.5rem">Área privada</h2>
+      <p style="color:var(--muted);margin-bottom:1.5rem">Faça login para aceder ao seu dashboard.</p>
+      <button class="btn btn-primary btn-lg" onclick="openModal('modal-auth')">Entrar →</button>
+    </div>
+    <div id="dash-content" style="display:none">
+      <div class="user-hero">
+        <div class="user-avatar" id="dash-avatar">CM</div>
+        <div>
+          <h1 style="font-size:1.45rem;font-weight:800" id="dash-greeting">Olá, Carlos!</h1>
+          <div style="display:flex;gap:.5rem;margin-top:.3rem;flex-wrap:wrap" id="dash-badges"></div>
         </div>
       </div>
-    </footer>
-  );
+      <div class="dash-tabs">
+        <button class="dash-tab active" onclick="switchDashTab('overview',this)">Resumo</button>
+        <button class="dash-tab" onclick="switchDashTab('profile',this)">Perfil</button>
+        <button class="dash-tab" onclick="switchDashTab('payments',this)">Pagamentos</button>
+        <button class="dash-tab" onclick="switchDashTab('wallet',this)">Certificate Wallet</button>
+      </div>
+      <!-- Overview -->
+      <div class="dash-panel active" id="dp-overview">
+        <div class="stats-row">
+          <div class="card-flat stat-box"><div style="font-size:1.5rem;margin-bottom:.3rem">🏅</div><div class="val">3</div><div class="lbl">Certificados</div></div>
+          <div class="card-flat stat-box"><div style="font-size:1.5rem;margin-bottom:.3rem">📅</div><div class="val">2</div><div class="lbl">Eventos inscritos</div></div>
+          <div class="card-flat stat-box"><div style="font-size:1.5rem;margin-bottom:.3rem">📥</div><div class="val">5</div><div class="lbl">Docs transferidos</div></div>
+          <div class="card-flat stat-box"><div style="font-size:1.5rem;margin-bottom:.3rem">🔑</div><div class="val" id="quota-status-val">Ativo</div><div class="lbl">Estado da quota</div></div>
+        </div>
+        <div id="quota-alert"></div>
+      </div>
+      <!-- Profile -->
+      <div class="dash-panel" id="dp-profile" style="max-width:520px">
+        <div class="form-group"><label>Nome completo</label><input id="prof-name" type="text"></div>
+        <div class="form-group"><label>Email</label><input id="prof-email" type="email" readonly style="opacity:.65"></div>
+        <div class="form-group"><label>Tipo de membro</label><input id="prof-type" type="text" readonly style="opacity:.65"></div>
+        <div class="form-group"><label>N.º sócio INCOSE</label><input value="INC-PT-00342" type="text" readonly style="opacity:.65"></div>
+        <div class="form-group">
+          <label>Opt-in Member Directory</label>
+          <div style="display:flex;align-items:center;gap:.6rem;margin-top:.3rem">
+            <input type="checkbox" checked style="accent-color:var(--teal)">
+            <span style="font-size:.82rem;color:rgba(255,255,255,.7)">Visível para outros membros no diretório</span>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>CV / Currículo (para 1-Click Apply)</label>
+          <div class="card-flat" style="padding:1rem;text-align:center;border-style:dashed">
+            <p style="font-size:.81rem;color:var(--muted)">Arraste o CV aqui ou clique para fazer upload</p>
+            <button class="btn btn-ghost btn-sm" style="margin-top:.5rem">⬆ Upload PDF</button>
+          </div>
+        </div>
+        <button class="btn btn-primary btn-md">Guardar alterações</button>
+      </div>
+      <!-- Payments -->
+      <div class="dash-panel" id="dp-payments">
+        <table class="dash-table">
+          <thead><tr><th>Descrição</th><th>Valor</th><th>Data</th><th>Estado</th><th></th></tr></thead>
+          <tbody>
+            <tr><td>Quota anual 2026 – Membro Individual</td><td style="font-weight:700">80.00€</td><td style="color:var(--muted)">2026-01-10</td><td><span class="badge badge-green">✓ pago</span></td><td><button class="btn btn-ghost btn-sm">Fatura</button></td></tr>
+            <tr><td>Quota anual 2025 – Membro Individual</td><td style="font-weight:700">80.00€</td><td style="color:var(--muted)">2025-01-12</td><td><span class="badge badge-green">✓ pago</span></td><td><button class="btn btn-ghost btn-sm">Fatura</button></td></tr>
+            <tr><td>Summit 2025 – Bilhete membro</td><td style="font-weight:700">60.00€</td><td style="color:var(--muted)">2025-10-20</td><td><span class="badge badge-green">✓ pago</span></td><td><button class="btn btn-ghost btn-sm">Fatura</button></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <!-- Wallet -->
+      <div class="dash-panel" id="dp-wallet">
+        <p style="color:var(--muted);margin-bottom:1.4rem;font-size:.87rem">Certificados gerados automaticamente após check-in em eventos.</p>
+        <div class="card-flat cert-row"><div style="font-size:1.7rem">🏅</div><div style="flex:1"><div style="font-family:'Syne',sans-serif;font-weight:700;font-size:.88rem">INCOSE Portugal Summit 2025 – Participação</div><div style="font-size:.73rem;color:var(--muted)">2025-11-15 · CERT-2025-001</div></div><button class="btn btn-ghost btn-sm">⬇ PDF</button></div>
+        <div class="card-flat cert-row"><div style="font-size:1.7rem">🏅</div><div style="flex:1"><div style="font-family:'Syne',sans-serif;font-weight:700;font-size:.88rem">ASEP Prep-Course – Dezembro 2025</div><div style="font-size:.73rem;color:var(--muted)">2025-12-08 · CERT-2025-002</div></div><button class="btn btn-ghost btn-sm">⬇ PDF</button></div>
+        <div class="card-flat cert-row"><div style="font-size:1.7rem">🏅</div><div style="flex:1"><div style="font-family:'Syne',sans-serif;font-weight:700;font-size:.88rem">Webinar MBSE Intro – Novembro 2025</div><div style="font-size:.73rem;color:var(--muted)">2025-11-28 · CERT-2025-003</div></div><button class="btn btn-ghost btn-sm">⬇ PDF</button></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── ADMIN ── -->
+<div id="page-admin" class="page">
+  <div class="container">
+    <div id="admin-locked" style="text-align:center;padding:4rem 0">
+      <div style="font-size:3rem;margin-bottom:1rem">🚫</div>
+      <h2 style="margin-bottom:.5rem">Acesso restrito</h2>
+      <p style="color:var(--muted)">Apenas administradores SESPT têm acesso ao Backoffice.</p>
+    </div>
+    <div id="admin-content" style="display:none">
+      <p class="section-label">Administração SESPT</p>
+      <h1 class="section-title">Back<span class="grad">office</span></h1>
+      <div class="admin-stats">
+        <div class="card-flat" style="padding:1rem;display:flex;gap:.8rem;align-items:center"><div style="font-size:1.5rem">👥</div><div><div style="font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:800">240</div><div style="font-size:.71rem;color:var(--muted)">Membros ativos</div></div></div>
+        <div class="card-flat" style="padding:1rem;display:flex;gap:.8rem;align-items:center"><div style="font-size:1.5rem">🏢</div><div><div style="font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:800">18</div><div style="font-size:.71rem;color:var(--muted)">Empresas CAB</div></div></div>
+        <div class="card-flat" style="padding:1rem;display:flex;gap:.8rem;align-items:center"><div style="font-size:1.5rem">⏳</div><div><div style="font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:800" id="admin-pending-count">1</div><div style="font-size:.71rem;color:var(--muted)">Vagas pendentes</div></div></div>
+        <div class="card-flat" style="padding:1rem;display:flex;gap:.8rem;align-items:center"><div style="font-size:1.5rem">📅</div><div><div style="font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:800">5</div><div style="font-size:.71rem;color:var(--muted)">Eventos futuros</div></div></div>
+      </div>
+      <div class="dash-tabs">
+        <button class="dash-tab active" onclick="switchAdminTab('news',this)">📰 Notícias</button>
+        <button class="dash-tab" onclick="switchAdminTab('pending',this)">💼 Vagas pendentes</button>
+        <button class="dash-tab" onclick="switchAdminTab('users',this)">👥 Utilizadores</button>
+        <button class="dash-tab" onclick="switchAdminTab('newsletter',this)">✉ Newsletter</button>
+      </div>
+
+      <!-- News CMS -->
+      <div class="dash-panel active" id="adp-news">
+        <div class="card-flat" style="padding:1.4rem;margin-bottom:1.4rem">
+          <h3 style="margin-bottom:1rem">Criar novo artigo</h3>
+          <div style="display:grid;grid-template-columns:2fr 1fr 0.4fr;gap:.8rem;margin-bottom:.8rem">
+            <div class="form-group" style="margin:0"><label>Título *</label><input id="na-title" placeholder="Título do artigo..."></div>
+            <div class="form-group" style="margin:0"><label>Categoria</label><select id="na-cat"><option>Destaque</option><option>CAB</option><option>Certificação</option><option>Internacional</option><option>Eventos</option></select></div>
+            <div class="form-group" style="margin:0"><label>Ícone</label><input id="na-icon" value="📰" maxlength="2"></div>
+          </div>
+          <div class="form-group"><label>Resumo</label><textarea id="na-excerpt" placeholder="Breve descrição..."></textarea></div>
+          <button class="btn btn-teal btn-md" onclick="addArticle()">Publicar artigo →</button>
+        </div>
+        <h3 style="margin-bottom:.9rem">Artigos publicados</h3>
+        <div id="admin-news-list"></div>
+      </div>
+
+      <!-- Pending jobs -->
+      <div class="dash-panel" id="adp-pending">
+        <h3 style="margin-bottom:1rem">Vagas aguardando aprovação</h3>
+        <div id="admin-pending-list"></div>
+      </div>
+
+      <!-- Users -->
+      <div class="dash-panel" id="adp-users">
+        <h3 style="margin-bottom:1rem">Gestão de utilizadores</h3>
+        <table class="dash-table" id="admin-users-table">
+          <thead><tr><th>Nome</th><th>Email</th><th>Tipo</th><th>Quota</th><th>Ações</th></tr></thead>
+          <tbody id="admin-users-tbody"></tbody>
+        </table>
+      </div>
+
+      <!-- Newsletter -->
+      <div class="dash-panel" id="adp-newsletter">
+        <h3 style="margin-bottom:.8rem">Gerador de Newsletter</h3>
+        <p style="font-size:.84rem;color:var(--muted);margin-bottom:1.3rem">Selecione as notícias → HTML automático para Mailchimp.</p>
+        <div id="newsletter-news-list" style="display:flex;flex-direction:column;gap:.55rem;max-width:600px;margin-bottom:1.4rem"></div>
+        <div style="display:flex;gap:.7rem">
+          <button class="btn btn-teal btn-md">⚡ Gerar HTML Newsletter</button>
+          <button class="btn btn-ghost btn-md">📤 Enviar via Mailchimp</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</main>
+
+<!-- ░░░ FOOTER ░░░ -->
+<footer>
+  <div class="footer-cols">
+    <div class="footer-col">
+      <div style="display:flex;align-items:center;gap:.65rem;margin-bottom:.8rem">
+        <div class="logo-mark" style="width:32px;height:32px;font-size:.52rem">INC</div>
+        <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:.88rem">INCOSE Portugal</div>
+      </div>
+      <p>Capítulo oficial INCOSE. Operado pela SESPT desde 2025.</p>
+      <div class="footer-social">
+        <button class="social-btn">in</button>
+        <button class="social-btn">▶</button>
+        <button class="social-btn">✉</button>
+      </div>
+    </div>
+    <div class="footer-col">
+      <h4>Quick Links</h4>
+      <a onclick="navTo('about')">Sobre Nós</a>
+      <a onclick="navTo('membership')">Membership</a>
+      <a onclick="navTo('events')">Eventos</a>
+      <a onclick="navTo('knowledge')">Knowledge Base</a>
+      <a onclick="navTo('jobs')">Job Board</a>
+      <a href="https://www.incose.org" target="_blank">INCOSE Global ↗</a>
+    </div>
+    <div class="footer-col">
+      <h4>Contacto SESPT</h4>
+      <p>Rua [a completar]<br>1000-000 Lisboa</p>
+      <a href="mailto:geral@sespt.pt">geral@sespt.pt</a>
+      <a href="mailto:membership@sespt.pt">membership@sespt.pt</a>
+    </div>
+    <div class="footer-col">
+      <h4>Legal</h4>
+      <a href="#">Política de Privacidade</a>
+      <a href="#">Termos de Utilização</a>
+      <a href="#">Política de Cookies</a>
+      <a href="#">RGPD – Right to be Forgotten</a>
+      <a href="#">Estatutos SESPT</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p><strong>O Capítulo INCOSE Portugal é legalmente representado e operado pela SESPT – Sociedade de Engenharia de Sistemas de Portugal, NIF [inserir número].</strong><br>© 2026 SESPT. INCOSE® marca registada da INCOSE. incose.pt</p>
+    <div class="footer-links"><a href="#">Mapa do site</a><a href="#">Acessibilidade</a><a href="#">Contactos</a></div>
+  </div>
+</footer>
+
+<!-- ░░░░░░░░░░  JAVASCRIPT  ░░░░░░░░░░ -->
+<script>
+// ── DATA ──────────────────────────────────────────────────────────────────────
+const USERS = {
+  "admin@sespt.pt":   { name:"Sofia Andrade",  role:"admin",   quota:true,  avatar:"SA", type:"Admin SESPT" },
+  "membro@incose.pt": { name:"Carlos Mendes",  role:"member",  quota:true,  avatar:"CM", type:"Membro Individual" },
+  "cab@embraer.pt":   { name:"Ana Ferreira",   role:"cab",     quota:true,  avatar:"AF", type:"CAB – Embraer" },
+  "estudante@ist.pt": { name:"Tomás Lima",     role:"student", quota:false, avatar:"TL", type:"Membro Estudante" },
 };
+const DEMO_PASS = "demo123";
 
-// ─── APP ROOT ─────────────────────────────────────────────────────────────────
-export default function App() {
-  const [page, setPage] = useState("home");
-  const [lang, setLang] = useState("pt");
-  const [user, setUser] = useState(null);
-  const [cookie, setCookie] = useState(true);
-  const [authOpen, setAuthOpen] = useState(false);
+let currentUser = null;
+let evtFilterFormat = "all";
+let evtFilterType   = "all";
+let docFilterCat    = "all";
+let jobFilterTag    = "all";
+let appliedJobs     = [];
+let registeredEvts  = [];
 
-  const login = (u) => setUser(u);
-  const logout = () => { setUser(null); setPage("home"); };
+const EVENTS = [
+  { id:1, title:"INCOSE Portugal Summit 2026",          date:"2026-03-15", loc:"Centro de Congressos do Estoril, Lisboa", format:"presencial", type:"summit",   desc:"A maior conferência anual do capítulo, com keynotes internacionais, workshops e networking.", price:{pub:120,mem:60,stu:25},  cap:300, reg:187 },
+  { id:2, title:"Webinar: MBSE com SysML v2",           date:"2026-03-28", loc:"Online · Zoom",                          format:"online",     type:"webinar",  desc:"Introdução prática ao SysML v2 com exemplos reais de sistemas aeroespaciais.",               price:{pub:20, mem:0, stu:0},   cap:200, reg:89  },
+  { id:3, title:"ASEP Prep-Course – Lisboa (Primavera)",date:"2026-04-12", loc:"Lisboa · Local a confirmar",             format:"presencial", type:"workshop", desc:"3 dias intensivos de preparação para o exame ASEP com instrutores certificados.",            price:{pub:400,mem:280,stu:150},cap:30,  reg:22  },
+  { id:4, title:"WG Defense Systems – Reunião Q2",      date:"2026-05-24", loc:"Online · Teams",                        format:"online",     type:"wg",       desc:"Reunião aberta do Working Group de Defense Systems.",                                         price:{pub:0,  mem:0, stu:0},   cap:100, reg:34  },
+  { id:5, title:"Workshop: Requirements Eng. para ESA", date:"2026-06-10", loc:"Porto · Hotel Sheraton",                format:"presencial", type:"workshop", desc:"Workshop focado nos standards ECSS para engenharia de requisitos em projetos espaciais.",      price:{pub:350,mem:220,stu:120},cap:25,  reg:18  },
+];
 
-  // Inject CSS
-  useEffect(()=>{
-    const style = document.createElement("style");
-    style.textContent = CSS + `@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.7)}}`;
-    document.head.appendChild(style);
-    return ()=> document.head.removeChild(style);
-  }, []);
+const DOCS = [
+  { id:1, title:"INCOSE SE Handbook v5.0 (PT)",          type:"PDF",  size:"12.4 MB", cat:"handbook", restricted:true,  icon:"📘", date:"2025-12" },
+  { id:2, title:"Template: Requirements Baseline",       type:"DOCX", size:"340 KB",  cat:"template", restricted:true,  icon:"📋", date:"2025-11" },
+  { id:3, title:"Template: System Architecture (SysML)", type:"ZIP",  size:"2.1 MB",  cat:"template", restricted:true,  icon:"🏗️", date:"2025-10" },
+  { id:4, title:"Webinar: Introdução ao MBSE (Nov 2025)",type:"MP4",  size:"1.2 GB",  cat:"webinar",  restricted:true,  icon:"🎥", date:"2025-11" },
+  { id:5, title:"Webinar: SysML v2 Overview (Jan 2026)", type:"MP4",  size:"890 MB",  cat:"webinar",  restricted:true,  icon:"🎥", date:"2026-01" },
+  { id:6, title:"Guia: ASEP Exam Preparation (PT)",      type:"PDF",  size:"8.7 MB",  cat:"guide",    restricted:true,  icon:"🎓", date:"2026-01" },
+  { id:7, title:"Estatutos SESPT 2025",                  type:"PDF",  size:"420 KB",  cat:"legal",    restricted:false, icon:"📜", date:"2025-09" },
+  { id:8, title:"Relatório Anual 2025",                  type:"PDF",  size:"3.2 MB",  cat:"legal",    restricted:false, icon:"📊", date:"2026-01" },
+];
 
-  const pages = {
-    home: <HomePage setPage={setPage} lang={lang} user={user} onOpenAuth={()=>setAuthOpen(true)} />,
-    about: <AboutPage />,
-    events: <EventsPage user={user} onOpenAuth={()=>setAuthOpen(true)} />,
-    knowledge: <KnowledgePage user={user} onOpenAuth={()=>setAuthOpen(true)} />,
-    jobs: <JobsPage user={user} onOpenAuth={()=>setAuthOpen(true)} />,
-    membership: <MembershipPage user={user} onOpenAuth={()=>setAuthOpen(true)} />,
-    dashboard: <DashboardPage user={user} onOpenAuth={()=>setAuthOpen(true)} />,
-    admin: <AdminPage user={user} />,
-  };
+let NEWS = [
+  { id:1, title:"Portugal lidera WG INCOSE sobre Offshore Renewables",  cat:"Destaque",      date:"2026-02-24", excerpt:"A WindFloat Atlantic tornou-se caso de estudo internacional. O capítulo português coordena agora o WG com parceiros de 12 países.", icon:"🌊" },
+  { id:2, title:"Embraer Évora junta-se ao Corporate Advisory Board",    cat:"CAB",           date:"2026-02-18", excerpt:"A fabricante aeronáutica reforça a presença industrial no capítulo.",                                                              icon:"✈️" },
+  { id:3, title:"3ª turma CSEP em Portugal: 12 aprovados",              cat:"Certificação",  date:"2026-02-10", excerpt:"Recordes de aprovação no prep-course de dezembro de 2025. Taxa de aprovação de 92%, acima da média global INCOSE.",               icon:"🏅" },
+  { id:4, title:"INCOSE Portugal no INCOSE IS 2026 – Las Vegas",        cat:"Internacional", date:"2026-01-30", excerpt:"Três membros do capítulo apresentaram papers no Symposium anual.",                                                                icon:"🌍" },
+];
 
-  return (
-    <AppCtx.Provider value={{ login, logout }}>
-      <div style={S.page}>
-        <Header page={page} setPage={setPage} lang={lang} setLang={setLang} user={user} onOpenAuth={()=>setAuthOpen(true)} />
-        <main style={{ flex:1 }}>
-          {pages[page] || pages.home}
-        </main>
-        <Footer lang={lang} />
-        {cookie && <CookieBanner onAccept={()=>setCookie(false)} />}
-        <AuthModal open={authOpen} onClose={()=>setAuthOpen(false)} />
-      </div>
-    </AppCtx.Provider>
-  );
+let JOBS = [
+  { id:1, co:"Embraer Portugal",     logo:"EMB", title:"Systems Engineer – Aerostructures", loc:"Évora",          type:"Full-time",  tags:["MBSE","SysML","Aerostructures"],     desc:"Integração de sistemas de estruturas aeronáuticas no novo programa de jatos executivos.", pending:false },
+  { id:2, co:"EDP Renewables",       logo:"EDP", title:"Lead SE – Offshore Wind Division",  loc:"Lisboa",         type:"Full-time",  tags:["Requisitos","Interface Mgmt"],       desc:"Liderança técnica da equipa de SE para o programa WindFloat Atlantic 2.0.",               pending:false },
+  { id:3, co:"IST / INESC-ID",       logo:"IST", title:"Investigador Doutoramento – MBSE",  loc:"Lisboa / Remoto",type:"Bolsa FCT",  tags:["PhD","MBSE","Investigação"],         desc:"Bolsa FCT para doutoramento em Model-Based Systems Engineering.",                          pending:false },
+  { id:4, co:"Thales Alenia Space",  logo:"TAS", title:"Systems Architect – Space Segment", loc:"Porto",          type:"Full-time",  tags:["Space","ECSS","CSEP preferido"],     desc:"Arquitetura de sistemas para segmento espacial em programa de observação da Terra.",      pending:false },
+  { id:5, co:"Critical Software",    logo:"CSW", title:"SE Consultant – Automotive",        loc:"Coimbra / Remoto",type:"Full-time", tags:["ISO 26262","SOTIF","Requisitos"],     desc:"Consultoria em engenharia de sistemas para projetos de veículos autónomos.",             pending:false },
+  { id:6, co:"Hovione",              logo:"HOV", title:"Validation Systems Engineer",        loc:"Lisboa",         type:"Full-time",  tags:["GxP","V&V","Farmacêutico"],          desc:"Engenheiro de validação para linha de produção farmacêutica contínua.",                  pending:false },
+];
+let PENDING_JOBS = [{ id:99, co:"Nova empresa Lda.", title:"Systems Engineer Jr." }];
+
+// ── NAVIGATION ────────────────────────────────────────────────────────────────
+function navTo(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+  const pg = document.getElementById('page-' + id);
+  if (pg) pg.classList.add('active');
+  const nb = document.querySelector(`nav button[onclick="navTo('${id}')"]`);
+  if (nb) nb.classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  // Render page content
+  if (id === 'events')    renderEvents();
+  if (id === 'knowledge') renderKnowledge();
+  if (id === 'jobs')      renderJobs();
+  if (id === 'dashboard') renderDashboard();
+  if (id === 'admin')     renderAdmin();
 }
+
+// ── AUTH ──────────────────────────────────────────────────────────────────────
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+function switchAuthTab(tab) {
+  document.querySelectorAll('.modal-tab').forEach((t,i) => t.classList.toggle('active', (i===0&&tab==='login')||(i===1&&tab==='register')));
+  document.getElementById('auth-login').style.display    = tab==='login'    ? 'block' : 'none';
+  document.getElementById('auth-register').style.display = tab==='register' ? 'block' : 'none';
+  document.getElementById('auth-modal-title').textContent = tab==='login' ? 'Entrar na plataforma' : 'Criar conta';
+}
+
+function fillDemo(email) {
+  document.getElementById('login-email').value = email;
+  document.getElementById('login-pass').value  = DEMO_PASS;
+}
+
+function doLogin() {
+  const email = document.getElementById('login-email').value.trim().toLowerCase();
+  const pass  = document.getElementById('login-pass').value;
+  const user  = USERS[email];
+  const errEl = document.getElementById('login-err');
+  if (user && pass === DEMO_PASS) {
+    currentUser = { email, ...user };
+    errEl.style.display = 'none';
+    closeModal('modal-auth');
+    updateUI();
+    navTo('dashboard');
+  } else {
+    errEl.style.display = 'flex';
+  }
+}
+
+function doLogout() {
+  currentUser = null;
+  appliedJobs = [];
+  updateUI();
+  navTo('home');
+}
+
+function updateUI() {
+  const u = currentUser;
+  const utilArea = document.getElementById('util-user-area');
+  if (u) {
+    utilArea.innerHTML = `
+      <span style="display:inline-flex;align-items:center;gap:.6rem">
+        <span style="width:26px;height:26px;border-radius:50%;background:var(--teal);display:inline-flex;align-items:center;justify-content:center;font-size:.63rem;font-weight:800">${u.avatar}</span>
+        <span style="color:rgba(255,255,255,.7);font-size:.74rem">${u.name}</span>
+        <button class="btn btn-ghost btn-sm" onclick="doLogout()" style="font-size:.71rem;padding:.2rem .6rem">Terminar sessão</button>
+      </span>`;
+    document.getElementById('nav-dashboard').style.display = 'block';
+    document.getElementById('nav-admin').style.display     = u.role==='admin' ? 'block' : 'none';
+    if (u.role==='cab'||u.role==='admin') document.getElementById('btn-post-job').style.display='inline-flex';
+  } else {
+    utilArea.innerHTML = `<button class="btn btn-primary btn-sm" onclick="openModal('modal-auth')">🔐 Login / Registo</button>`;
+    document.getElementById('nav-dashboard').style.display = 'none';
+    document.getElementById('nav-admin').style.display     = 'none';
+    document.getElementById('btn-post-job').style.display  = 'none';
+  }
+  // Re-render active page
+  renderEvents(); renderKnowledge(); renderJobs();
+}
+
+// ── LANGUAGE ──────────────────────────────────────────────────────────────────
+const TRANS = {
+  pt: { badge:"Capítulo oficial INCOSE em Portugal", h1:"Engenharia de Sistemas<br><span class='grad'>com raízes atlânticas</span>", p:"A comunidade portuguesa de profissionais INCOSE. Formação certificada, networking, Working Groups ativos e representação no ecossistema global de Systems Engineering.", cta1:"Tornar-me sócio →", cta2:"Ver eventos" },
+  en: { badge:"Official INCOSE Chapter in Portugal",  h1:"Systems Engineering<br><span class='grad'>with Atlantic roots</span>",     p:"The Portuguese community of INCOSE professionals. Certified training, networking, active Working Groups and representation in the global SE ecosystem.",             cta1:"Become a member →", cta2:"See events" },
+};
+function setLang(l, btn) {
+  document.querySelectorAll('.lang-toggle button').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  const t = TRANS[l];
+  document.getElementById('hero-badge-txt').textContent = t.badge;
+  document.getElementById('hero-h1').innerHTML = t.h1;
+  document.getElementById('hero-p').textContent = t.p;
+  document.getElementById('hero-cta1').textContent = t.cta1;
+  document.getElementById('hero-cta2').textContent = t.cta2;
+}
+
+// ── COOKIE ────────────────────────────────────────────────────────────────────
+function closeCookie() { document.getElementById('cookie-banner').style.display='none'; }
+
+// ── HOME NEWS ─────────────────────────────────────────────────────────────────
+function renderHomeNews() {
+  const el = document.getElementById('home-news');
+  el.innerHTML = NEWS.slice(0,3).map((n,i) => `
+    <div class="card news-card" style="${i===0?'grid-row:span 1':''}">
+      <div class="news-card-icon">${n.icon}</div>
+      <span class="badge badge-teal">${n.cat}</span>
+      <h3 style="font-family:'Syne',sans-serif;font-weight:700;font-size:${i===0?'1.02rem':'.88rem'};margin:.45rem 0 .35rem;line-height:1.35">${n.title}</h3>
+      ${i===0?`<p style="font-size:.82rem;color:var(--muted);line-height:1.6">${n.excerpt}</p>`:''}
+      <div style="font-size:.71rem;color:rgba(255,255,255,.28);margin-top:.55rem">${n.date}</div>
+    </div>`).join('');
+}
+
+// ── EVENTS ────────────────────────────────────────────────────────────────────
+function getEvtPrice(e) {
+  if (!currentUser) return e.price.pub;
+  if (currentUser.role==='student') return e.price.stu;
+  if (currentUser.quota) return e.price.mem;
+  return e.price.pub;
+}
+const typeLabel = { summit:"Summit", webinar:"Webinar", workshop:"Workshop", wg:"Working Group" };
+const fmtColor  = { presencial:"badge-cork", online:"badge-teal" };
+
+function renderEvents() {
+  const list = document.getElementById('events-list');
+  if (!list) return;
+  const filtered = EVENTS.filter(e =>
+    (evtFilterFormat==='all'||e.format===evtFilterFormat) &&
+    (evtFilterType==='all'||e.type===evtFilterType)
+  );
+  list.innerHTML = filtered.map(e => {
+    const d = new Date(e.date);
+    const price = getEvtPrice(e);
+    const isReg = registeredEvts.includes(e.id);
+    const discount = currentUser?.quota && price < e.price.pub;
+    return `<div class="card event-row">
+      <div class="event-date-box">
+        <div class="event-day">${d.getDate()}</div>
+        <div class="event-month">${d.toLocaleString('pt',{month:'short'})}</div>
+      </div>
+      <div style="flex:1">
+        <div style="display:flex;gap:.38rem;margin-bottom:.32rem;flex-wrap:wrap">
+          <span class="badge ${fmtColor[e.format]}">${e.format}</span>
+          <span class="badge badge-blue">${typeLabel[e.type]}</span>
+          ${discount?'<span class="badge badge-green">✓ Preço de membro</span>':''}
+        </div>
+        <h3 style="font-family:'Syne',sans-serif;font-weight:700;font-size:.95rem;margin-bottom:.18rem">${e.title}</h3>
+        <p style="font-size:.77rem;color:var(--muted)">${e.loc}</p>
+      </div>
+      <div class="event-right">
+        <div class="event-price ${price===0?'event-price-free':''}">${price===0?'Grátis':price+'€'}</div>
+        ${discount?`<div style="font-size:.63rem;color:var(--muted);text-decoration:line-through">${e.price.pub}€</div>`:''}
+        <div style="display:flex;gap:.38rem;margin-top:.45rem;justify-content:flex-end">
+          <button class="btn btn-ghost btn-sm" onclick="openEventDetail(${e.id})">Detalhes</button>
+          ${isReg
+            ? `<button class="btn btn-success btn-sm">✓ Inscrito</button>`
+            : `<button class="btn btn-primary btn-sm" onclick="registerEvent(${e.id})">${currentUser?'Inscrever':'Login p/ inscrever'}</button>`
+          }
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function filterEvents(dim, val, btn) {
+  if (dim==='format') {
+    evtFilterFormat = val;
+    document.querySelectorAll('[data-filter-format]').forEach(b=>b.className=b.getAttribute('data-filter-format')===val?'btn btn-teal btn-sm':'btn btn-ghost btn-sm');
+  } else {
+    evtFilterType = val;
+    document.querySelectorAll('[data-filter-type]').forEach(b=>b.className=b.getAttribute('data-filter-type')===val?'btn btn-teal btn-sm':'btn btn-ghost btn-sm');
+  }
+  renderEvents();
+}
+
+function registerEvent(id) {
+  if (!currentUser) { openModal('modal-auth'); return; }
+  if (!registeredEvts.includes(id)) registeredEvts.push(id);
+  renderEvents();
+  closeModal('modal-event');
+}
+
+function openEventDetail(id) {
+  const e = EVENTS.find(x=>x.id===id);
+  if (!e) return;
+  const price = getEvtPrice(e);
+  const isReg = registeredEvts.includes(e.id);
+  document.getElementById('ev-modal-title').textContent = e.title;
+  document.getElementById('ev-modal-body').innerHTML = `
+    <div style="display:flex;gap:.38rem;margin-bottom:.9rem;flex-wrap:wrap">
+      <span class="badge ${fmtColor[e.format]}">${e.format}</span>
+      <span class="badge badge-blue">${typeLabel[e.type]}</span>
+    </div>
+    <p style="font-size:.87rem;color:rgba(255,255,255,.7);line-height:1.7;margin-bottom:1rem">${e.desc}</p>
+    <div class="topbox" style="margin-bottom:1rem">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.55rem;font-size:.81rem">
+        <div><span style="color:var(--muted)">Data: </span>${e.date}</div>
+        <div><span style="color:var(--muted)">Local: </span>${e.loc}</div>
+        <div><span style="color:var(--muted)">Vagas: </span>${e.cap-e.reg} restantes</div>
+        <div><span style="color:var(--muted)">Inscritos: </span>${e.reg}</div>
+      </div>
+    </div>
+    <p style="font-size:.73rem;font-weight:600;color:var(--muted);letter-spacing:1px;margin-bottom:.45rem">PREÇOS</p>
+    ${[['Público geral',e.price.pub],['Membro ativo',e.price.mem],['Estudante',e.price.stu]].map(([l,p])=>`
+      <div style="display:flex;justify-content:space-between;font-size:.84rem;padding:.28rem 0;border-bottom:1px solid var(--border)">
+        <span style="color:var(--muted)">${l}</span>
+        <strong style="color:${p===0?'var(--success)':'#fff'}">${p===0?'Grátis':p+'€'}</strong>
+      </div>`).join('')}
+    <div style="display:flex;gap:.6rem;margin-top:1.2rem">
+      <button class="btn ${isReg?'btn-success':'btn-primary'} btn-md" style="flex:1;justify-content:center" onclick="registerEvent(${e.id})">
+        ${isReg?'✓ Já inscrito':'Inscrever agora'}
+      </button>
+      <button class="btn btn-ghost btn-md" onclick="downloadICS(${e.id})">⬇ .ics</button>
+    </div>`;
+  openModal('modal-event');
+}
+
+function downloadICS(id) {
+  const e = EVENTS.find(x=>x.id===id);
+  const d = e.date.replace(/-/g,'');
+  const ics = `BEGIN:VCALENDAR\nVERSION:2.0\nBEGIN:VEVENT\nSUMMARY:${e.title}\nDTSTART:${d}T090000Z\nDTEND:${d}T180000Z\nLOCATION:${e.loc}\nDESCRIPTION:${e.desc}\nEND:VEVENT\nEND:VCALENDAR`;
+  const a = Object.assign(document.createElement('a'),{href:URL.createObjectURL(new Blob([ics],{type:'text/calendar'})),download:'evento-incose.ics'});
+  a.click();
+}
+
+// ── KNOWLEDGE ─────────────────────────────────────────────────────────────────
+const catLabels = { all:"Todos", handbook:"Handbook", template:"Templates", webinar:"Webinars", guide:"Guias", legal:"Legal / Estatutos" };
+
+function renderKnowledge() {
+  const alertEl = document.getElementById('knowledge-alert');
+  const catsEl  = document.getElementById('doc-cats');
+  const gridEl  = document.getElementById('docs-grid');
+  if (!alertEl) return;
+  if (!currentUser)        alertEl.innerHTML = `<div class="alert alert-warn">🔒 Os materiais técnicos requerem login e quota ativa. <button onclick="openModal('modal-auth')" style="background:none;border:none;color:var(--teal2);cursor:pointer;font-weight:600;font-family:inherit">Entrar →</button></div>`;
+  else if (!currentUser.quota) alertEl.innerHTML = `<div class="alert alert-warn">⚠ Quota inativa. Renove a adesão para aceder aos materiais técnicos.</div>`;
+  else                         alertEl.innerHTML = `<div class="alert alert-success">✓ Acesso completo – quota ativa até dezembro 2026.</div>`;
+
+  catsEl.innerHTML = Object.entries(catLabels).map(([k,v])=>
+    `<button class="btn ${docFilterCat===k?'btn-teal':'btn-ghost'} btn-sm" onclick="filterDocs('${k}',this)">${v}</button>`
+  ).join('');
+
+  const search = (document.getElementById('doc-search')?.value||'').toLowerCase();
+  const filtered = DOCS.filter(d => (docFilterCat==='all'||d.cat===docFilterCat) && d.title.toLowerCase().includes(search));
+  const canAccess = d => !d.restricted || currentUser?.quota;
+
+  gridEl.innerHTML = filtered.map(d => `
+    <div class="card doc-card" style="${!canAccess(d)?'opacity:.6':''}">
+      <div style="font-size:2rem;margin-bottom:.65rem">${d.icon}</div>
+      <div style="display:flex;gap:.35rem;margin-bottom:.45rem;flex-wrap:wrap">
+        <span class="badge badge-blue">${d.type}</span>
+        ${d.restricted?`<span class="badge ${canAccess(d)?'badge-green':'badge-warn'}">${canAccess(d)?'✓ Acesso':'🔒 Membros'}</span>`:''}
+      </div>
+      <h4 style="font-family:'Syne',sans-serif;font-weight:700;font-size:.86rem;margin-bottom:.22rem;line-height:1.3">${d.title}</h4>
+      <p style="font-size:.71rem;color:var(--muted);margin-bottom:.75rem">${d.size} · ${d.date}</p>
+      ${canAccess(d)
+        ? `<button class="btn btn-primary btn-sm">⬇ Download</button>`
+        : `<button class="btn btn-ghost btn-sm" onclick="openModal('modal-auth')">${currentUser?'Renovar quota':'🔒 Fazer login'}</button>`
+      }
+    </div>`).join('');
+}
+
+function filterDocs(cat) {
+  docFilterCat = cat;
+  renderKnowledge();
+}
+
+// ── JOBS ──────────────────────────────────────────────────────────────────────
+function renderJobs() {
+  const alertEl   = document.getElementById('jobs-alert');
+  const tagsEl    = document.getElementById('job-tag-filters');
+  const gridEl    = document.getElementById('jobs-grid');
+  if (!alertEl) return;
+
+  if (!currentUser)              alertEl.innerHTML = `<div class="alert alert-info">🔒 Candidatura 1-click disponível para membros. <button onclick="openModal('modal-auth')" style="background:none;border:none;color:var(--teal2);cursor:pointer;font-weight:600;font-family:inherit">Fazer login →</button></div>`;
+  else if (!currentUser.quota)   alertEl.innerHTML = `<div class="alert alert-warn">⚠ Quota inativa. Renove para usar a candidatura 1-click.</div>`;
+  else                           alertEl.innerHTML = `<div class="alert alert-success">✓ Perfil ativo – candidatura 1-click disponível.</div>`;
+
+  const allTags = [...new Set(JOBS.flatMap(j=>j.tags))];
+  tagsEl.innerHTML = ['all',...allTags].map(t=>
+    `<button class="btn ${jobFilterTag===t?'btn-teal':'btn-ghost'} btn-sm" onclick="filterJobs('${t}')">${t==='all'?'Todas':t}</button>`
+  ).join('');
+
+  const search = (document.getElementById('job-search')?.value||'').toLowerCase();
+  const filtered = JOBS.filter(j => !j.pending &&
+    (jobFilterTag==='all'||j.tags.includes(jobFilterTag)) &&
+    (j.title.toLowerCase().includes(search)||j.co.toLowerCase().includes(search))
+  );
+  gridEl.innerHTML = filtered.map(j => {
+    const isApplied = appliedJobs.includes(j.id);
+    return `<div class="card job-card">
+      <div style="display:flex;gap:.85rem;margin-bottom:.75rem">
+        <div class="job-logo">${j.logo}</div>
+        <div>
+          <h4 style="font-family:'Syne',sans-serif;font-weight:700;font-size:.9rem;margin-bottom:.12rem">${j.title}</h4>
+          <div style="font-size:.77rem;color:var(--muted)">${j.co} · ${j.loc}</div>
+        </div>
+      </div>
+      <p style="font-size:.79rem;color:rgba(255,255,255,.55);line-height:1.55;margin-bottom:.75rem">${j.desc}</p>
+      <div style="display:flex;gap:.3rem;flex-wrap:wrap;margin-bottom:.75rem">
+        ${j.tags.map(t=>`<span class="badge badge-default">${t}</span>`).join('')}
+        <span class="badge badge-blue">${j.type}</span>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <span style="font-size:.67rem;color:rgba(255,255,255,.22)">Publicado: ${j.posted||'2026-02-28'}</span>
+        ${isApplied
+          ? `<button class="btn btn-success btn-sm">✓ Candidatura enviada</button>`
+          : `<button class="btn ${currentUser?.quota?'btn-primary':'btn-ghost'} btn-sm" onclick="applyJob(${j.id})">${currentUser?.quota?'1-Click Apply ⚡':'Candidatar →'}</button>`
+        }
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function filterJobs(tag) {
+  jobFilterTag = tag;
+  renderJobs();
+}
+
+function applyJob(id) {
+  if (!currentUser) { openModal('modal-auth'); return; }
+  if (!appliedJobs.includes(id)) appliedJobs.push(id);
+  renderJobs();
+}
+
+function showPostJob() { document.getElementById('post-job-form').style.display='block'; }
+
+function submitJob() {
+  const title = document.getElementById('nj-title').value.trim();
+  if (!title) return;
+  JOBS.unshift({
+    id: Date.now(), co: currentUser?.name||'Empresa',
+    logo: (currentUser?.avatar||'EM'), title,
+    loc: document.getElementById('nj-loc').value,
+    type: document.getElementById('nj-type').value,
+    tags: document.getElementById('nj-tags').value.split(',').map(t=>t.trim()).filter(Boolean),
+    desc: document.getElementById('nj-desc').value,
+    pending: false,
+  });
+  PENDING_JOBS.push({ id: Date.now()+1, co: currentUser?.name||'Empresa', title });
+  ['nj-title','nj-loc','nj-tags','nj-desc'].forEach(i=>document.getElementById(i).value='');
+  document.getElementById('post-job-form').style.display='none';
+  renderJobs();
+  if (document.getElementById('admin-pending-count')) renderAdminPending();
+}
+
+// ── DASHBOARD ─────────────────────────────────────────────────────────────────
+function renderDashboard() {
+  const u = currentUser;
+  document.getElementById('dash-locked').style.display   = u ? 'none'  : 'block';
+  document.getElementById('dash-content').style.display  = u ? 'block' : 'none';
+  if (!u) return;
+  document.getElementById('dash-avatar').textContent     = u.avatar;
+  document.getElementById('dash-greeting').textContent   = `Olá, ${u.name.split(' ')[0]}!`;
+  document.getElementById('dash-badges').innerHTML       = `<span class="badge badge-blue">${u.type}</span><span class="badge ${u.quota?'badge-green':'badge-warn'}">${u.quota?'✓ Quota ativa 2026':'⚠ Quota inativa'}</span>`;
+  document.getElementById('quota-status-val').textContent = u.quota ? 'Ativo' : 'Inativo';
+  document.getElementById('quota-status-val').style.color = u.quota ? 'var(--success)' : 'var(--warn)';
+  document.getElementById('quota-alert').innerHTML        = u.quota ? '' : `<div class="alert alert-warn">⚠ A sua quota anual expirou. Renove para manter acesso a todos os benefícios.</div>`;
+  document.getElementById('prof-name').value  = u.name;
+  document.getElementById('prof-email').value = u.email;
+  document.getElementById('prof-type').value  = u.type;
+}
+
+function switchDashTab(id, btn) {
+  document.querySelectorAll('.dash-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.dash-tabs .dash-tab').forEach(b=>b.classList.remove('active'));
+  document.getElementById('dp-'+id).classList.add('active');
+  if (btn) btn.classList.add('active');
+}
+
+// ── ADMIN ─────────────────────────────────────────────────────────────────────
+function renderAdmin() {
+  const u = currentUser;
+  document.getElementById('admin-locked').style.display  = (u&&u.role==='admin') ? 'none'  : 'block';
+  document.getElementById('admin-content').style.display = (u&&u.role==='admin') ? 'block' : 'none';
+  if (!u||u.role!=='admin') return;
+  renderAdminNews();
+  renderAdminPending();
+  renderAdminUsers();
+  renderAdminNewsletter();
+}
+
+function renderAdminNews() {
+  document.getElementById('admin-news-list').innerHTML = NEWS.map(n=>`
+    <div class="card-flat news-manage-row">
+      <div style="font-size:1.4rem">${n.icon}</div>
+      <div style="flex:1">
+        <div style="display:flex;gap:.35rem;margin-bottom:.22rem"><span class="badge badge-teal">${n.cat}</span></div>
+        <h4 style="font-family:'Syne',sans-serif;font-weight:700;font-size:.87rem">${n.title}</h4>
+        <p style="font-size:.71rem;color:var(--muted)">${n.date}</p>
+      </div>
+      <button class="btn btn-ghost btn-sm">✏ Editar</button>
+      <button class="btn btn-danger btn-sm" onclick="deleteArticle(${n.id})">🗑 Apagar</button>
+    </div>`).join('');
+}
+
+function renderAdminPending() {
+  const el = document.getElementById('admin-pending-list');
+  const count = document.getElementById('admin-pending-count');
+  if (count) count.textContent = PENDING_JOBS.length;
+  if (!el) return;
+  el.innerHTML = PENDING_JOBS.length === 0
+    ? '<p style="color:var(--muted)">Sem vagas pendentes.</p>'
+    : PENDING_JOBS.map(j=>`
+      <div class="card-flat news-manage-row">
+        <div style="flex:1">
+          <h4 style="font-family:'Syne',sans-serif;font-weight:700;font-size:.9rem">${j.title}</h4>
+          <p style="font-size:.77rem;color:var(--muted)">${j.co}</p>
+        </div>
+        <span class="badge badge-warn">⏳ Pendente</span>
+        <button class="btn btn-success btn-sm" onclick="approveJob(${j.id})">✓ Aprovar</button>
+        <button class="btn btn-danger btn-sm" onclick="rejectJob(${j.id})">✕ Rejeitar</button>
+      </div>`).join('');
+}
+
+function approveJob(id) { PENDING_JOBS = PENDING_JOBS.filter(j=>j.id!==id); renderAdminPending(); }
+function rejectJob(id)  { PENDING_JOBS = PENDING_JOBS.filter(j=>j.id!==id); renderAdminPending(); }
+
+function renderAdminUsers() {
+  document.getElementById('admin-users-tbody').innerHTML = Object.entries(USERS).map(([email,u])=>`
+    <tr>
+      <td><div style="display:flex;align-items:center;gap:.55rem"><div style="width:26px;height:26px;border-radius:50%;background:var(--teal);display:inline-flex;align-items:center;justify-content:center;font-size:.63rem;font-weight:800">${u.avatar}</div>${u.name}</div></td>
+      <td style="color:var(--muted)">${email}</td>
+      <td><span class="badge badge-blue">${u.type}</span></td>
+      <td><span class="badge ${u.quota?'badge-green':'badge-warn'}">${u.quota?'Ativa':'Inativa'}</span></td>
+      <td><button class="btn btn-ghost btn-sm">Gerir</button></td>
+    </tr>`).join('');
+}
+
+function renderAdminNewsletter() {
+  document.getElementById('newsletter-news-list').innerHTML = NEWS.map(n=>`
+    <label class="card-flat" style="padding:.85rem 1.1rem;display:flex;align-items:center;gap:.8rem;cursor:pointer">
+      <input type="checkbox" style="accent-color:var(--teal)">
+      <span style="font-size:.87rem">${n.icon} ${n.title}</span>
+    </label>`).join('');
+}
+
+function addArticle() {
+  const title = document.getElementById('na-title').value.trim();
+  if (!title) return;
+  NEWS.unshift({
+    id: Date.now(),
+    title,
+    cat: document.getElementById('na-cat').value,
+    icon: document.getElementById('na-icon').value||'📰',
+    excerpt: document.getElementById('na-excerpt').value,
+    date: new Date().toISOString().slice(0,10),
+  });
+  ['na-title','na-excerpt'].forEach(i=>document.getElementById(i).value='');
+  document.getElementById('na-icon').value='📰';
+  renderAdminNews();
+  renderHomeNews();
+  renderAdminNewsletter();
+}
+
+function deleteArticle(id) {
+  NEWS = NEWS.filter(n=>n.id!==id);
+  renderAdminNews();
+  renderHomeNews();
+  renderAdminNewsletter();
+}
+
+function switchAdminTab(id, btn) {
+  document.querySelectorAll('#admin-content .dash-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('#admin-content .dash-tabs .dash-tab').forEach(b=>b.classList.remove('active'));
+  document.getElementById('adp-'+id).classList.add('active');
+  if (btn) btn.classList.add('active');
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+renderHomeNews();
+renderEvents();
+</script>
+</body>
+</html>
