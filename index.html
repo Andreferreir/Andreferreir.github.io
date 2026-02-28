@@ -5,670 +5,664 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>INCOSE Portugal | Engenharia de Sistemas</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
 <style>
-/* ─── TOKENS ─────────────────────────────────────────────────────────── */
-:root {
+/* ═══ TOKENS ════════════════════════════════════════════════════════════════ */
+:root{
   --blue:#003580;--blue2:#0055cc;--teal:#007a8a;--teal2:#00b4c8;
-  --cork:#c8a96e;--sand:#f0e8d8;--dark:#080e1e;--card:#0d1530;
-  --card2:#111b38;--white:#fff;--muted:#6b82aa;--border:rgba(255,255,255,0.07);
+  --cork:#c8a96e;--dark:#07101f;--card:#0c1628;--card2:#10203a;
+  --white:#fff;--muted:#6b82aa;--border:rgba(255,255,255,0.07);
   --success:#22c55e;--warn:#f59e0b;--danger:#ef4444;
+  --radius:10px;--radius-lg:16px;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth}
-body{font-family:'DM Sans',sans-serif;background:var(--dark);color:var(--white);overflow-x:hidden;min-height:100vh;display:flex;flex-direction:column}
-h1,h2,h3,h4,h5{font-family:'Syne',sans-serif}
+html{scroll-behavior:smooth;font-size:15px}
+body{font-family:'DM Sans',sans-serif;background:var(--dark);color:var(--white);overflow-x:hidden;min-height:100vh;display:flex;flex-direction:column;line-height:1.6}
+h1,h2,h3,h4,h5{font-family:'Syne',sans-serif;line-height:1.2}
 a{color:inherit;text-decoration:none}
-::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:var(--dark)}::-webkit-scrollbar-thumb{background:var(--card2);border-radius:3px}
-@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.7)}}
-@keyframes fadeInUp{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
-@keyframes fadeInLeft{from{opacity:0;transform:translateX(-24px)}to{opacity:1;transform:translateX(0)}}
-@keyframes fadeInRight{from{opacity:0;transform:translateX(24px)}to{opacity:1;transform:translateX(0)}}
-@keyframes slideUp{to{transform:translateY(0)}}
+button{cursor:pointer}
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-track{background:var(--dark)}
+::-webkit-scrollbar-thumb{background:var(--card2);border-radius:3px}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.65)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeLeft{from{opacity:0;transform:translateX(-20px)}to{opacity:1;transform:translateX(0)}}
+@keyframes fadeRight{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
+@keyframes cookieIn{from{transform:translateY(100%)}to{transform:translateY(0)}}
 
-/* ─── LAYOUT ─────────────────────────────────────────────────────────── */
-.container{max-width:1100px;margin:0 auto;padding:0 clamp(1rem,4vw,2.5rem);width:100%}
+/* ═══ LAYOUT ════════════════════════════════════════════════════════════════ */
+.wrap{max-width:1080px;margin:0 auto;padding:0 clamp(1rem,3.5vw,2.5rem);width:100%}
 main{flex:1}
-.page{display:none;padding:clamp(1.5rem,4vw,3rem) 0;animation:fadeInUp .45s ease both}
+.page{display:none;padding:clamp(2rem,5vw,4rem) 0;animation:fadeUp .4s ease both}
 .page.active{display:block}
-/* Cap body font so it never stretches on ultrawide */
-body{font-size:clamp(.85rem,.9vw + .45rem,1rem)}
 
-/* ─── UTILITY BAR ────────────────────────────────────────────────────── */
-#util-bar{background:rgba(0,20,60,.98);border-bottom:1px solid var(--border);padding:.35rem 2rem;display:flex;align-items:center;justify-content:flex-end;gap:1.2rem;font-size:.76rem}
+/* ═══ UTILITY BAR ═══════════════════════════════════════════════════════════ */
+#util-bar{background:rgba(4,12,30,.98);border-bottom:1px solid var(--border);padding:.38rem 2rem;display:flex;align-items:center;justify-content:flex-end;gap:1.2rem;font-size:.75rem}
 #util-bar a{color:var(--muted);transition:color .2s}
 #util-bar a:hover{color:var(--teal2)}
-.lang-toggle{display:flex;border:1px solid var(--border);border-radius:4px;overflow:hidden}
-.lang-toggle button{background:transparent;border:none;padding:.22rem .55rem;color:var(--muted);cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:700;font-size:.72rem;transition:all .2s}
+.lang-toggle{display:flex;border:1px solid var(--border);border-radius:5px;overflow:hidden}
+.lang-toggle button{background:transparent;border:none;padding:.25rem .6rem;color:var(--muted);font-family:'DM Sans',sans-serif;font-weight:700;font-size:.72rem;transition:all .2s}
 .lang-toggle button.active{background:var(--teal);color:#fff}
 
-/* ─── HEADER ─────────────────────────────────────────────────────────── */
-header{position:sticky;top:0;z-index:200;background:rgba(8,14,30,.97);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:0 clamp(1rem,3vw,2rem);display:flex;align-items:center;justify-content:space-between;height:64px;gap:.8rem}
-.logo-group{display:flex;align-items:center;gap:.9rem;flex-shrink:0}
-.logo-mark{width:36px;height:36px;border-radius:6px;background:var(--blue);display:flex;align-items:center;justify-content:center;font-size:.52rem;font-weight:800;font-family:'Syne',sans-serif;letter-spacing:.5px;color:#fff;border:2px solid rgba(0,85,204,.5);flex-shrink:0}
+/* ═══ HEADER ════════════════════════════════════════════════════════════════ */
+header{position:sticky;top:0;z-index:300;background:rgba(7,16,31,.96);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-bottom:1px solid var(--border);padding:0 clamp(1rem,3vw,2rem);display:flex;align-items:center;justify-content:space-between;height:62px;gap:.8rem}
+.logo-group{display:flex;align-items:center;gap:.9rem;flex-shrink:0;min-width:0}
+.logo-mark{width:36px;height:36px;min-width:36px;border-radius:7px;background:linear-gradient(135deg,var(--blue),var(--blue2));display:flex;align-items:center;justify-content:center;font-size:.5rem;font-weight:800;font-family:'Syne',sans-serif;letter-spacing:.5px;color:#fff;position:relative;overflow:hidden}
+.logo-mark::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--teal2)}
 .logo-text .main{font-size:.9rem;font-weight:700;font-family:'Syne',sans-serif;white-space:nowrap}
-.logo-text .sub{font-size:.56rem;color:var(--cork);letter-spacing:2px;text-transform:uppercase}
-.logo-divider{width:1px;height:24px;background:var(--border);flex-shrink:0}
-.logo-sespt{font-size:.6rem;font-weight:700;color:var(--muted);letter-spacing:1px;text-transform:uppercase}
+.logo-text .sub{font-size:.55rem;color:var(--cork);letter-spacing:2px;text-transform:uppercase}
+.logo-sep{width:1px;height:22px;background:var(--border);flex-shrink:0}
+.logo-sespt{font-size:.58rem;font-weight:700;color:var(--muted);letter-spacing:1px;text-transform:uppercase}
 /* Desktop nav */
-nav{display:flex;gap:0}
-nav button{padding:0 .75rem;height:64px;background:transparent;border:none;border-bottom:2px solid transparent;color:rgba(255,255,255,.6);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:.79rem;font-weight:500;transition:all .2s;white-space:nowrap}
-nav button:hover{color:#fff}
-nav button.active{color:#fff;border-bottom-color:var(--teal2)}
-.header-cta{flex-shrink:0}
-/* Hamburger */
-#burger{display:none;background:transparent;border:1px solid var(--border);border-radius:6px;padding:.4rem .55rem;cursor:pointer;color:rgba(255,255,255,.7);font-size:1.1rem;flex-shrink:0}
-/* Mobile drawer */
-#mobile-menu{display:none;position:fixed;top:64px;left:0;right:0;bottom:0;background:rgba(8,14,30,.98);z-index:199;overflow-y:auto;padding:1.2rem 1.5rem;flex-direction:column;gap:.2rem}
-#mobile-menu.open{display:flex}
-#mobile-menu button{width:100%;text-align:left;padding:.85rem 1rem;background:transparent;border:none;border-bottom:1px solid var(--border);color:rgba(255,255,255,.7);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:.95rem;font-weight:500;transition:color .2s}
-#mobile-menu button:hover,#mobile-menu button.active{color:var(--teal2)}
-#mobile-menu .mob-lang{display:flex;gap:.6rem;padding:.85rem 1rem;border-bottom:1px solid var(--border)}
-#mobile-menu .mob-util{padding:.85rem 1rem}
+#desk-nav{display:flex}
+#desk-nav button{padding:0 .7rem;height:62px;background:transparent;border:none;border-bottom:2px solid transparent;color:rgba(255,255,255,.55);font-family:'DM Sans',sans-serif;font-size:.8rem;font-weight:500;transition:all .2s;white-space:nowrap}
+#desk-nav button:hover{color:#fff}
+#desk-nav button.active{color:#fff;border-bottom-color:var(--teal2)}
+.hdr-cta{flex-shrink:0}
+/* Burger */
+#burger{display:none;background:transparent;border:1px solid var(--border);border-radius:7px;padding:.38rem .55rem;color:rgba(255,255,255,.7);font-size:1rem;line-height:1;flex-shrink:0}
 
-/* ─── BUTTONS ────────────────────────────────────────────────────────── */
-.btn{display:inline-flex;align-items:center;gap:.4rem;font-family:'DM Sans',sans-serif;font-weight:600;cursor:pointer;border:none;border-radius:6px;transition:all .2s;text-decoration:none;white-space:nowrap}
-.btn-sm{padding:.32rem .8rem;font-size:.76rem}
-.btn-md{padding:.62rem 1.3rem;font-size:.86rem}
-.btn-lg{padding:.8rem 1.9rem;font-size:.93rem}
+/* ═══ MOBILE DRAWER ═════════════════════════════════════════════════════════ */
+#mob-drawer{display:none;position:fixed;inset:62px 0 0 0;background:rgba(7,16,31,.99);z-index:290;overflow-y:auto;flex-direction:column}
+#mob-drawer.open{display:flex}
+.mob-section{padding:.5rem 0;border-bottom:1px solid var(--border)}
+.mob-section:last-child{border:none}
+#mob-drawer button.mob-nav-btn{width:100%;text-align:left;padding:.9rem 1.5rem;background:transparent;border:none;color:rgba(255,255,255,.65);font-family:'DM Sans',sans-serif;font-size:.95rem;font-weight:500;transition:color .2s;display:flex;align-items:center;gap:.7rem}
+#mob-drawer button.mob-nav-btn:hover,#mob-drawer button.mob-nav-btn.active{color:var(--teal2)}
+.mob-lang-row{display:flex;gap:.6rem;padding:.9rem 1.5rem;align-items:center}
+.mob-lang-row span{font-size:.75rem;color:var(--muted);font-weight:600}
+.mob-user-row{padding:1rem 1.5rem}
+
+/* ═══ BUTTONS ═══════════════════════════════════════════════════════════════ */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.4rem;font-family:'DM Sans',sans-serif;font-weight:600;border:none;border-radius:var(--radius);transition:all .18s;white-space:nowrap}
+.btn-sm{padding:.3rem .85rem;font-size:.76rem}
+.btn-md{padding:.58rem 1.3rem;font-size:.85rem}
+.btn-lg{padding:.75rem 1.8rem;font-size:.92rem}
+.btn-xl{padding:.9rem 2.2rem;font-size:1rem}
+.btn-full{width:100%}
 .btn-primary{background:var(--blue);color:#fff}
-.btn-primary:hover{background:var(--blue2);transform:translateY(-1px)}
+.btn-primary:hover{background:var(--blue2);transform:translateY(-1px);box-shadow:0 4px 16px rgba(0,85,204,.35)}
 .btn-teal{background:var(--teal);color:#fff}
-.btn-teal:hover{background:var(--teal2);color:#fff;transform:translateY(-1px)}
-.btn-ghost{background:transparent;color:rgba(255,255,255,.65);border:1px solid var(--border)}
-.btn-ghost:hover{color:#fff;border-color:rgba(255,255,255,.25)}
-.btn-success{background:rgba(34,197,94,.15);color:var(--success);border:1px solid rgba(34,197,94,.3)}
-.btn-danger{background:rgba(239,68,68,.12);color:var(--danger);border:1px solid rgba(239,68,68,.25)}
-.btn-danger:hover{background:rgba(239,68,68,.2)}
-.btn-full{width:100%;justify-content:center}
+.btn-teal:hover{background:var(--teal2);transform:translateY(-1px);box-shadow:0 4px 16px rgba(0,180,200,.3)}
+.btn-ghost{background:transparent;color:rgba(255,255,255,.6);border:1px solid var(--border)}
+.btn-ghost:hover{color:#fff;border-color:rgba(255,255,255,.22)}
+.btn-success{background:rgba(34,197,94,.12);color:var(--success);border:1px solid rgba(34,197,94,.28)}
+.btn-danger{background:rgba(239,68,68,.1);color:var(--danger);border:1px solid rgba(239,68,68,.25)}
+.btn-danger:hover{background:rgba(239,68,68,.18)}
+.btn-cork{background:rgba(200,169,110,.12);color:var(--cork);border:1px solid rgba(200,169,110,.25)}
 
-/* ─── CARDS ─────────────────────────────────────────────────────────── */
-.card{background:var(--card);border:1px solid var(--border);border-radius:12px;transition:all .25s}
-.card:hover{border-color:rgba(0,180,200,.22)}
-.card-flat{background:var(--card);border:1px solid var(--border);border-radius:12px}
+/* ═══ CARDS ═════════════════════════════════════════════════════════════════ */
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-lg);transition:border-color .2s,transform .2s,box-shadow .2s}
+.card:hover{border-color:rgba(0,180,200,.2);transform:translateY(-2px);box-shadow:0 12px 40px rgba(0,0,0,.3)}
+.card-flat{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-lg)}
+.card-accent{position:relative;overflow:hidden}
+.card-accent::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--blue),var(--teal),var(--cork))}
 
-/* ─── TAGS / BADGES ──────────────────────────────────────────────────── */
-.badge{display:inline-flex;align-items:center;padding:.14rem .48rem;border-radius:4px;font-size:.67rem;font-weight:600;letter-spacing:.4px}
-.badge-default{background:rgba(255,255,255,.05);color:var(--muted);border:1px solid var(--border)}
-.badge-teal{background:rgba(0,180,200,.12);color:var(--teal2);border:1px solid rgba(0,180,200,.25)}
-.badge-blue{background:rgba(0,85,204,.15);color:#7ab2ff;border:1px solid rgba(0,85,204,.3)}
-.badge-cork{background:rgba(200,169,110,.12);color:var(--cork);border:1px solid rgba(200,169,110,.25)}
-.badge-green{background:rgba(34,197,94,.1);color:var(--success);border:1px solid rgba(34,197,94,.2)}
-.badge-warn{background:rgba(245,158,11,.1);color:var(--warn);border:1px solid rgba(245,158,11,.2)}
+/* ═══ BADGES ════════════════════════════════════════════════════════════════ */
+.badge{display:inline-flex;align-items:center;padding:.13rem .5rem;border-radius:5px;font-size:.67rem;font-weight:600;letter-spacing:.3px}
+.b-def{background:rgba(255,255,255,.05);color:var(--muted);border:1px solid var(--border)}
+.b-teal{background:rgba(0,180,200,.1);color:var(--teal2);border:1px solid rgba(0,180,200,.22)}
+.b-blue{background:rgba(0,85,204,.14);color:#7ab2ff;border:1px solid rgba(0,85,204,.28)}
+.b-cork{background:rgba(200,169,110,.1);color:var(--cork);border:1px solid rgba(200,169,110,.22)}
+.b-green{background:rgba(34,197,94,.09);color:var(--success);border:1px solid rgba(34,197,94,.2)}
+.b-warn{background:rgba(245,158,11,.09);color:var(--warn);border:1px solid rgba(245,158,11,.2)}
 
-/* ─── ALERTS ─────────────────────────────────────────────────────────── */
-.alert{border-radius:8px;padding:.7rem 1rem;font-size:.82rem;display:flex;gap:.5rem;align-items:flex-start;margin-bottom:1rem}
-.alert-info{background:rgba(0,180,200,.08);border:1px solid rgba(0,180,200,.25);color:var(--teal2)}
-.alert-warn{background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.25);color:var(--warn)}
-.alert-success{background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.25);color:var(--success)}
-.alert-error{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);color:var(--danger)}
+/* ═══ ALERTS ════════════════════════════════════════════════════════════════ */
+.alert{border-radius:var(--radius);padding:.72rem 1rem;font-size:.82rem;display:flex;gap:.55rem;align-items:flex-start;margin-bottom:1rem;line-height:1.5}
+.a-info{background:rgba(0,180,200,.07);border:1px solid rgba(0,180,200,.22);color:var(--teal2)}
+.a-warn{background:rgba(245,158,11,.07);border:1px solid rgba(245,158,11,.22);color:var(--warn)}
+.a-ok{background:rgba(34,197,94,.07);border:1px solid rgba(34,197,94,.22);color:var(--success)}
+.a-err{background:rgba(239,68,68,.07);border:1px solid rgba(239,68,68,.22);color:var(--danger)}
 
-/* ─── FORMS ─────────────────────────────────────────────────────────── */
-.form-group{margin-bottom:.85rem}
-.form-group label{display:block;font-size:.73rem;font-weight:600;color:var(--muted);margin-bottom:.32rem;letter-spacing:.4px}
-.form-group input,.form-group select,.form-group textarea{width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:6px;padding:.62rem 1rem;color:#fff;font-family:'DM Sans',sans-serif;font-size:.87rem;transition:border-color .2s;outline:none}
-.form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--teal)}
-.form-group textarea{resize:vertical;min-height:80px}
-.form-group select option{background:var(--card);color:#fff}
+/* ═══ FORMS ═════════════════════════════════════════════════════════════════ */
+.fg{margin-bottom:.9rem}
+.fg label{display:block;font-size:.72rem;font-weight:600;color:var(--muted);margin-bottom:.32rem;letter-spacing:.3px;text-transform:uppercase}
+.fg input,.fg select,.fg textarea{width:100%;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:var(--radius);padding:.6rem .9rem;color:#fff;font-family:'DM Sans',sans-serif;font-size:.86rem;transition:border-color .2s;outline:none}
+.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--teal2);background:rgba(0,180,200,.04)}
+.fg textarea{resize:vertical;min-height:80px}
+.fg select option{background:var(--card)}
 
-/* ─── SECTION HEADERS ────────────────────────────────────────────────── */
-.section-label{font-size:.67rem;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--teal2);margin-bottom:.55rem}
-.section-title{font-size:clamp(1.45rem,2.5vw,2.2rem);font-weight:800;letter-spacing:-.4px;line-height:1.2;margin-bottom:.8rem}
-.grad{background:linear-gradient(135deg,var(--teal2),var(--cork));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.section-sub{font-size:clamp(.82rem,.9vw + .3rem,.95rem);color:var(--muted);line-height:1.7;max-width:560px;margin-bottom:2rem}
+/* ═══ SECTION LABELS ════════════════════════════════════════════════════════ */
+.slabel{font-size:.65rem;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--teal2);margin-bottom:.55rem}
+.stitle{font-size:clamp(1.4rem,2.4vw,2rem);font-weight:800;letter-spacing:-.3px;margin-bottom:.7rem}
+.ssub{font-size:clamp(.82rem,.85vw + .3rem,.93rem);color:var(--muted);line-height:1.7;margin-bottom:1.8rem}
+.grad{background:linear-gradient(130deg,var(--teal2),var(--cork));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+hr.div{border:none;border-top:1px solid var(--border);margin:.9rem 0}
 
-/* ─── DIVIDER ────────────────────────────────────────────────────────── */
-hr.divider{border:none;border-top:1px solid var(--border);margin:1rem 0}
+/* ═══ MODAL ═════════════════════════════════════════════════════════════════ */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:400;align-items:flex-end;justify-content:center;padding:0;backdrop-filter:blur(6px)}
+.overlay.open{display:flex}
+@media(min-width:600px){.overlay{align-items:center;padding:1rem}}
+.mbox{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-lg) var(--radius-lg) 0 0;width:100%;max-width:460px;max-height:92vh;overflow-y:auto;position:relative}
+@media(min-width:600px){.mbox{border-radius:var(--radius-lg)}}
+.mbox-top{height:3px;background:linear-gradient(90deg,var(--blue),var(--teal));border-radius:var(--radius-lg) var(--radius-lg) 0 0}
+.mbody{padding:1.4rem 1.6rem}
+.mhead{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.1rem}
+.mhead h3{font-size:1.1rem;font-weight:700}
+.mclose{background:transparent;border:none;color:var(--muted);font-size:1rem;padding:.25rem;border-radius:5px;transition:color .2s}
+.mclose:hover{color:#fff}
+.mtabs{display:flex;border-bottom:1px solid var(--border);margin-bottom:1.1rem}
+.mtab{flex:1;background:transparent;border:none;border-bottom:2px solid transparent;padding:.55rem;color:var(--muted);font-family:'DM Sans',sans-serif;font-weight:600;font-size:.83rem;transition:all .2s}
+.mtab.active{color:#fff;border-bottom-color:var(--teal2)}
 
-/* ─── TOP BOX ────────────────────────────────────────────────────────── */
-.topbox{background:linear-gradient(135deg,rgba(0,122,138,.08),rgba(0,53,128,.05));border:1px solid var(--border);border-radius:8px;padding:1rem 1.2rem}
+/* ═══ TABS (Dashboard / Admin) ══════════════════════════════════════════════ */
+.dtabs{display:flex;border-bottom:1px solid var(--border);margin-bottom:1.8rem;overflow-x:auto;gap:0}
+.dtab{background:transparent;border:none;border-bottom:2px solid transparent;padding:.58rem 1rem;color:var(--muted);font-family:'DM Sans',sans-serif;font-weight:600;font-size:.82rem;transition:all .2s;white-space:nowrap}
+.dtab.active{color:#fff;border-bottom-color:var(--teal2)}
+.dpanel{display:none}
+.dpanel.active{display:block}
 
-/* ─── MODAL ─────────────────────────────────────────────────────────── */
-.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.82);z-index:500;align-items:center;justify-content:center;padding:1rem;backdrop-filter:blur(8px)}
-.modal-overlay.open{display:flex}
-.modal-box{background:var(--card);border:1px solid var(--border);border-radius:16px;width:100%;max-width:460px;max-height:90vh;overflow-y:auto;position:relative}
-.modal-top-bar{height:3px;background:linear-gradient(90deg,var(--blue),var(--teal));border-radius:16px 16px 0 0}
-.modal-body{padding:1.5rem 1.8rem}
-.modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.1rem}
-.modal-header h3{font-size:1.15rem;font-weight:700}
-.modal-close{background:transparent;border:none;color:var(--muted);cursor:pointer;font-size:1.1rem;padding:.2rem}
-.modal-tabs{display:flex;border-bottom:1px solid var(--border);margin-bottom:1.2rem}
-.modal-tab{flex:1;background:transparent;border:none;border-bottom:2px solid transparent;padding:.6rem;color:var(--muted);cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600;font-size:.84rem;transition:all .2s}
-.modal-tab.active{color:#fff;border-bottom-color:var(--teal2)}
-.demo-chips{display:flex;gap:.4rem;flex-wrap:wrap;margin-top:.3rem}
+/* ═══ COOKIE BANNER ═════════════════════════════════════════════════════════ */
+#cookie{position:fixed;bottom:0;left:0;right:0;z-index:500;background:rgba(7,16,31,.98);border-top:1px solid var(--border);padding:1rem clamp(1rem,3vw,2rem);display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;animation:cookieIn .5s 1.5s both}
+#cookie p{font-size:.8rem;color:var(--muted);max-width:560px;line-height:1.55}
 
-/* ─── DASHBOARD TABS ─────────────────────────────────────────────────── */
-.dash-tabs{display:flex;border-bottom:1px solid var(--border);margin-bottom:2rem}
-.dash-tab{background:transparent;border:none;border-bottom:2px solid transparent;padding:.6rem 1.1rem;color:var(--muted);cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:600;font-size:.84rem;transition:all .2s}
-.dash-tab.active{color:#fff;border-bottom-color:var(--teal2)}
-.dash-panel{display:none}
-.dash-panel.active{display:block}
+/* ═══ HERO ══════════════════════════════════════════════════════════════════ */
+#hero{position:relative;min-height:88vh;display:flex;align-items:center;overflow:hidden;background:linear-gradient(135deg,#040d1c 0%,#001040 55%,#00203a 100%)}
+.hero-grid-bg{position:absolute;inset:0;background-image:linear-gradient(rgba(0,122,138,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(0,122,138,.04) 1px,transparent 1px);background-size:50px 50px;mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,black 20%,transparent 100%)}
+.hero-glow-r{position:absolute;top:-15%;right:-8%;width:550px;height:550px;border-radius:50%;background:radial-gradient(circle,rgba(0,122,138,.14) 0%,transparent 70%);pointer-events:none}
+.hero-glow-l{position:absolute;bottom:-20%;left:-5%;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(0,53,128,.1) 0%,transparent 70%);pointer-events:none}
+.hero-inner{position:relative;z-index:2;display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:center}
+.hero-left{animation:fadeLeft .7s .1s both}
+.hero-right{animation:fadeRight .7s .35s both}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:.5rem;background:rgba(0,122,138,.1);border:1px solid rgba(0,180,200,.25);padding:.28rem .8rem;border-radius:20px;font-size:.7rem;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--teal2);margin-bottom:1.3rem}
+.hero-dot{width:6px;height:6px;min-width:6px;border-radius:50%;background:var(--teal2);animation:pulse 2s infinite}
+.hero-h1{font-size:clamp(1.7rem,3.2vw,2.9rem);font-weight:800;line-height:1.1;letter-spacing:-.5px;margin-bottom:1.1rem}
+.hero-sub{font-size:clamp(.83rem,.8vw + .35rem,.97rem);color:rgba(255,255,255,.58);line-height:1.75;margin-bottom:1.8rem;max-width:460px}
+.hero-btns{display:flex;gap:.75rem;flex-wrap:wrap}
+/* Stat card */
+.stat-card{padding:1.6rem;position:relative}
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:.9rem;margin-bottom:1.3rem}
+.stat-item{text-align:center;padding:.7rem;border-radius:var(--radius);background:rgba(255,255,255,.03)}
+.stat-n{font-size:clamp(1.3rem,1.8vw,1.7rem);font-weight:800;font-family:'Syne',sans-serif;background:linear-gradient(135deg,var(--teal2),var(--cork));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.stat-l{font-size:.68rem;color:var(--muted);margin-top:1px}
+.next-evt{background:rgba(0,122,138,.08);border:1px solid rgba(0,122,138,.22);border-radius:var(--radius);padding:.85rem}
+.next-evt-label{font-size:.6rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--teal2);margin-bottom:.28rem}
+.hero-wave{position:absolute;bottom:0;left:0;right:0;height:70px;opacity:.1;pointer-events:none}
 
-/* ─── COOKIE BANNER ─────────────────────────────────────────────────── */
-#cookie-banner{position:fixed;bottom:0;left:0;right:0;z-index:999;background:rgba(8,14,30,.98);border-top:1px solid var(--border);padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;backdrop-filter:blur(16px);transform:translateY(100%);animation:slideUp .5s 1.5s forwards}
-#cookie-banner p{font-size:.81rem;color:var(--muted);max-width:600px}
+/* ═══ SECTION WRAPPERS ══════════════════════════════════════════════════════ */
+.sec{padding:clamp(3rem,6vw,5rem) 0}
+.sec-dark{background:#050d1c}
+.sec-header{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:2rem;flex-wrap:wrap;gap:1rem}
 
-/* ─── HERO ───────────────────────────────────────────────────────────── */
-#hero{position:relative;min-height:88vh;display:flex;align-items:center;overflow:hidden;background:linear-gradient(135deg,#050c1a 0%,#001040 55%,#002244 100%)}
-.hero-bg-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(0,122,138,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(0,122,138,.05) 1px,transparent 1px);background-size:55px 55px;mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,black 20%,transparent 100%)}
-.hero-glow{position:absolute;top:-20%;right:-5%;width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(0,122,138,.15) 0%,transparent 70%)}
-.hero-content{position:relative;z-index:2;display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:center}
-.hero-left{animation:fadeInLeft .7s .1s both}
-.hero-right{animation:fadeInRight .7s .3s both}
-.hero-badge{display:inline-flex;align-items:center;gap:.5rem;background:rgba(0,122,138,.12);border:1px solid rgba(0,180,200,.3);padding:.3rem .85rem;border-radius:20px;font-size:.7rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--teal2);margin-bottom:1.2rem;flex-wrap:wrap}
-.hero-badge-dot{width:6px;height:6px;border-radius:50%;background:var(--teal2);animation:pulse 2s infinite;flex-shrink:0}
-.hero-h1{font-size:clamp(1.7rem,3.5vw,3rem);font-weight:800;line-height:1.12;letter-spacing:-.5px;margin-bottom:1.1rem}
-.hero-p{font-size:clamp(.82rem,.85vw + .3rem,.98rem);color:rgba(255,255,255,.6);line-height:1.75;margin-bottom:1.8rem;max-width:480px}
-.hero-ctas{display:flex;gap:.8rem;flex-wrap:wrap}
-.hero-card{background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:16px;padding:1.6rem;backdrop-filter:blur(10px);position:relative}
-.hero-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--blue),var(--teal),var(--cork));border-radius:16px 16px 0 0}
-.hero-stats{display:grid;grid-template-columns:1fr 1fr;gap:.9rem;margin-bottom:1.2rem}
-.stat-num{font-size:clamp(1.3rem,2vw,1.8rem);font-weight:800;font-family:'Syne',sans-serif;background:linear-gradient(135deg,var(--teal2),var(--cork));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.stat-label{font-size:.69rem;color:var(--muted);margin-top:2px}
-.next-event-box{background:rgba(0,122,138,.1);border:1px solid rgba(0,122,138,.25);border-radius:8px;padding:.85rem}
-.next-event-label{font-size:.62rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--teal2);margin-bottom:.3rem}
-.hero-wave{position:absolute;bottom:0;left:0;right:0;height:80px;opacity:.12}
+/* ═══ GRIDS ═════════════════════════════════════════════════════════════════ */
+.g-3{display:grid;grid-template-columns:repeat(3,1fr);gap:1.1rem}
+.g-2{display:grid;grid-template-columns:repeat(2,1fr);gap:1.1rem}
+.g-4{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem}
+.g-news{display:grid;grid-template-columns:2fr 1fr 1fr;gap:1.1rem}
+.g-about{display:grid;grid-template-columns:2fr 1fr;gap:2.5rem}
 
-/* ─── EVENTS ─────────────────────────────────────────────────────────── */
-.filter-bar{display:flex;gap:.4rem;flex-wrap:wrap;align-items:center;margin-bottom:1.5rem}
-.filter-label{font-size:.73rem;color:var(--muted);font-weight:600;margin-right:.2rem}
-.event-row{display:flex;align-items:center;gap:1.4rem;padding:1.2rem 1.5rem}
-.event-date-box{min-width:50px;text-align:center;background:rgba(0,53,128,.2);border:1px solid rgba(0,85,204,.3);border-radius:8px;padding:.5rem .3rem;flex-shrink:0}
-.event-day{font-size:1.4rem;font-weight:800;font-family:'Syne',sans-serif;line-height:1}
-.event-month{font-size:.6rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted)}
-.event-right{text-align:right;flex-shrink:0}
-.event-price{font-size:1.25rem;font-weight:800;font-family:'Syne',sans-serif}
-.event-price-free{color:var(--success)}
-.events-list{display:flex;flex-direction:column;gap:.85rem}
+/* ═══ EVENTS ════════════════════════════════════════════════════════════════ */
+.evts-list{display:flex;flex-direction:column;gap:.8rem}
+.evt-row{display:flex;align-items:center;gap:1.2rem;padding:1.1rem 1.4rem}
+.evt-date{min-width:48px;text-align:center;background:rgba(0,53,128,.18);border:1px solid rgba(0,85,204,.25);border-radius:var(--radius);padding:.45rem .25rem;flex-shrink:0}
+.evt-day{font-size:1.35rem;font-weight:800;font-family:'Syne',sans-serif;line-height:1}
+.evt-mon{font-size:.58rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted)}
+.evt-meta{flex:1;min-width:0}
+.evt-meta h3{font-family:'Syne',sans-serif;font-weight:700;font-size:.92rem;margin-bottom:.18rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.evt-meta p{font-size:.76rem;color:var(--muted)}
+.evt-right{text-align:right;flex-shrink:0}
+.evt-price{font-size:1.2rem;font-weight:800;font-family:'Syne',sans-serif}
+.price-free{color:var(--success)}
+.evt-actions{display:flex;gap:.35rem;margin-top:.45rem;justify-content:flex-end;flex-wrap:wrap}
+.filter-bar{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:1.5rem;align-items:center}
+.flabel{font-size:.72rem;color:var(--muted);font-weight:600;margin-right:.1rem}
 
-/* ─── JOBS ───────────────────────────────────────────────────────────── */
-.jobs-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
-.job-card{padding:1.2rem 1.3rem}
-.job-logo{width:42px;height:42px;border-radius:8px;background:rgba(0,53,128,.3);border:1px solid rgba(0,85,204,.2);display:flex;align-items:center;justify-content:center;font-size:.68rem;font-weight:800;color:var(--teal2);flex-shrink:0}
+/* ═══ JOBS ══════════════════════════════════════════════════════════════════ */
+.job-card{padding:1.2rem}
+.job-logo-box{width:40px;height:40px;min-width:40px;border-radius:8px;background:rgba(0,53,128,.25);border:1px solid rgba(0,85,204,.18);display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:800;color:var(--teal2)}
 
-/* ─── KNOWLEDGE ──────────────────────────────────────────────────────── */
-.docs-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}
-.doc-card{padding:1.2rem;cursor:pointer}
+/* ═══ DOCS ══════════════════════════════════════════════════════════════════ */
+.doc-card{padding:1.2rem}
 
-/* ─── MEMBERSHIP ─────────────────────────────────────────────────────── */
-.plans-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-bottom:2rem}
+/* ═══ PLANS ═════════════════════════════════════════════════════════════════ */
 .plan-card{padding:1.8rem;position:relative}
-.plan-card.featured{border-color:rgba(0,180,200,.4)!important}
-.plan-popular{position:absolute;top:-11px;left:50%;transform:translateX(-50%);background:var(--teal);padding:.14rem .75rem;border-radius:10px;font-size:.63rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;white-space:nowrap}
-.plan-price-num{font-size:2.1rem;font-weight:800;font-family:'Syne',sans-serif}
-.plan-benefits{list-style:none;margin-bottom:1.4rem}
-.plan-benefits li{font-size:.81rem;color:rgba(255,255,255,.75);padding:.25rem 0;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:.5rem}
-.plan-benefits li::before{content:'✓';color:var(--teal2);font-size:.68rem;flex-shrink:0}
+.plan-card.featured{border-color:rgba(0,180,200,.35)!important;background:linear-gradient(180deg,rgba(0,122,138,.05),var(--card))}
+.plan-pop{position:absolute;top:-11px;left:50%;transform:translateX(-50%);background:var(--teal);padding:.12rem .75rem;border-radius:20px;font-size:.62rem;font-weight:700;letter-spacing:.8px;text-transform:uppercase;white-space:nowrap}
+.plan-price{margin-bottom:1.1rem}
+.plan-price span{font-size:2rem;font-weight:800;font-family:'Syne',sans-serif}
+.plan-price small{font-size:.77rem;color:var(--muted)}
+.plan-ul{list-style:none;margin-bottom:1.4rem;display:flex;flex-direction:column;gap:.3rem}
+.plan-ul li{font-size:.82rem;color:rgba(255,255,255,.72);padding:.3rem 0;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:.5rem}
+.plan-ul li::before{content:'✓';color:var(--teal2);font-size:.67rem;flex-shrink:0}
 
-/* ─── DASHBOARD ──────────────────────────────────────────────────────── */
-.user-hero{display:flex;align-items:center;gap:1.2rem;margin-bottom:2rem}
-.user-avatar{width:54px;height:54px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--teal));display:flex;align-items:center;justify-content:center;font-size:1.2rem;font-weight:800;font-family:'Syne',sans-serif;flex-shrink:0}
-.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:2rem}
-.stat-box{padding:1.2rem;text-align:center}
-.stat-box .val{font-size:1.3rem;font-weight:800;font-family:'Syne',sans-serif;margin-bottom:.15rem}
-.stat-box .lbl{font-size:.71rem;color:var(--muted)}
-table.dash-table{width:100%;border-collapse:collapse;font-size:.83rem}
-table.dash-table th{padding:.6rem .8rem;text-align:left;font-size:.67rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border)}
-table.dash-table td{padding:.8rem;border-bottom:1px solid var(--border)}
-.cert-row{display:flex;align-items:center;gap:1rem;padding:1rem 1.3rem;margin-bottom:.7rem}
+/* ═══ DASHBOARD ═════════════════════════════════════════════════════════════ */
+.user-hero{display:flex;align-items:center;gap:1.1rem;margin-bottom:2rem;flex-wrap:wrap}
+.u-avatar{width:52px;height:52px;min-width:52px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--teal));display:flex;align-items:center;justify-content:center;font-size:1.1rem;font-weight:800;font-family:'Syne',sans-serif}
+.stats4{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1.8rem}
+.stat-box{padding:1.1rem;text-align:center}
+.stat-box .v{font-size:1.25rem;font-weight:800;font-family:'Syne',sans-serif;margin-bottom:.15rem}
+.stat-box .l{font-size:.7rem;color:var(--muted)}
+.cert-row{display:flex;align-items:center;gap:1rem;padding:1rem 1.3rem;margin-bottom:.65rem}
+.tbl{width:100%;border-collapse:collapse;font-size:.82rem}
+.tbl th{padding:.55rem .75rem;text-align:left;font-size:.65rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border)}
+.tbl td{padding:.75rem;border-bottom:1px solid var(--border);vertical-align:middle}
 
-/* ─── ADMIN ──────────────────────────────────────────────────────────── */
-.admin-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:2rem}
-.news-manage-row{display:flex;align-items:center;gap:1rem;padding:1rem 1.3rem;margin-bottom:.65rem}
+/* ═══ ADMIN ═════════════════════════════════════════════════════════════════ */
+.admin4{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1.8rem}
+.astat{padding:.9rem 1rem;display:flex;gap:.75rem;align-items:center}
+.astat .ico{font-size:1.4rem}
+.astat .v{font-size:1.3rem;font-weight:800;font-family:'Syne',sans-serif}
+.astat .l{font-size:.7rem;color:var(--muted)}
+.news-row{display:flex;align-items:center;gap:.9rem;padding:.9rem 1.2rem;margin-bottom:.55rem}
 
-/* ─── ABOUT ──────────────────────────────────────────────────────────── */
-.about-grid{display:grid;grid-template-columns:2fr 1fr;gap:3rem;margin-top:2rem}
+/* ═══ ABOUT ═════════════════════════════════════════════════════════════════ */
 .wg-grid{display:grid;grid-template-columns:1fr 1fr;gap:.8rem;margin-top:1rem}
-.wg-card{padding:1rem}
+.wg-card{padding:.9rem 1rem}
+.dir-row{display:flex;justify-content:space-between;padding:.35rem 0;border-bottom:1px solid var(--border);font-size:.82rem}
 
-/* ─── FOOTER ─────────────────────────────────────────────────────────── */
+/* ═══ FOOTER ════════════════════════════════════════════════════════════════ */
 footer{background:#030810;border-top:1px solid var(--border);margin-top:auto}
-.footer-cols{max-width:1200px;margin:0 auto;padding:3rem 2rem 1.5rem;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:2.5rem}
-.footer-col h4{font-size:.63rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--cork);margin-bottom:1rem}
-.footer-col p,.footer-col a{font-size:.81rem;color:var(--muted);line-height:1.7}
-.footer-col a{display:block;text-decoration:none;margin-bottom:.38rem;transition:color .2s}
-.footer-col a:hover{color:#fff}
-.footer-social{display:flex;gap:.55rem;margin-top:1rem}
-.social-btn{width:30px;height:30px;border-radius:6px;background:rgba(255,255,255,.05);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:.73rem;cursor:pointer;transition:all .2s}
-.social-btn:hover{background:var(--teal);color:#fff;border-color:var(--teal)}
-.footer-bottom{max-width:1200px;margin:0 auto;padding:.9rem 2rem;border-top:1px solid var(--border);display:flex;justify-content:space-between;flex-wrap:wrap;gap:.5rem;align-items:center}
-.footer-bottom p{font-size:.73rem;color:rgba(255,255,255,.28);line-height:1.55}
-.footer-bottom strong{color:rgba(255,255,255,.38)}
-.footer-links{display:flex;gap:1.2rem}
-.footer-links a{font-size:.71rem;color:rgba(255,255,255,.28);transition:color .2s}
-.footer-links a:hover{color:rgba(255,255,255,.6)}
+.ft-cols{max-width:1080px;margin:0 auto;padding:2.5rem clamp(1rem,3vw,2rem) 1.5rem;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:2.2rem}
+.ft-col h4{font-size:.62rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--cork);margin-bottom:.9rem}
+.ft-col p,.ft-col a{font-size:.8rem;color:var(--muted);line-height:1.7}
+.ft-col a{display:block;margin-bottom:.35rem;transition:color .2s}
+.ft-col a:hover{color:#fff}
+.ft-social{display:flex;gap:.5rem;margin-top:.9rem}
+.soc-btn{width:30px;height:30px;border-radius:7px;background:rgba(255,255,255,.04);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:.72rem;transition:all .2s}
+.soc-btn:hover{background:var(--teal);color:#fff;border-color:var(--teal)}
+.ft-bottom{max-width:1080px;margin:0 auto;padding:.85rem clamp(1rem,3vw,2rem);border-top:1px solid var(--border);display:flex;justify-content:space-between;flex-wrap:wrap;gap:.5rem;align-items:flex-start}
+.ft-bottom p{font-size:.71rem;color:rgba(255,255,255,.25);line-height:1.55;max-width:620px}
+.ft-bottom strong{color:rgba(255,255,255,.35)}
+.ft-links{display:flex;gap:1.1rem;flex-wrap:wrap}
+.ft-links a{font-size:.7rem;color:rgba(255,255,255,.25);transition:color .2s}
+.ft-links a:hover{color:rgba(255,255,255,.55)}
 
-/* ─── HOME NEWS GRID ─────────────────────────────────────────────────── */
-.news-grid{display:grid;grid-template-columns:2fr 1fr 1fr;gap:1.2rem}
-.news-card{padding:1.2rem;cursor:pointer}
-.news-card-icon{font-size:1.9rem;margin-bottom:.75rem}
-.quick-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-top:2rem}
-.quick-card{padding:1.4rem;text-align:center;cursor:pointer}
+/* ═══ TOPBOX ════════════════════════════════════════════════════════════════ */
+.topbox{background:linear-gradient(135deg,rgba(0,122,138,.07),rgba(0,53,128,.04));border:1px solid var(--border);border-radius:var(--radius);padding:.9rem 1.1rem}
 
-/* ─── RESPONSIVE ─────────────────────────────────────────────────────── */
-/* Tablet */
+/* ═══ RESPONSIVE ════════════════════════════════════════════════════════════ */
 @media(max-width:1024px){
-  .footer-cols{grid-template-columns:1fr 1fr}
-  .plans-grid{grid-template-columns:1fr}
-  .admin-stats,.stats-row{grid-template-columns:1fr 1fr}
+  .ft-cols{grid-template-columns:1fr 1fr}
+  .admin4,.stats4{grid-template-columns:1fr 1fr}
+  .g-4{grid-template-columns:1fr 1fr}
 }
-/* Mobile */
 @media(max-width:768px){
-  /* Hide desktop nav, show burger */
-  nav,#util-bar,.header-cta,.logo-divider,.logo-sespt{display:none!important}
+  #desk-nav,#util-bar,.hdr-cta,.logo-sep,.logo-sespt{display:none!important}
   #burger{display:flex!important}
-  /* Grids → single column */
-  .hero-content,.about-grid{grid-template-columns:1fr}
+  .hero-inner,.g-about{grid-template-columns:1fr}
   .hero-right{display:none}
-  .news-grid,.jobs-grid,.docs-grid,.plans-grid,.stats-row,.admin-stats,.wg-grid{grid-template-columns:1fr}
-  .quick-grid{grid-template-columns:1fr 1fr}
-  .footer-cols{grid-template-columns:1fr}
-  /* Event row stacks */
-  .event-row{flex-wrap:wrap;gap:.8rem}
-  .event-right{width:100%;display:flex;align-items:center;justify-content:space-between;text-align:left}
-  /* Tables scroll */
-  .dash-table{display:block;overflow-x:auto;white-space:nowrap}
-  /* Dash tab labels shorten */
-  .dash-tab{font-size:.75rem;padding:.55rem .7rem}
-  /* Filter bar wraps tightly */
-  .filter-bar{gap:.3rem}
-  .filter-label{display:none}
-  /* Footer bottom stacks */
-  .footer-bottom{flex-direction:column;align-items:flex-start}
+  .g-3,.g-2,.g-news,.g-about,.wg-grid,.plan-cards-row{grid-template-columns:1fr}
+  .g-4,.stats4,.admin4{grid-template-columns:1fr 1fr}
+  .ft-cols{grid-template-columns:1fr 1fr}
+  .evt-row{flex-wrap:wrap;gap:.7rem}
+  .evt-right{width:100%;display:flex;align-items:center;justify-content:space-between;text-align:left}
+  .tbl{display:block;overflow-x:auto}
+  .dtab{font-size:.76rem;padding:.5rem .7rem}
+  .ft-bottom{flex-direction:column}
+  section.sec{padding:2rem 0}
 }
 @media(max-width:480px){
-  .hero-h1{font-size:1.55rem}
-  .news-grid,.jobs-grid{grid-template-columns:1fr}
-  .quick-grid{grid-template-columns:1fr 1fr}
-  .modal-box{border-radius:12px 12px 0 0;margin-top:auto}
-  .modal-overlay{align-items:flex-end}
-  .cert-row{flex-wrap:wrap}
-  .plans-grid .plan-card+.plan-card{margin-top:.8rem}
-  .admin-stats{grid-template-columns:1fr 1fr}
-  .hero-ctas{flex-direction:column}
-  .hero-ctas .btn-lg{text-align:center;justify-content:center}
+  .hero-h1{font-size:1.6rem}
+  .g-4,.stats4,.admin4,.g-2{grid-template-columns:1fr}
+  .hero-btns{flex-direction:column}
+  .hero-btns .btn{width:100%}
+  .overlay{align-items:flex-end;padding:0}
+  .mbox{border-radius:var(--radius-lg) var(--radius-lg) 0 0}
+  .ft-cols{grid-template-columns:1fr}
+  .evt-actions{flex-wrap:wrap}
 }
 </style>
 </head>
 <body>
 
-<!-- ░░░ COOKIE BANNER ░░░ -->
-<div id="cookie-banner">
-  <p>Usamos cookies para melhorar a sua experiência (RGPD). <a href="#" style="color:var(--teal2)">Política de Privacidade</a></p>
-  <div style="display:flex;gap:.6rem">
+<!-- ══ COOKIE ══════════════════════════════════════════════════════════════ -->
+<div id="cookie">
+  <p>Usamos cookies para melhorar a experiência (RGPD). <a href="#" style="color:var(--teal2)">Política de Privacidade</a></p>
+  <div style="display:flex;gap:.6rem;flex-shrink:0">
     <button class="btn btn-ghost btn-sm" onclick="closeCookie()">Recusar não essenciais</button>
     <button class="btn btn-teal btn-sm" onclick="closeCookie()">Aceitar todos</button>
   </div>
 </div>
 
-<!-- ░░░ AUTH MODAL ░░░ -->
-<div class="modal-overlay" id="modal-auth" onclick="if(event.target===this)closeModal('modal-auth')">
-  <div class="modal-box">
-    <div class="modal-top-bar"></div>
-    <div class="modal-body">
-      <div class="modal-header">
-        <h3 id="auth-modal-title">Entrar na plataforma</h3>
-        <button class="modal-close" onclick="closeModal('modal-auth')">✕</button>
+<!-- ══ AUTH MODAL ══════════════════════════════════════════════════════════ -->
+<div class="overlay" id="modal-auth">
+  <div class="mbox">
+    <div class="mbox-top"></div>
+    <div class="mbody">
+      <div class="mhead">
+        <h3 id="auth-title">Entrar na plataforma</h3>
+        <button class="mclose" onclick="closeModal('modal-auth')">✕</button>
       </div>
-      <div class="modal-tabs">
-        <button class="modal-tab active" onclick="switchAuthTab('login')">Login</button>
-        <button class="modal-tab" onclick="switchAuthTab('register')">Registar</button>
+      <div class="mtabs">
+        <button class="mtab active" onclick="authTab('login')">Login</button>
+        <button class="mtab" onclick="authTab('register')">Registar</button>
       </div>
-
-      <!-- Login panel -->
+      <!-- Login -->
       <div id="auth-login">
-        <div class="form-group"><label>Email</label><input id="login-email" type="email" value="membro@incose.pt"></div>
-        <div class="form-group"><label>Password</label><input id="login-pass" type="password" value="demo123"></div>
-        <div id="login-err" class="alert alert-error" style="display:none">⚠ Email ou password incorretos.</div>
+        <div class="fg"><label>Email</label><input id="l-email" type="email" value="membro@incose.pt"></div>
+        <div class="fg"><label>Password</label><input id="l-pass" type="password" value="demo123"></div>
+        <div id="l-err" class="alert a-err" style="display:none">⚠ Email ou password incorretos.</div>
         <button class="btn btn-primary btn-md btn-full" onclick="doLogin()">Entrar →</button>
-        <hr class="divider">
-        <p style="font-size:.71rem;color:var(--muted);margin-bottom:.55rem;font-weight:600;letter-spacing:1px">DEMO – clique para preencher:</p>
-        <div class="demo-chips">
+        <hr class="div">
+        <p style="font-size:.7rem;color:var(--muted);margin-bottom:.5rem;font-weight:600;letter-spacing:.8px">DEMO – clique para preencher:</p>
+        <div style="display:flex;gap:.4rem;flex-wrap:wrap">
           <button class="btn btn-ghost btn-sm" onclick="fillDemo('admin@sespt.pt')">Admin SESPT</button>
           <button class="btn btn-ghost btn-sm" onclick="fillDemo('membro@incose.pt')">Membro Ativo</button>
           <button class="btn btn-ghost btn-sm" onclick="fillDemo('cab@embraer.pt')">CAB Rep.</button>
-          <button class="btn btn-ghost btn-sm" onclick="fillDemo('estudante@ist.pt')">Estudante (inativo)</button>
+          <button class="btn btn-ghost btn-sm" onclick="fillDemo('estudante@ist.pt')">Estudante</button>
         </div>
       </div>
-
-      <!-- Register panel -->
+      <!-- Register -->
       <div id="auth-register" style="display:none">
-        <div class="alert alert-info">📋 Após registo, a conta aguarda aprovação SESPT.</div>
-        <div class="form-group"><label>Nome completo</label><input type="text" placeholder="O seu nome"></div>
-        <div class="form-group"><label>Email profissional</label><input type="email" placeholder="email@empresa.pt"></div>
-        <div class="form-group"><label>Tipo de adesão</label>
-          <select>
-            <option>Membro Individual (80€/ano)</option>
-            <option>Membro Estudante (30€/ano)</option>
-            <option>Empresa CAB (800€/ano)</option>
-          </select>
+        <div class="alert a-info">📋 Após registo, a conta aguarda aprovação SESPT.</div>
+        <div class="fg"><label>Nome completo</label><input type="text" placeholder="O seu nome"></div>
+        <div class="fg"><label>Email profissional</label><input type="email" placeholder="email@empresa.pt"></div>
+        <div class="fg"><label>Tipo de adesão</label>
+          <select><option>Membro Individual (80€/ano)</option><option>Membro Estudante (30€/ano)</option><option>Empresa CAB (800€/ano)</option></select>
         </div>
-        <button class="btn btn-teal btn-md btn-full">Submeter pedido de adesão →</button>
+        <button class="btn btn-teal btn-md btn-full">Submeter pedido →</button>
       </div>
     </div>
   </div>
 </div>
 
-<!-- ░░░ EVENT DETAIL MODAL ░░░ -->
-<div class="modal-overlay" id="modal-event" onclick="if(event.target===this)closeModal('modal-event')">
-  <div class="modal-box" style="max-width:520px">
-    <div class="modal-top-bar"></div>
-    <div class="modal-body">
-      <div class="modal-header">
-        <h3 id="ev-modal-title">Evento</h3>
-        <button class="modal-close" onclick="closeModal('modal-event')">✕</button>
-      </div>
-      <div id="ev-modal-body"></div>
+<!-- ══ EVENT MODAL ════════════════════════════════════════════════════════ -->
+<div class="overlay" id="modal-evt">
+  <div class="mbox" style="max-width:500px">
+    <div class="mbox-top"></div>
+    <div class="mbody">
+      <div class="mhead"><h3 id="em-title">Evento</h3><button class="mclose" onclick="closeModal('modal-evt')">✕</button></div>
+      <div id="em-body"></div>
     </div>
   </div>
 </div>
 
-<!-- ░░░ UTILITY BAR ░░░ -->
+<!-- ══ UTILITY BAR ════════════════════════════════════════════════════════ -->
 <div id="util-bar">
   <div class="lang-toggle">
-    <button class="active" onclick="setLang('pt')">PT</button>
-    <button onclick="setLang('en')">EN</button>
+    <button onclick="setLang('pt')" id="lt-pt" class="active">PT</button>
+    <button onclick="setLang('en')" id="lt-en">EN</button>
   </div>
   <a href="https://linkedin.com" target="_blank">LinkedIn ↗</a>
   <a href="https://youtube.com" target="_blank">YouTube ↗</a>
-  <span id="util-user-area">
-    <button class="btn btn-primary btn-sm" onclick="openModal('modal-auth')">🔐 Login / Registo</button>
-  </span>
+  <span id="util-user"></span>
 </div>
 
-<!-- ░░░ HEADER ░░░ -->
+<!-- ══ HEADER ═════════════════════════════════════════════════════════════ -->
 <header>
   <div class="logo-group">
-    <button onclick="navTo('home')" style="display:flex;align-items:center;gap:.7rem;background:none;border:none;cursor:pointer">
+    <button onclick="navTo('home')" style="display:flex;align-items:center;gap:.75rem;background:none;border:none">
       <div class="logo-mark">INCOSE</div>
       <div class="logo-text">
         <div class="main">INCOSE Portugal</div>
         <div class="sub">Capítulo Oficial</div>
       </div>
     </button>
-    <div class="logo-divider"></div>
+    <div class="logo-sep"></div>
     <span class="logo-sespt">SESPT</span>
   </div>
-
-  <nav id="main-nav">
-    <button class="active" data-nav="0" onclick="navTo('home')">Início</button>
+  <nav id="desk-nav">
+    <button data-nav="0" onclick="navTo('home')">Início</button>
     <button data-nav="1" onclick="navTo('about')">Sobre Nós</button>
     <button data-nav="2" onclick="navTo('events')">Eventos</button>
     <button data-nav="3" onclick="navTo('knowledge')">Knowledge</button>
     <button data-nav="4" onclick="navTo('jobs')">Carreiras</button>
     <button data-nav="5" onclick="navTo('membership')">Adesão</button>
-    <button id="nav-dashboard" style="display:none" onclick="navTo('dashboard')">Dashboard</button>
-    <button id="nav-admin" style="display:none" onclick="navTo('admin')">Backoffice</button>
+    <button id="nav-dash" style="display:none" onclick="navTo('dashboard')">Dashboard</button>
+    <button id="nav-adm" style="display:none" onclick="navTo('admin')">Backoffice</button>
   </nav>
-
-  <button class="btn btn-teal btn-sm header-cta" onclick="navTo('membership')">Aderir →</button>
-  <button id="burger" onclick="toggleMobile()" aria-label="Menu">☰</button>
+  <div style="display:flex;align-items:center;gap:.6rem;flex-shrink:0">
+    <button class="btn btn-teal btn-sm hdr-cta" onclick="navTo('membership')">Aderir →</button>
+    <button id="burger" onclick="toggleDrawer()" aria-label="Menu">☰</button>
+  </div>
 </header>
 
-<!-- ░░░ MOBILE DRAWER ░░░ -->
-<div id="mobile-menu">
-  <div class="mob-lang">
-    <span style="font-size:.78rem;color:var(--muted);font-weight:600;align-self:center">Idioma:</span>
-    <button class="btn btn-teal btn-sm" id="mob-pt" onclick="setLang('pt');toggleMobile()">PT</button>
-    <button class="btn btn-ghost btn-sm" id="mob-en" onclick="setLang('en');toggleMobile()">EN</button>
+<!-- ══ MOBILE DRAWER ══════════════════════════════════════════════════════ -->
+<div id="mob-drawer">
+  <div class="mob-section">
+    <button class="mob-nav-btn" onclick="navTo('home');closeDrawer()">🏠 Início</button>
+    <button class="mob-nav-btn" onclick="navTo('about');closeDrawer()">ℹ Sobre Nós</button>
+    <button class="mob-nav-btn" onclick="navTo('events');closeDrawer()">📅 Eventos</button>
+    <button class="mob-nav-btn" onclick="navTo('knowledge');closeDrawer()">📚 Knowledge</button>
+    <button class="mob-nav-btn" onclick="navTo('jobs');closeDrawer()">💼 Carreiras</button>
+    <button class="mob-nav-btn" onclick="navTo('membership');closeDrawer()">🤝 Adesão</button>
+    <button id="mob-nav-dash" class="mob-nav-btn" style="display:none" onclick="navTo('dashboard');closeDrawer()">👤 Dashboard</button>
+    <button id="mob-nav-adm" class="mob-nav-btn" style="display:none" onclick="navTo('admin');closeDrawer()">⚙ Backoffice</button>
   </div>
-  <button onclick="navTo('home');toggleMobile()">🏠 Início</button>
-  <button onclick="navTo('about');toggleMobile()">ℹ Sobre Nós</button>
-  <button onclick="navTo('events');toggleMobile()">📅 Eventos</button>
-  <button onclick="navTo('knowledge');toggleMobile()">📚 Knowledge</button>
-  <button onclick="navTo('jobs');toggleMobile()">💼 Carreiras</button>
-  <button onclick="navTo('membership');toggleMobile()">🤝 Adesão</button>
-  <button id="mob-dashboard" style="display:none" onclick="navTo('dashboard');toggleMobile()">👤 Dashboard</button>
-  <button id="mob-admin" style="display:none" onclick="navTo('admin');toggleMobile()">⚙ Backoffice</button>
-  <div class="mob-util" id="mob-util-area">
-    <button class="btn btn-primary btn-md btn-full" onclick="openModal('modal-auth');toggleMobile()">🔐 Login / Registo</button>
+  <div class="mob-section">
+    <div class="mob-lang-row">
+      <span>Idioma:</span>
+      <button id="mob-lt-pt" class="btn btn-teal btn-sm" onclick="setLang('pt');closeDrawer()">PT</button>
+      <button id="mob-lt-en" class="btn btn-ghost btn-sm" onclick="setLang('en');closeDrawer()">EN</button>
+    </div>
+  </div>
+  <div class="mob-section">
+    <div class="mob-user-row" id="mob-user"></div>
   </div>
 </div>
 
-<!-- ░░░░░░░░░░  PAGES  ░░░░░░░░░░ -->
+<!-- ════════════════════════ PAGES ════════════════════════════════════════ -->
 <main>
 
-<!-- ── HOME ── -->
+<!-- ── HOME ─────────────────────────────────────────────────────────────── -->
 <div id="page-home" class="page active">
   <!-- HERO -->
   <section id="hero">
-    <div class="hero-bg-grid"></div>
-    <div class="hero-glow"></div>
-    <div class="container hero-content">
+    <div class="hero-grid-bg"></div>
+    <div class="hero-glow-r"></div>
+    <div class="hero-glow-l"></div>
+    <div class="wrap hero-inner">
       <div class="hero-left">
-        <div class="hero-badge"><span class="hero-badge-dot"></span><span id="hero-badge-txt">Capítulo oficial INCOSE em Portugal</span></div>
-        <h1 class="hero-h1" id="hero-h1">Engenharia de Sistemas<br><span class="grad">com raízes atlânticas</span></h1>
-        <p class="hero-p" id="hero-p">A comunidade portuguesa de profissionais INCOSE. Formação certificada, networking, Working Groups ativos e representação no ecossistema global de Systems Engineering.</p>
-        <div class="hero-ctas">
-          <button class="btn btn-primary btn-lg" style="box-shadow:0 4px 24px rgba(0,53,128,.4)" onclick="navTo('membership')" id="hero-cta1">Tornar-me sócio →</button>
-          <button class="btn btn-ghost btn-lg" onclick="navTo('events')" id="hero-cta2">Ver eventos</button>
+        <div class="hero-eyebrow">
+          <span class="hero-dot"></span>
+          <span id="h-badge">Capítulo oficial INCOSE em Portugal</span>
+        </div>
+        <h1 class="hero-h1" id="h-h1">Engenharia de Sistemas<br><span class="grad">com raízes atlânticas</span></h1>
+        <p class="hero-sub" id="h-sub">A comunidade portuguesa de profissionais INCOSE. Formação certificada, networking, Working Groups ativos e representação no ecossistema global de Systems Engineering.</p>
+        <div class="hero-btns">
+          <button id="h-cta1" class="btn btn-primary btn-xl" onclick="navTo('membership')">Tornar-me sócio →</button>
+          <button id="h-cta2" class="btn btn-ghost btn-xl" onclick="navTo('events')">Ver eventos</button>
         </div>
       </div>
       <div class="hero-right">
-        <div class="hero-card">
-          <div class="section-label" style="margin-bottom:1.1rem">Capítulo em números</div>
-          <div class="hero-stats">
-            <div style="text-align:center"><div class="stat-num">240+</div><div class="stat-label">Membros ativos</div></div>
-            <div style="text-align:center"><div class="stat-num">18</div><div class="stat-label">Empresas CAB</div></div>
-            <div style="text-align:center"><div class="stat-num">32</div><div class="stat-label">Eventos 2025</div></div>
-            <div style="text-align:center"><div class="stat-num">4</div><div class="stat-label">Working Groups</div></div>
+        <div class="card card-flat card-accent stat-card">
+          <div class="slabel" style="margin-bottom:1rem">Capítulo em números</div>
+          <div class="stat-grid">
+            <div class="stat-item"><div class="stat-n">240+</div><div class="stat-l">Membros ativos</div></div>
+            <div class="stat-item"><div class="stat-n">18</div><div class="stat-l">Empresas CAB</div></div>
+            <div class="stat-item"><div class="stat-n">32</div><div class="stat-l">Eventos 2025</div></div>
+            <div class="stat-item"><div class="stat-n">4</div><div class="stat-l">Working Groups</div></div>
           </div>
-          <div class="next-event-box">
-            <div class="next-event-label">⚡ Próximo evento</div>
+          <div class="next-evt">
+            <div class="next-evt-label">⚡ Próximo evento</div>
             <div style="font-weight:600;font-size:.9rem;margin-bottom:.2rem">INCOSE Portugal Summit 2026</div>
-            <div style="font-size:.77rem;color:var(--muted)">15 de março · Lisboa · Presencial + Online</div>
+            <div style="font-size:.75rem;color:var(--muted)">15 de março · Lisboa · Presencial + Online</div>
             <button class="btn btn-teal btn-sm" style="margin-top:.65rem" onclick="navTo('events')">Inscrever →</button>
           </div>
         </div>
       </div>
     </div>
     <div class="hero-wave">
-      <svg viewBox="0 0 1440 80" preserveAspectRatio="none" style="width:100%;height:100%">
-        <path d="M0,40 C360,70 720,10 1080,40 C1260,55 1380,30 1440,40 L1440,80 L0,80Z" fill="#003580"/>
+      <svg viewBox="0 0 1440 70" preserveAspectRatio="none" style="width:100%;height:100%">
+        <path d="M0,35 C360,65 720,5 1080,35 C1260,50 1380,25 1440,35 L1440,70 L0,70Z" fill="#003580"/>
       </svg>
     </div>
   </section>
 
-  <!-- NEWS preview -->
-  <section style="padding:4rem 0;background:#050c1a">
-    <div class="container">
-      <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:2rem;flex-wrap:wrap;gap:1rem">
-        <div><p class="section-label">Últimas notícias</p><h2 class="section-title">Acontece na <span class="grad">comunidade</span></h2></div>
+  <!-- NEWS -->
+  <section class="sec sec-dark">
+    <div class="wrap">
+      <div class="sec-header">
+        <div><p class="slabel">Últimas notícias</p><h2 class="stitle">Acontece na <span class="grad">comunidade</span></h2></div>
         <button class="btn btn-ghost btn-sm">Ver todas →</button>
       </div>
-      <div class="news-grid" id="home-news"></div>
+      <div class="g-news" id="home-news"></div>
     </div>
   </section>
 
-  <!-- QUICK ACTIONS -->
-  <section style="padding:4rem 0">
-    <div class="container">
-      <p class="section-label">O que oferecemos</p>
-      <h2 class="section-title">Tudo o que precisa em <span class="grad">SE</span></h2>
-      <div class="quick-grid">
-        <div class="card quick-card" onclick="navTo('events')">
-          <div style="font-size:1.8rem;margin-bottom:.65rem">🎓</div>
-          <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:.88rem;margin-bottom:.2rem">Certificação CSEP/ASEP</div>
-          <div style="font-size:.74rem;color:var(--muted)">Prep-courses e exames</div>
+  <!-- QUICK ACCESS -->
+  <section class="sec">
+    <div class="wrap">
+      <p class="slabel">O que oferecemos</p>
+      <h2 class="stitle">Tudo o que precisa em <span class="grad">SE</span></h2>
+      <div class="g-4" style="margin-top:1.5rem" id="quick-grid">
+        <div class="card" style="padding:1.3rem;text-align:center;cursor:pointer" onclick="navTo('events')">
+          <div style="font-size:1.8rem;margin-bottom:.6rem">🎓</div>
+          <div style="font-weight:700;font-size:.88rem;margin-bottom:.2rem">Certificação CSEP/ASEP</div>
+          <div style="font-size:.75rem;color:var(--muted)">Prep-courses e exames</div>
         </div>
-        <div class="card quick-card" onclick="navTo('jobs')">
-          <div style="font-size:1.8rem;margin-bottom:.65rem">💼</div>
-          <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:.88rem;margin-bottom:.2rem">Job Board SE</div>
-          <div style="font-size:.74rem;color:var(--muted)">Vagas em empresas CAB</div>
+        <div class="card" style="padding:1.3rem;text-align:center;cursor:pointer" onclick="navTo('jobs')">
+          <div style="font-size:1.8rem;margin-bottom:.6rem">💼</div>
+          <div style="font-weight:700;font-size:.88rem;margin-bottom:.2rem">Job Board SE</div>
+          <div style="font-size:.75rem;color:var(--muted)">Vagas em empresas CAB</div>
         </div>
-        <div class="card quick-card" onclick="navTo('knowledge')">
-          <div style="font-size:1.8rem;margin-bottom:.65rem">📚</div>
-          <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:.88rem;margin-bottom:.2rem">Knowledge Base</div>
-          <div style="font-size:.74rem;color:var(--muted)">Handbook, templates, webinars</div>
+        <div class="card" style="padding:1.3rem;text-align:center;cursor:pointer" onclick="navTo('knowledge')">
+          <div style="font-size:1.8rem;margin-bottom:.6rem">📚</div>
+          <div style="font-weight:700;font-size:.88rem;margin-bottom:.2rem">Knowledge Base</div>
+          <div style="font-size:.75rem;color:var(--muted)">Handbook, templates, webinars</div>
         </div>
-        <div class="card quick-card" onclick="navTo('about')">
-          <div style="font-size:1.8rem;margin-bottom:.65rem">🤝</div>
-          <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:.88rem;margin-bottom:.2rem">Working Groups</div>
-          <div style="font-size:.74rem;color:var(--muted)">MBSE · Defense · Space</div>
+        <div class="card" style="padding:1.3rem;text-align:center;cursor:pointer" onclick="navTo('about')">
+          <div style="font-size:1.8rem;margin-bottom:.6rem">🤝</div>
+          <div style="font-weight:700;font-size:.88rem;margin-bottom:.2rem">Working Groups</div>
+          <div style="font-size:.75rem;color:var(--muted)">MBSE · Defense · Space</div>
         </div>
       </div>
     </div>
   </section>
 </div>
 
-<!-- ── ABOUT ── -->
+<!-- ── ABOUT ─────────────────────────────────────────────────────────────── -->
 <div id="page-about" class="page">
-  <div class="container">
-    <p class="section-label">Quem somos</p>
-    <h1 class="section-title">Sobre o <span class="grad">Capítulo</span></h1>
-    <div class="about-grid">
+  <div class="wrap">
+    <p class="slabel">Quem somos</p>
+    <h1 class="stitle">Sobre o <span class="grad">Capítulo</span></h1>
+    <div class="g-about">
       <div>
-        <p style="color:rgba(255,255,255,.75);line-height:1.8;margin-bottom:1.1rem;font-size:.94rem">O INCOSE Portugal é o capítulo oficial da International Council on Systems Engineering em Portugal. Representado legalmente pela <strong style="color:var(--teal2)">SESPT – Sociedade de Engenharia de Sistemas de Portugal</strong>, o capítulo reúne profissionais, académicos e empresas comprometidos com a excelência em Engenharia de Sistemas.</p>
-        <p style="color:rgba(255,255,255,.75);line-height:1.8;margin-bottom:1.5rem;font-size:.94rem">Fundado em 2025, cresceu rapidamente para mais de 240 membros e 18 empresas parceiras CAB, tornando-se polo de referência na comunidade europeia de SE.</p>
-        <h3 style="margin-bottom:.9rem">Working Groups ativos</h3>
+        <p style="color:rgba(255,255,255,.72);line-height:1.8;margin-bottom:1rem;font-size:.93rem">O INCOSE Portugal é o capítulo oficial da International Council on Systems Engineering em Portugal. Representado legalmente pela <strong style="color:var(--teal2)">SESPT – Sociedade de Engenharia de Sistemas de Portugal</strong>, o capítulo reúne profissionais, académicos e empresas comprometidos com a excelência em Engenharia de Sistemas.</p>
+        <p style="color:rgba(255,255,255,.72);line-height:1.8;margin-bottom:1.5rem;font-size:.93rem">Fundado em 2025, cresceu rapidamente para mais de 240 membros e 18 empresas parceiras CAB, tornando-se polo de referência na comunidade europeia de SE.</p>
+        <h3 style="margin-bottom:.85rem">Working Groups ativos</h3>
         <div class="wg-grid">
-          <div class="card wg-card"><div style="font-size:1.3rem;margin-bottom:.35rem">🏗️</div><div style="font-family:'Syne',sans-serif;font-weight:700;font-size:.83rem;margin-bottom:.15rem">MBSE &amp; SysML v2</div><div style="font-size:.73rem;color:var(--muted)">Modelação de sistemas complexos</div></div>
-          <div class="card wg-card"><div style="font-size:1.3rem;margin-bottom:.35rem">🛡️</div><div style="font-family:'Syne',sans-serif;font-weight:700;font-size:.83rem;margin-bottom:.15rem">Defense Systems</div><div style="font-size:.73rem;color:var(--muted)">Sistemas de defesa e segurança</div></div>
-          <div class="card wg-card"><div style="font-size:1.3rem;margin-bottom:.35rem">🚀</div><div style="font-family:'Syne',sans-serif;font-weight:700;font-size:.83rem;margin-bottom:.15rem">Space Systems</div><div style="font-size:.73rem;color:var(--muted)">Projetos espaciais ECSS</div></div>
-          <div class="card wg-card"><div style="font-size:1.3rem;margin-bottom:.35rem">🌱</div><div style="font-family:'Syne',sans-serif;font-weight:700;font-size:.83rem;margin-bottom:.15rem">Sustainability in SE</div><div style="font-size:.73rem;color:var(--muted)">SE aplicado à sustentabilidade</div></div>
+          <div class="card-flat wg-card"><div style="font-size:1.3rem;margin-bottom:.35rem">🏗️</div><div style="font-weight:700;font-size:.83rem;margin-bottom:.15rem">MBSE &amp; SysML v2</div><div style="font-size:.73rem;color:var(--muted)">Modelação de sistemas complexos</div></div>
+          <div class="card-flat wg-card"><div style="font-size:1.3rem;margin-bottom:.35rem">🛡️</div><div style="font-weight:700;font-size:.83rem;margin-bottom:.15rem">Defense Systems</div><div style="font-size:.73rem;color:var(--muted)">Sistemas de defesa e segurança</div></div>
+          <div class="card-flat wg-card"><div style="font-size:1.3rem;margin-bottom:.35rem">🚀</div><div style="font-weight:700;font-size:.83rem;margin-bottom:.15rem">Space Systems</div><div style="font-size:.73rem;color:var(--muted)">Projetos espaciais ECSS</div></div>
+          <div class="card-flat wg-card"><div style="font-size:1.3rem;margin-bottom:.35rem">🌱</div><div style="font-weight:700;font-size:.83rem;margin-bottom:.15rem">Sustainability in SE</div><div style="font-size:.73rem;color:var(--muted)">SE aplicado à sustentabilidade</div></div>
         </div>
       </div>
       <div>
-        <div class="card-flat" style="padding:1.4rem;margin-bottom:1rem">
-          <h4 style="margin-bottom:1rem">Direção SESPT</h4>
-          <div style="display:flex;flex-direction:column;gap:.1rem">
-            <div style="display:flex;justify-content:space-between;padding:.38rem 0;border-bottom:1px solid var(--border);font-size:.82rem"><span style="font-weight:600">Sofia Andrade</span><span style="color:var(--muted)">Presidente</span></div>
-            <div style="display:flex;justify-content:space-between;padding:.38rem 0;border-bottom:1px solid var(--border);font-size:.82rem"><span style="font-weight:600">João Figueiredo</span><span style="color:var(--muted)">Vice-Presidente</span></div>
-            <div style="display:flex;justify-content:space-between;padding:.38rem 0;border-bottom:1px solid var(--border);font-size:.82rem"><span style="font-weight:600">Marta Costa</span><span style="color:var(--muted)">Tesoureira</span></div>
-            <div style="display:flex;justify-content:space-between;padding:.38rem 0;font-size:.82rem"><span style="font-weight:600">Pedro Nunes</span><span style="color:var(--muted)">Secretário</span></div>
-          </div>
+        <div class="card-flat" style="padding:1.3rem;margin-bottom:1rem">
+          <h4 style="margin-bottom:.9rem">Direção SESPT</h4>
+          <div class="dir-row"><span style="font-weight:600">Sofia Andrade</span><span style="color:var(--muted)">Presidente</span></div>
+          <div class="dir-row"><span style="font-weight:600">João Figueiredo</span><span style="color:var(--muted)">Vice-Presidente</span></div>
+          <div class="dir-row"><span style="font-weight:600">Marta Costa</span><span style="color:var(--muted)">Tesoureira</span></div>
+          <div style="display:flex;justify-content:space-between;padding:.35rem 0;font-size:.82rem"><span style="font-weight:600">Pedro Nunes</span><span style="color:var(--muted)">Secretário</span></div>
         </div>
         <div class="topbox">
-          <p style="font-size:.78rem;color:var(--muted);line-height:1.65"><strong style="color:rgba(255,255,255,.55)">Identificação legal:</strong><br>SESPT – Sociedade de Engenharia de Sistemas de Portugal<br>NIF: [inserir número]<br>Sede: Lisboa, Portugal</p>
+          <p style="font-size:.77rem;color:var(--muted);line-height:1.65"><strong style="color:rgba(255,255,255,.5)">Identificação legal:</strong><br>SESPT – Sociedade de Engenharia de Sistemas de Portugal<br>NIF: [inserir número]<br>Sede: Lisboa, Portugal</p>
         </div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- ── EVENTS ── -->
+<!-- ── EVENTS ────────────────────────────────────────────────────────────── -->
 <div id="page-events" class="page">
-  <div class="container">
-    <p class="section-label">Agenda</p>
-    <h1 class="section-title">Próximos <span class="grad">Eventos</span></h1>
-    <p class="section-sub">Membros com quota ativa têm desconto automático. Clique em "Detalhes" para ver preços e inscrever.</p>
+  <div class="wrap">
+    <p class="slabel">Agenda</p>
+    <h1 class="stitle">Próximos <span class="grad">Eventos</span></h1>
+    <p class="ssub">Membros com quota ativa têm desconto automático. Clique em Detalhes para ver preços.</p>
     <div class="filter-bar">
-      <span class="filter-label">Formato:</span>
-      <button class="btn btn-teal btn-sm" data-filter-format="all" onclick="filterEvents('format','all',this)">Todos</button>
-      <button class="btn btn-ghost btn-sm" data-filter-format="presencial" onclick="filterEvents('format','presencial',this)">Presencial</button>
-      <button class="btn btn-ghost btn-sm" data-filter-format="online" onclick="filterEvents('format','online',this)">Online</button>
-      <span class="filter-label" style="margin-left:.6rem">Tipo:</span>
-      <button class="btn btn-teal btn-sm" data-filter-type="all" onclick="filterEvents('type','all',this)">Todos</button>
-      <button class="btn btn-ghost btn-sm" data-filter-type="summit" onclick="filterEvents('type','summit',this)">Summit</button>
-      <button class="btn btn-ghost btn-sm" data-filter-type="webinar" onclick="filterEvents('type','webinar',this)">Webinar</button>
-      <button class="btn btn-ghost btn-sm" data-filter-type="workshop" onclick="filterEvents('type','workshop',this)">Workshop</button>
-      <button class="btn btn-ghost btn-sm" data-filter-type="wg" onclick="filterEvents('type','wg',this)">Working Group</button>
+      <span class="flabel">Formato:</span>
+      <button class="btn btn-teal btn-sm" data-ff="all" onclick="fEvt('f','all',this)">Todos</button>
+      <button class="btn btn-ghost btn-sm" data-ff="presencial" onclick="fEvt('f','presencial',this)">Presencial</button>
+      <button class="btn btn-ghost btn-sm" data-ff="online" onclick="fEvt('f','online',this)">Online</button>
+      <span class="flabel" style="margin-left:.5rem">Tipo:</span>
+      <button class="btn btn-teal btn-sm" data-ft="all" onclick="fEvt('t','all',this)">Todos</button>
+      <button class="btn btn-ghost btn-sm" data-ft="summit" onclick="fEvt('t','summit',this)">Summit</button>
+      <button class="btn btn-ghost btn-sm" data-ft="webinar" onclick="fEvt('t','webinar',this)">Webinar</button>
+      <button class="btn btn-ghost btn-sm" data-ft="workshop" onclick="fEvt('t','workshop',this)">Workshop</button>
+      <button class="btn btn-ghost btn-sm" data-ft="wg" onclick="fEvt('t','wg',this)">Working Group</button>
     </div>
-    <div class="events-list" id="events-list"></div>
+    <div class="evts-list" id="evts-list"></div>
   </div>
 </div>
 
-<!-- ── KNOWLEDGE ── -->
+<!-- ── KNOWLEDGE ─────────────────────────────────────────────────────────── -->
 <div id="page-knowledge" class="page">
-  <div class="container">
-    <p class="section-label">Biblioteca</p>
-    <h1 class="section-title">Knowledge <span class="grad">Base</span></h1>
-    <p class="section-sub">Materiais técnicos exclusivos para membros com quota ativa. Documentos públicos disponíveis para todos.</p>
-    <div id="knowledge-alert"></div>
-    <div style="display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:.9rem">
-      <input id="doc-search" style="background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:6px;padding:.55rem .9rem;color:#fff;font-family:'DM Sans',sans-serif;font-size:.85rem;outline:none;max-width:300px;flex:1" placeholder="🔍 Pesquisar..." oninput="renderDocs()">
+  <div class="wrap">
+    <p class="slabel">Biblioteca</p>
+    <h1 class="stitle">Knowledge <span class="grad">Base</span></h1>
+    <p class="ssub">Materiais técnicos exclusivos para membros com quota ativa.</p>
+    <div id="know-alert"></div>
+    <div style="display:flex;gap:.8rem;flex-wrap:wrap;margin-bottom:.9rem">
+      <input id="doc-q" style="background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:var(--radius);padding:.55rem .9rem;color:#fff;font-family:'DM Sans',sans-serif;font-size:.85rem;outline:none;flex:1;max-width:300px;transition:border-color .2s" placeholder="🔍 Pesquisar..." onfocus="this.style.borderColor='var(--teal2)'" onblur="this.style.borderColor='var(--border)'" oninput="renderDocs()">
     </div>
-    <div style="display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:1.8rem" id="doc-cats"></div>
-    <div class="docs-grid" id="docs-grid"></div>
+    <div style="display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:1.6rem" id="doc-cats"></div>
+    <div class="g-3" id="docs-grid"></div>
   </div>
 </div>
 
-<!-- ── JOBS ── -->
+<!-- ── JOBS ──────────────────────────────────────────────────────────────── -->
 <div id="page-jobs" class="page">
-  <div class="container">
-    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.8rem;flex-wrap:wrap;gap:1rem">
+  <div class="wrap">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:1rem;margin-bottom:.8rem">
       <div>
-        <p class="section-label">Portal de Carreiras</p>
-        <h1 class="section-title">Job Board <span class="grad">SE</span></h1>
-        <p class="section-sub" style="margin-bottom:0">Vagas publicadas por empresas CAB. Candidatura 1-click para membros com perfil completo.</p>
+        <p class="slabel">Portal de Carreiras</p>
+        <h1 class="stitle">Job Board <span class="grad">SE</span></h1>
+        <p class="ssub" style="margin-bottom:0">Vagas publicadas por empresas CAB. 1-click apply para membros com perfil completo.</p>
       </div>
-      <button id="btn-post-job" class="btn btn-teal btn-md" style="display:none" onclick="showPostJob()">+ Publicar vaga</button>
+      <button id="btn-post" class="btn btn-teal btn-md" style="display:none;margin-top:.5rem" onclick="showPostJob()">+ Publicar vaga</button>
     </div>
     <div id="jobs-alert" style="margin:1rem 0"></div>
-    <div style="display:flex;gap:.8rem;margin-bottom:.9rem;flex-wrap:wrap">
-      <input id="job-search" style="background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:6px;padding:.55rem .9rem;color:#fff;font-family:'DM Sans',sans-serif;font-size:.85rem;outline:none;max-width:300px;flex:1" placeholder="🔍 Pesquisar cargo ou empresa..." oninput="renderJobs()">
+    <div style="display:flex;gap:.7rem;flex-wrap:wrap;margin-bottom:.9rem">
+      <input id="job-q" style="background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:var(--radius);padding:.55rem .9rem;color:#fff;font-family:'DM Sans',sans-serif;font-size:.85rem;outline:none;flex:1;max-width:300px;transition:border-color .2s" placeholder="🔍 Pesquisar..." onfocus="this.style.borderColor='var(--teal2)'" onblur="this.style.borderColor='var(--border)'" oninput="renderJobs()">
     </div>
-    <div style="display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:1.8rem" id="job-tag-filters"></div>
-    <div class="jobs-grid" id="jobs-grid"></div>
-
-    <!-- Post job form (hidden) -->
-    <div id="post-job-form" style="display:none;margin-top:2rem">
+    <div style="display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:1.6rem" id="job-tags"></div>
+    <div class="g-2" id="jobs-grid"></div>
+    <div id="post-form" style="display:none;margin-top:2rem">
       <h3 style="margin-bottom:1rem">Publicar nova vaga</h3>
       <div class="card-flat" style="padding:1.5rem">
-        <div style="display:grid;grid-template-columns:2fr 1fr;gap:.8rem">
-          <div class="form-group"><label>Título do cargo *</label><input id="nj-title" type="text" placeholder="Systems Engineer – ..."></div>
-          <div class="form-group"><label>Localização</label><input id="nj-loc" type="text" placeholder="Lisboa / Remoto"></div>
-        </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:.8rem">
-          <div class="form-group"><label>Tipo</label><select id="nj-type"><option>Full-time</option><option>Part-time</option><option>Contrato</option><option>Bolsa FCT</option><option>Estágio</option></select></div>
-          <div class="form-group"><label>Tags (separadas por vírgula)</label><input id="nj-tags" type="text" placeholder="MBSE, SysML, Space"></div>
-        </div>
-        <div class="form-group"><label>Descrição da vaga</label><textarea id="nj-desc" placeholder="Descrição detalhada..."></textarea></div>
-        <div class="alert alert-warn">⏳ A vaga ficará pendente até aprovação pelo Admin.</div>
+        <div class="g-2"><div class="fg"><label>Título *</label><input id="nj-t" placeholder="Systems Engineer – ..."></div><div class="fg"><label>Localização</label><input id="nj-l" placeholder="Lisboa / Remoto"></div></div>
+        <div class="g-2"><div class="fg"><label>Tipo</label><select id="nj-tp"><option>Full-time</option><option>Part-time</option><option>Contrato</option><option>Bolsa FCT</option><option>Estágio</option></select></div><div class="fg"><label>Tags (vírgula)</label><input id="nj-tg" placeholder="MBSE, SysML"></div></div>
+        <div class="fg"><label>Descrição</label><textarea id="nj-d"></textarea></div>
+        <div class="alert a-warn">⏳ A vaga ficará pendente até aprovação pelo Admin.</div>
         <div style="display:flex;gap:.7rem;margin-top:.5rem">
-          <button class="btn btn-primary btn-md" onclick="submitJob()">Submeter para aprovação →</button>
-          <button class="btn btn-ghost btn-md" onclick="document.getElementById('post-job-form').style.display='none'">Cancelar</button>
+          <button class="btn btn-primary btn-md" onclick="submitJob()">Submeter →</button>
+          <button class="btn btn-ghost btn-md" onclick="document.getElementById('post-form').style.display='none'">Cancelar</button>
         </div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- ── MEMBERSHIP ── -->
+<!-- ── MEMBERSHIP ────────────────────────────────────────────────────────── -->
 <div id="page-membership" class="page">
-  <div class="container">
-    <p class="section-label">Seja sócio</p>
-    <h1 class="section-title">Planos de <span class="grad">Adesão</span></h1>
-    <p class="section-sub">Faça parte da comunidade portuguesa de Systems Engineering. Acesso imediato aos recursos, descontos e representação internacional.</p>
-    <div class="plans-grid">
+  <div class="wrap">
+    <p class="slabel">Seja sócio</p>
+    <h1 class="stitle">Planos de <span class="grad">Adesão</span></h1>
+    <p class="ssub">Faça parte da comunidade portuguesa de Systems Engineering. Acesso imediato aos recursos, descontos e representação internacional.</p>
+    <div class="g-3">
       <div class="card plan-card">
-        <div style="font-size:.73rem;font-weight:600;color:var(--muted);margin-bottom:.35rem">Estudante de universidade portuguesa</div>
+        <div style="font-size:.72rem;color:var(--muted);margin-bottom:.35rem">Estudante universitário</div>
         <h3 style="margin-bottom:.8rem">Membro Estudante</h3>
-        <div style="margin-bottom:1.1rem"><span class="plan-price-num" style="color:var(--muted)">30€</span><span style="font-size:.78rem;color:var(--muted)">/ano</span></div>
-        <ul class="plan-benefits">
-          <li>Acesso à biblioteca</li><li>Desconto em eventos</li><li>Webinars gravados</li><li>Certificate Wallet</li><li>Member Directory (opt-in)</li>
-        </ul>
+        <div class="plan-price"><span style="color:var(--muted)">30€</span><small>/ano</small></div>
+        <ul class="plan-ul"><li>Acesso à biblioteca</li><li>Desconto em eventos</li><li>Webinars gravados</li><li>Certificate Wallet</li><li>Member Directory</li></ul>
         <button class="btn btn-ghost btn-md btn-full" onclick="openModal('modal-auth')">Aderir agora →</button>
       </div>
       <div class="card plan-card featured">
-        <div class="plan-popular">Mais popular</div>
-        <div style="font-size:.73rem;font-weight:600;color:var(--muted);margin-bottom:.35rem">Profissional de SE</div>
+        <div class="plan-pop">Mais popular</div>
+        <div style="font-size:.72rem;color:var(--muted);margin-bottom:.35rem">Profissional de SE</div>
         <h3 style="margin-bottom:.8rem">Membro Individual</h3>
-        <div style="margin-bottom:1.1rem"><span class="plan-price-num" style="color:var(--teal2)">80€</span><span style="font-size:.78rem;color:var(--muted)">/ano</span></div>
-        <ul class="plan-benefits">
-          <li>Tudo do Estudante</li><li>Fórum privado</li><li>Voto nas eleições</li><li>Desconto acrescido em formações</li><li>Acesso ao IS internacional</li>
-        </ul>
+        <div class="plan-price"><span style="color:var(--teal2)">80€</span><small>/ano</small></div>
+        <ul class="plan-ul"><li>Tudo do Estudante</li><li>Fórum privado</li><li>Voto nas eleições</li><li>Desconto acrescido</li><li>Acesso ao IS internacional</li></ul>
         <button class="btn btn-teal btn-md btn-full" onclick="openModal('modal-auth')">Aderir agora →</button>
       </div>
       <div class="card plan-card">
-        <div style="font-size:.73rem;font-weight:600;color:var(--muted);margin-bottom:.35rem">Empresa · 5 seats incluídos</div>
+        <div style="font-size:.72rem;color:var(--muted);margin-bottom:.35rem">Empresa · 5 seats</div>
         <h3 style="margin-bottom:.8rem">CAB – Corporate</h3>
-        <div style="margin-bottom:1.1rem"><span class="plan-price-num" style="color:var(--cork)">800€</span><span style="font-size:.78rem;color:var(--muted)">/ano</span></div>
-        <ul class="plan-benefits">
-          <li>5 membros incluídos</li><li>Perfil empresa no site</li><li>Publicar vagas (Job Board)</li><li>Repositório doc. estratégicos</li><li>Presença no Summit anual</li>
-        </ul>
+        <div class="plan-price"><span style="color:var(--cork)">800€</span><small>/ano</small></div>
+        <ul class="plan-ul"><li>5 membros incluídos</li><li>Perfil empresa no site</li><li>Publicar vagas (Job Board)</li><li>Repositório doc. estratégicos</li><li>Presença no Summit anual</li></ul>
         <button class="btn btn-ghost btn-md btn-full" onclick="openModal('modal-auth')">Aderir agora →</button>
       </div>
     </div>
-    <div class="topbox" style="text-align:center">
-      <p style="font-size:.81rem;color:var(--muted)">ℹ️ As quotas internacionais INCOSE são pagas separadamente em <a href="https://www.incose.org" target="_blank" style="color:var(--teal2)">incose.org ↗</a>. A SESPT emite fatura nos termos legais portugueses.</p>
+    <div class="topbox" style="text-align:center;margin-top:1.5rem">
+      <p style="font-size:.8rem;color:var(--muted)">ℹ️ As quotas internacionais INCOSE são pagas separadamente em <a href="https://www.incose.org" target="_blank" style="color:var(--teal2)">incose.org ↗</a>. A SESPT emite fatura nos termos legais portugueses.</p>
     </div>
   </div>
 </div>
 
-<!-- ── DASHBOARD ── -->
+<!-- ── DASHBOARD ─────────────────────────────────────────────────────────── -->
 <div id="page-dashboard" class="page">
-  <div class="container">
+  <div class="wrap">
     <div id="dash-locked" style="text-align:center;padding:4rem 0">
       <div style="font-size:3rem;margin-bottom:1rem">🔒</div>
       <h2 style="margin-bottom:.5rem">Área privada</h2>
@@ -677,135 +671,132 @@ footer{background:#030810;border-top:1px solid var(--border);margin-top:auto}
     </div>
     <div id="dash-content" style="display:none">
       <div class="user-hero">
-        <div class="user-avatar" id="dash-avatar">CM</div>
+        <div class="u-avatar" id="d-av">CM</div>
         <div>
-          <h1 style="font-size:1.45rem;font-weight:800" id="dash-greeting">Olá, Carlos!</h1>
-          <div style="display:flex;gap:.5rem;margin-top:.3rem;flex-wrap:wrap" id="dash-badges"></div>
+          <h1 style="font-size:1.4rem;font-weight:800" id="d-greet">Olá!</h1>
+          <div style="display:flex;gap:.45rem;margin-top:.3rem;flex-wrap:wrap" id="d-badges"></div>
         </div>
       </div>
-      <div class="dash-tabs">
-        <button class="dash-tab active" onclick="switchDashTab('overview',this)">Resumo</button>
-        <button class="dash-tab" onclick="switchDashTab('profile',this)">Perfil</button>
-        <button class="dash-tab" onclick="switchDashTab('payments',this)">Pagamentos</button>
-        <button class="dash-tab" onclick="switchDashTab('wallet',this)">Certificate Wallet</button>
+      <div class="dtabs">
+        <button class="dtab active" onclick="dTab('overview',this)">Resumo</button>
+        <button class="dtab" onclick="dTab('profile',this)">Perfil</button>
+        <button class="dtab" onclick="dTab('payments',this)">Pagamentos</button>
+        <button class="dtab" onclick="dTab('wallet',this)">Certificados</button>
       </div>
       <!-- Overview -->
-      <div class="dash-panel active" id="dp-overview">
-        <div class="stats-row">
-          <div class="card-flat stat-box"><div style="font-size:1.5rem;margin-bottom:.3rem">🏅</div><div class="val">3</div><div class="lbl">Certificados</div></div>
-          <div class="card-flat stat-box"><div style="font-size:1.5rem;margin-bottom:.3rem">📅</div><div class="val">2</div><div class="lbl">Eventos inscritos</div></div>
-          <div class="card-flat stat-box"><div style="font-size:1.5rem;margin-bottom:.3rem">📥</div><div class="val">5</div><div class="lbl">Docs transferidos</div></div>
-          <div class="card-flat stat-box"><div style="font-size:1.5rem;margin-bottom:.3rem">🔑</div><div class="val" id="quota-status-val">Ativo</div><div class="lbl">Estado da quota</div></div>
+      <div class="dpanel active" id="dp-overview">
+        <div class="stats4">
+          <div class="card-flat stat-box"><div style="font-size:1.4rem;margin-bottom:.3rem">🏅</div><div class="v">3</div><div class="l">Certificados</div></div>
+          <div class="card-flat stat-box"><div style="font-size:1.4rem;margin-bottom:.3rem">📅</div><div class="v">2</div><div class="l">Eventos inscritos</div></div>
+          <div class="card-flat stat-box"><div style="font-size:1.4rem;margin-bottom:.3rem">📥</div><div class="v">5</div><div class="l">Docs transferidos</div></div>
+          <div class="card-flat stat-box"><div style="font-size:1.4rem;margin-bottom:.3rem">🔑</div><div class="v" id="d-qval">Ativo</div><div class="l">Quota</div></div>
         </div>
-        <div id="quota-alert"></div>
+        <div id="d-qalert"></div>
       </div>
       <!-- Profile -->
-      <div class="dash-panel" id="dp-profile" style="max-width:520px">
-        <div class="form-group"><label>Nome completo</label><input id="prof-name" type="text"></div>
-        <div class="form-group"><label>Email</label><input id="prof-email" type="email" readonly style="opacity:.65"></div>
-        <div class="form-group"><label>Tipo de membro</label><input id="prof-type" type="text" readonly style="opacity:.65"></div>
-        <div class="form-group"><label>N.º sócio INCOSE</label><input value="INC-PT-00342" type="text" readonly style="opacity:.65"></div>
-        <div class="form-group">
+      <div class="dpanel" id="dp-profile" style="max-width:500px">
+        <div class="fg"><label>Nome completo</label><input id="p-name"></div>
+        <div class="fg"><label>Email</label><input id="p-email" readonly style="opacity:.6"></div>
+        <div class="fg"><label>Tipo de membro</label><input id="p-type" readonly style="opacity:.6"></div>
+        <div class="fg"><label>N.º sócio INCOSE</label><input value="INC-PT-00342" readonly style="opacity:.6"></div>
+        <div class="fg">
           <label>Opt-in Member Directory</label>
           <div style="display:flex;align-items:center;gap:.6rem;margin-top:.3rem">
-            <input type="checkbox" checked style="accent-color:var(--teal)">
-            <span style="font-size:.82rem;color:rgba(255,255,255,.7)">Visível para outros membros no diretório</span>
+            <input type="checkbox" checked style="accent-color:var(--teal);width:16px;height:16px">
+            <span style="font-size:.82rem;color:rgba(255,255,255,.68)">Visível para outros membros</span>
           </div>
         </div>
-        <div class="form-group">
-          <label>CV / Currículo (para 1-Click Apply)</label>
-          <div class="card-flat" style="padding:1rem;text-align:center;border-style:dashed">
-            <p style="font-size:.81rem;color:var(--muted)">Arraste o CV aqui ou clique para fazer upload</p>
+        <div class="fg">
+          <label>CV / Currículo (1-Click Apply)</label>
+          <div class="card-flat" style="padding:.9rem;text-align:center;border-style:dashed">
+            <p style="font-size:.8rem;color:var(--muted)">Arraste o CV ou clique para upload</p>
             <button class="btn btn-ghost btn-sm" style="margin-top:.5rem">⬆ Upload PDF</button>
           </div>
         </div>
         <button class="btn btn-primary btn-md">Guardar alterações</button>
       </div>
       <!-- Payments -->
-      <div class="dash-panel" id="dp-payments">
-        <table class="dash-table">
+      <div class="dpanel" id="dp-payments">
+        <div style="overflow-x:auto">
+        <table class="tbl">
           <thead><tr><th>Descrição</th><th>Valor</th><th>Data</th><th>Estado</th><th></th></tr></thead>
           <tbody>
-            <tr><td>Quota anual 2026 – Membro Individual</td><td style="font-weight:700">80.00€</td><td style="color:var(--muted)">2026-01-10</td><td><span class="badge badge-green">✓ pago</span></td><td><button class="btn btn-ghost btn-sm">Fatura</button></td></tr>
-            <tr><td>Quota anual 2025 – Membro Individual</td><td style="font-weight:700">80.00€</td><td style="color:var(--muted)">2025-01-12</td><td><span class="badge badge-green">✓ pago</span></td><td><button class="btn btn-ghost btn-sm">Fatura</button></td></tr>
-            <tr><td>Summit 2025 – Bilhete membro</td><td style="font-weight:700">60.00€</td><td style="color:var(--muted)">2025-10-20</td><td><span class="badge badge-green">✓ pago</span></td><td><button class="btn btn-ghost btn-sm">Fatura</button></td></tr>
+            <tr><td>Quota anual 2026 – Membro Individual</td><td style="font-weight:700">80.00€</td><td style="color:var(--muted)">2026-01-10</td><td><span class="badge b-green">✓ pago</span></td><td><button class="btn btn-ghost btn-sm">Fatura</button></td></tr>
+            <tr><td>Quota anual 2025 – Membro Individual</td><td style="font-weight:700">80.00€</td><td style="color:var(--muted)">2025-01-12</td><td><span class="badge b-green">✓ pago</span></td><td><button class="btn btn-ghost btn-sm">Fatura</button></td></tr>
+            <tr><td>Summit 2025 – Bilhete membro</td><td style="font-weight:700">60.00€</td><td style="color:var(--muted)">2025-10-20</td><td><span class="badge b-green">✓ pago</span></td><td><button class="btn btn-ghost btn-sm">Fatura</button></td></tr>
           </tbody>
         </table>
+        </div>
       </div>
       <!-- Wallet -->
-      <div class="dash-panel" id="dp-wallet">
-        <p style="color:var(--muted);margin-bottom:1.4rem;font-size:.87rem">Certificados gerados automaticamente após check-in em eventos.</p>
-        <div class="card-flat cert-row"><div style="font-size:1.7rem">🏅</div><div style="flex:1"><div style="font-family:'Syne',sans-serif;font-weight:700;font-size:.88rem">INCOSE Portugal Summit 2025 – Participação</div><div style="font-size:.73rem;color:var(--muted)">2025-11-15 · CERT-2025-001</div></div><button class="btn btn-ghost btn-sm">⬇ PDF</button></div>
-        <div class="card-flat cert-row"><div style="font-size:1.7rem">🏅</div><div style="flex:1"><div style="font-family:'Syne',sans-serif;font-weight:700;font-size:.88rem">ASEP Prep-Course – Dezembro 2025</div><div style="font-size:.73rem;color:var(--muted)">2025-12-08 · CERT-2025-002</div></div><button class="btn btn-ghost btn-sm">⬇ PDF</button></div>
-        <div class="card-flat cert-row"><div style="font-size:1.7rem">🏅</div><div style="flex:1"><div style="font-family:'Syne',sans-serif;font-weight:700;font-size:.88rem">Webinar MBSE Intro – Novembro 2025</div><div style="font-size:.73rem;color:var(--muted)">2025-11-28 · CERT-2025-003</div></div><button class="btn btn-ghost btn-sm">⬇ PDF</button></div>
+      <div class="dpanel" id="dp-wallet">
+        <p style="color:var(--muted);margin-bottom:1.3rem;font-size:.86rem">Certificados gerados automaticamente após check-in em eventos.</p>
+        <div class="card-flat cert-row"><div style="font-size:1.6rem">🏅</div><div style="flex:1"><div style="font-weight:700;font-size:.87rem">INCOSE Portugal Summit 2025 – Participação</div><div style="font-size:.72rem;color:var(--muted)">2025-11-15 · CERT-2025-001</div></div><button class="btn btn-ghost btn-sm">⬇ PDF</button></div>
+        <div class="card-flat cert-row"><div style="font-size:1.6rem">🏅</div><div style="flex:1"><div style="font-weight:700;font-size:.87rem">ASEP Prep-Course – Dezembro 2025</div><div style="font-size:.72rem;color:var(--muted)">2025-12-08 · CERT-2025-002</div></div><button class="btn btn-ghost btn-sm">⬇ PDF</button></div>
+        <div class="card-flat cert-row"><div style="font-size:1.6rem">🏅</div><div style="flex:1"><div style="font-weight:700;font-size:.87rem">Webinar MBSE Intro – Novembro 2025</div><div style="font-size:.72rem;color:var(--muted)">2025-11-28 · CERT-2025-003</div></div><button class="btn btn-ghost btn-sm">⬇ PDF</button></div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- ── ADMIN ── -->
+<!-- ── ADMIN ──────────────────────────────────────────────────────────────── -->
 <div id="page-admin" class="page">
-  <div class="container">
-    <div id="admin-locked" style="text-align:center;padding:4rem 0">
+  <div class="wrap">
+    <div id="adm-locked" style="text-align:center;padding:4rem 0">
       <div style="font-size:3rem;margin-bottom:1rem">🚫</div>
       <h2 style="margin-bottom:.5rem">Acesso restrito</h2>
       <p style="color:var(--muted)">Apenas administradores SESPT têm acesso ao Backoffice.</p>
     </div>
-    <div id="admin-content" style="display:none">
-      <p class="section-label">Administração SESPT</p>
-      <h1 class="section-title">Back<span class="grad">office</span></h1>
-      <div class="admin-stats">
-        <div class="card-flat" style="padding:1rem;display:flex;gap:.8rem;align-items:center"><div style="font-size:1.5rem">👥</div><div><div style="font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:800">240</div><div style="font-size:.71rem;color:var(--muted)">Membros ativos</div></div></div>
-        <div class="card-flat" style="padding:1rem;display:flex;gap:.8rem;align-items:center"><div style="font-size:1.5rem">🏢</div><div><div style="font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:800">18</div><div style="font-size:.71rem;color:var(--muted)">Empresas CAB</div></div></div>
-        <div class="card-flat" style="padding:1rem;display:flex;gap:.8rem;align-items:center"><div style="font-size:1.5rem">⏳</div><div><div style="font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:800" id="admin-pending-count">1</div><div style="font-size:.71rem;color:var(--muted)">Vagas pendentes</div></div></div>
-        <div class="card-flat" style="padding:1rem;display:flex;gap:.8rem;align-items:center"><div style="font-size:1.5rem">📅</div><div><div style="font-family:'Syne',sans-serif;font-size:1.4rem;font-weight:800">5</div><div style="font-size:.71rem;color:var(--muted)">Eventos futuros</div></div></div>
+    <div id="adm-content" style="display:none">
+      <p class="slabel">Administração SESPT</p>
+      <h1 class="stitle">Back<span class="grad">office</span></h1>
+      <div class="admin4">
+        <div class="card-flat astat"><div class="ico">👥</div><div><div class="v">240</div><div class="l">Membros ativos</div></div></div>
+        <div class="card-flat astat"><div class="ico">🏢</div><div><div class="v">18</div><div class="l">Empresas CAB</div></div></div>
+        <div class="card-flat astat"><div class="ico">⏳</div><div><div class="v" id="a-pcount">1</div><div class="l">Vagas pendentes</div></div></div>
+        <div class="card-flat astat"><div class="ico">📅</div><div><div class="v">5</div><div class="l">Eventos futuros</div></div></div>
       </div>
-      <div class="dash-tabs">
-        <button class="dash-tab active" onclick="switchAdminTab('news',this)">📰 Notícias</button>
-        <button class="dash-tab" onclick="switchAdminTab('pending',this)">💼 Vagas pendentes</button>
-        <button class="dash-tab" onclick="switchAdminTab('users',this)">👥 Utilizadores</button>
-        <button class="dash-tab" onclick="switchAdminTab('newsletter',this)">✉ Newsletter</button>
+      <div class="dtabs">
+        <button class="dtab active" onclick="aTab('news',this)">📰 Notícias</button>
+        <button class="dtab" onclick="aTab('pending',this)">💼 Vagas pendentes</button>
+        <button class="dtab" onclick="aTab('users',this)">👥 Utilizadores</button>
+        <button class="dtab" onclick="aTab('newsletter',this)">✉ Newsletter</button>
       </div>
-
       <!-- News CMS -->
-      <div class="dash-panel active" id="adp-news">
-        <div class="card-flat" style="padding:1.4rem;margin-bottom:1.4rem">
-          <h3 style="margin-bottom:1rem">Criar novo artigo</h3>
-          <div style="display:grid;grid-template-columns:2fr 1fr 0.4fr;gap:.8rem;margin-bottom:.8rem">
-            <div class="form-group" style="margin:0"><label>Título *</label><input id="na-title" placeholder="Título do artigo..."></div>
-            <div class="form-group" style="margin:0"><label>Categoria</label><select id="na-cat"><option>Destaque</option><option>CAB</option><option>Certificação</option><option>Internacional</option><option>Eventos</option></select></div>
-            <div class="form-group" style="margin:0"><label>Ícone</label><input id="na-icon" value="📰" maxlength="2"></div>
+      <div class="dpanel active" id="adp-news">
+        <div class="card-flat" style="padding:1.3rem;margin-bottom:1.3rem">
+          <h3 style="margin-bottom:.9rem">Criar novo artigo</h3>
+          <div class="g-2" style="margin-bottom:.8rem">
+            <div class="fg" style="margin:0"><label>Título *</label><input id="na-t" placeholder="Título..."></div>
+            <div style="display:grid;grid-template-columns:2fr 1fr;gap:.8rem">
+              <div class="fg" style="margin:0"><label>Categoria</label><select id="na-c"><option>Destaque</option><option>CAB</option><option>Certificação</option><option>Internacional</option><option>Eventos</option></select></div>
+              <div class="fg" style="margin:0"><label>Ícone</label><input id="na-i" value="📰" maxlength="2"></div>
+            </div>
           </div>
-          <div class="form-group"><label>Resumo</label><textarea id="na-excerpt" placeholder="Breve descrição..."></textarea></div>
-          <button class="btn btn-teal btn-md" onclick="addArticle()">Publicar artigo →</button>
+          <div class="fg"><label>Resumo</label><textarea id="na-e" placeholder="Breve descrição..."></textarea></div>
+          <button class="btn btn-teal btn-md" onclick="addArticle()">Publicar →</button>
         </div>
-        <h3 style="margin-bottom:.9rem">Artigos publicados</h3>
-        <div id="admin-news-list"></div>
+        <h3 style="margin-bottom:.85rem">Artigos publicados</h3>
+        <div id="a-news-list"></div>
       </div>
-
-      <!-- Pending jobs -->
-      <div class="dash-panel" id="adp-pending">
-        <h3 style="margin-bottom:1rem">Vagas aguardando aprovação</h3>
-        <div id="admin-pending-list"></div>
+      <!-- Pending -->
+      <div class="dpanel" id="adp-pending">
+        <h3 style="margin-bottom:.9rem">Vagas aguardando aprovação</h3>
+        <div id="a-pending-list"></div>
       </div>
-
       <!-- Users -->
-      <div class="dash-panel" id="adp-users">
-        <h3 style="margin-bottom:1rem">Gestão de utilizadores</h3>
-        <table class="dash-table" id="admin-users-table">
-          <thead><tr><th>Nome</th><th>Email</th><th>Tipo</th><th>Quota</th><th>Ações</th></tr></thead>
-          <tbody id="admin-users-tbody"></tbody>
-        </table>
+      <div class="dpanel" id="adp-users">
+        <h3 style="margin-bottom:.9rem">Gestão de utilizadores</h3>
+        <div style="overflow-x:auto"><table class="tbl"><thead><tr><th>Nome</th><th>Email</th><th>Tipo</th><th>Quota</th><th></th></tr></thead><tbody id="a-users-tbody"></tbody></table></div>
       </div>
-
       <!-- Newsletter -->
-      <div class="dash-panel" id="adp-newsletter">
-        <h3 style="margin-bottom:.8rem">Gerador de Newsletter</h3>
-        <p style="font-size:.84rem;color:var(--muted);margin-bottom:1.3rem">Selecione as notícias → HTML automático para Mailchimp.</p>
-        <div id="newsletter-news-list" style="display:flex;flex-direction:column;gap:.55rem;max-width:600px;margin-bottom:1.4rem"></div>
-        <div style="display:flex;gap:.7rem">
-          <button class="btn btn-teal btn-md">⚡ Gerar HTML Newsletter</button>
-          <button class="btn btn-ghost btn-md">📤 Enviar via Mailchimp</button>
+      <div class="dpanel" id="adp-newsletter">
+        <h3 style="margin-bottom:.75rem">Gerador de Newsletter</h3>
+        <p style="font-size:.83rem;color:var(--muted);margin-bottom:1.2rem">Selecione notícias → HTML automático para Mailchimp.</p>
+        <div id="a-nl-list" style="display:flex;flex-direction:column;gap:.5rem;max-width:600px;margin-bottom:1.3rem"></div>
+        <div style="display:flex;gap:.6rem;flex-wrap:wrap">
+          <button class="btn btn-teal btn-md">⚡ Gerar HTML</button>
+          <button class="btn btn-ghost btn-md">📤 Enviar Mailchimp</button>
         </div>
       </div>
     </div>
@@ -814,22 +805,22 @@ footer{background:#030810;border-top:1px solid var(--border);margin-top:auto}
 
 </main>
 
-<!-- ░░░ FOOTER ░░░ -->
+<!-- ══ FOOTER ═════════════════════════════════════════════════════════════ -->
 <footer>
-  <div class="footer-cols">
-    <div class="footer-col">
+  <div class="ft-cols">
+    <div class="ft-col">
       <div style="display:flex;align-items:center;gap:.65rem;margin-bottom:.8rem">
-        <div class="logo-mark" style="width:32px;height:32px;font-size:.52rem">INC</div>
-        <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:.88rem">INCOSE Portugal</div>
+        <div class="logo-mark" style="width:32px;height:32px;font-size:.5rem">INC</div>
+        <div style="font-weight:700;font-size:.88rem;font-family:'Syne',sans-serif">INCOSE Portugal</div>
       </div>
       <p>Capítulo oficial INCOSE. Operado pela SESPT desde 2025.</p>
-      <div class="footer-social">
-        <button class="social-btn">in</button>
-        <button class="social-btn">▶</button>
-        <button class="social-btn">✉</button>
+      <div class="ft-social">
+        <button class="soc-btn">in</button>
+        <button class="soc-btn">▶</button>
+        <button class="soc-btn">✉</button>
       </div>
     </div>
-    <div class="footer-col">
+    <div class="ft-col">
       <h4>Quick Links</h4>
       <a onclick="navTo('about')">Sobre Nós</a>
       <a onclick="navTo('membership')">Membership</a>
@@ -838,13 +829,13 @@ footer{background:#030810;border-top:1px solid var(--border);margin-top:auto}
       <a onclick="navTo('jobs')">Job Board</a>
       <a href="https://www.incose.org" target="_blank">INCOSE Global ↗</a>
     </div>
-    <div class="footer-col">
+    <div class="ft-col">
       <h4>Contacto SESPT</h4>
       <p>Rua [a completar]<br>1000-000 Lisboa</p>
-      <a href="/cdn-cgi/l/email-protection#eb8c8e998a87ab988e989b9fc59b9f"><span class="__cf_email__" data-cfemail="d4b3b1a6b5b894a7b1a7a4a0faa4a0">[email&#160;protected]</span></a>
-      <a href="/cdn-cgi/l/email-protection#aac7cfc7c8cfd8d9c2c3daead9cfd9dade84dade"><span class="__cf_email__" data-cfemail="0b666e66696e797863627b4b786e787b7f257b7f">[email&#160;protected]</span></a>
+      <a href="mailto:geral@sespt.pt">geral@sespt.pt</a>
+      <a href="mailto:membership@sespt.pt">membership@sespt.pt</a>
     </div>
-    <div class="footer-col">
+    <div class="ft-col">
       <h4>Legal</h4>
       <a href="#">Política de Privacidade</a>
       <a href="#">Termos de Utilização</a>
@@ -853,276 +844,275 @@ footer{background:#030810;border-top:1px solid var(--border);margin-top:auto}
       <a href="#">Estatutos SESPT</a>
     </div>
   </div>
-  <div class="footer-bottom">
+  <div class="ft-bottom">
     <p><strong>O Capítulo INCOSE Portugal é legalmente representado e operado pela SESPT – Sociedade de Engenharia de Sistemas de Portugal, NIF [inserir número].</strong><br>© 2026 SESPT. INCOSE® marca registada da INCOSE. incose.pt</p>
-    <div class="footer-links"><a href="#">Mapa do site</a><a href="#">Acessibilidade</a><a href="#">Contactos</a></div>
+    <div class="ft-links"><a href="#">Mapa do site</a><a href="#">Acessibilidade</a><a href="#">Contactos</a></div>
   </div>
 </footer>
 
-<!-- ░░░░░░░░░░  JAVASCRIPT  ░░░░░░░░░░ -->
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
-// ── DATA ──────────────────────────────────────────────────────────────────────
-const USERS = {
-  "admin@sespt.pt":   { name:"Sofia Andrade",  role:"admin",   quota:true,  avatar:"SA", type:"Admin SESPT" },
-  "membro@incose.pt": { name:"Carlos Mendes",  role:"member",  quota:true,  avatar:"CM", type:"Membro Individual" },
-  "cab@embraer.pt":   { name:"Ana Ferreira",   role:"cab",     quota:true,  avatar:"AF", type:"CAB – Embraer" },
-  "estudante@ist.pt": { name:"Tomás Lima",     role:"student", quota:false, avatar:"TL", type:"Membro Estudante" },
-};
-const DEMO_PASS = "demo123";
+<!-- ════════════════ JAVASCRIPT (fim do body = DOM já existe) ════════════ -->
+<script>
+'use strict';
 
-let currentUser = null;
-let evtFilterFormat = "all";
-let evtFilterType   = "all";
-let docFilterCat    = "all";
-let jobFilterTag    = "all";
-let appliedJobs     = [];
-let registeredEvts  = [];
+/* ── DATA ───────────────────────────────────────────────────────────────── */
+const USERS = {
+  'admin@sespt.pt':   {name:'Sofia Andrade', role:'admin',   quota:true,  avatar:'SA', type:'Admin SESPT'},
+  'membro@incose.pt': {name:'Carlos Mendes', role:'member',  quota:true,  avatar:'CM', type:'Membro Individual'},
+  'cab@embraer.pt':   {name:'Ana Ferreira',  role:'cab',     quota:true,  avatar:'AF', type:'CAB – Embraer'},
+  'estudante@ist.pt': {name:'Tomás Lima',    role:'student', quota:false, avatar:'TL', type:'Membro Estudante'},
+};
+const PASS = 'demo123';
 
 const EVENTS = [
-  { id:1, title:"INCOSE Portugal Summit 2026",          date:"2026-03-15", loc:"Centro de Congressos do Estoril, Lisboa", format:"presencial", type:"summit",   desc:"A maior conferência anual do capítulo, com keynotes internacionais, workshops e networking.", price:{pub:120,mem:60,stu:25},  cap:300, reg:187 },
-  { id:2, title:"Webinar: MBSE com SysML v2",           date:"2026-03-28", loc:"Online · Zoom",                          format:"online",     type:"webinar",  desc:"Introdução prática ao SysML v2 com exemplos reais de sistemas aeroespaciais.",               price:{pub:20, mem:0, stu:0},   cap:200, reg:89  },
-  { id:3, title:"ASEP Prep-Course – Lisboa (Primavera)",date:"2026-04-12", loc:"Lisboa · Local a confirmar",             format:"presencial", type:"workshop", desc:"3 dias intensivos de preparação para o exame ASEP com instrutores certificados.",            price:{pub:400,mem:280,stu:150},cap:30,  reg:22  },
-  { id:4, title:"WG Defense Systems – Reunião Q2",      date:"2026-05-24", loc:"Online · Teams",                        format:"online",     type:"wg",       desc:"Reunião aberta do Working Group de Defense Systems.",                                         price:{pub:0,  mem:0, stu:0},   cap:100, reg:34  },
-  { id:5, title:"Workshop: Requirements Eng. para ESA", date:"2026-06-10", loc:"Porto · Hotel Sheraton",                format:"presencial", type:"workshop", desc:"Workshop focado nos standards ECSS para engenharia de requisitos em projetos espaciais.",      price:{pub:350,mem:220,stu:120},cap:25,  reg:18  },
+  {id:1,title:'INCOSE Portugal Summit 2026',          date:'2026-03-15',loc:'Centro de Congressos do Estoril, Lisboa',format:'presencial',type:'summit',  desc:'A maior conferência anual do capítulo, com keynotes internacionais.',                               price:{p:120,m:60, s:25 },cap:300,reg:187},
+  {id:2,title:'Webinar: MBSE com SysML v2',           date:'2026-03-28',loc:'Online · Zoom',                          format:'online',    type:'webinar', desc:'Introdução prática ao SysML v2 com exemplos reais de sistemas aeroespaciais.',                    price:{p:20, m:0,  s:0  },cap:200,reg:89},
+  {id:3,title:'ASEP Prep-Course – Lisboa (Primavera)',date:'2026-04-12',loc:'Lisboa · Local a confirmar',             format:'presencial',type:'workshop',desc:'3 dias intensivos de preparação para o exame ASEP com instrutores certificados.',                 price:{p:400,m:280,s:150},cap:30, reg:22},
+  {id:4,title:'WG Defense Systems – Reunião Q2',      date:'2026-05-24',loc:'Online · Teams',                        format:'online',    type:'wg',      desc:'Reunião aberta do Working Group de Defense Systems.',                                              price:{p:0,  m:0,  s:0  },cap:100,reg:34},
+  {id:5,title:'Workshop: Requirements Eng. para ESA', date:'2026-06-10',loc:'Porto · Hotel Sheraton',                format:'presencial',type:'workshop',desc:'Workshop focado nos standards ECSS para engenharia de requisitos em projetos espaciais.',           price:{p:350,m:220,s:120},cap:25, reg:18},
 ];
 
 const DOCS = [
-  { id:1, title:"INCOSE SE Handbook v5.0 (PT)",          type:"PDF",  size:"12.4 MB", cat:"handbook", restricted:true,  icon:"📘", date:"2025-12" },
-  { id:2, title:"Template: Requirements Baseline",       type:"DOCX", size:"340 KB",  cat:"template", restricted:true,  icon:"📋", date:"2025-11" },
-  { id:3, title:"Template: System Architecture (SysML)", type:"ZIP",  size:"2.1 MB",  cat:"template", restricted:true,  icon:"🏗️", date:"2025-10" },
-  { id:4, title:"Webinar: Introdução ao MBSE (Nov 2025)",type:"MP4",  size:"1.2 GB",  cat:"webinar",  restricted:true,  icon:"🎥", date:"2025-11" },
-  { id:5, title:"Webinar: SysML v2 Overview (Jan 2026)", type:"MP4",  size:"890 MB",  cat:"webinar",  restricted:true,  icon:"🎥", date:"2026-01" },
-  { id:6, title:"Guia: ASEP Exam Preparation (PT)",      type:"PDF",  size:"8.7 MB",  cat:"guide",    restricted:true,  icon:"🎓", date:"2026-01" },
-  { id:7, title:"Estatutos SESPT 2025",                  type:"PDF",  size:"420 KB",  cat:"legal",    restricted:false, icon:"📜", date:"2025-09" },
-  { id:8, title:"Relatório Anual 2025",                  type:"PDF",  size:"3.2 MB",  cat:"legal",    restricted:false, icon:"📊", date:"2026-01" },
+  {id:1,title:'INCOSE SE Handbook v5.0 (PT)', type:'PDF', size:'12.4 MB',cat:'handbook',restricted:true, icon:'📘',date:'2025-12'},
+  {id:2,title:'Template: Requirements Baseline',type:'DOCX',size:'340 KB',cat:'template',restricted:true, icon:'📋',date:'2025-11'},
+  {id:3,title:'Template: System Architecture (SysML)',type:'ZIP',size:'2.1 MB',cat:'template',restricted:true, icon:'🏗️',date:'2025-10'},
+  {id:4,title:'Webinar: Introdução ao MBSE (Nov 2025)',type:'MP4',size:'1.2 GB',cat:'webinar', restricted:true, icon:'🎥',date:'2025-11'},
+  {id:5,title:'Webinar: SysML v2 Overview (Jan 2026)', type:'MP4',size:'890 MB',cat:'webinar', restricted:true, icon:'🎥',date:'2026-01'},
+  {id:6,title:'Guia: ASEP Exam Preparation (PT)',      type:'PDF',size:'8.7 MB',cat:'guide',   restricted:true, icon:'🎓',date:'2026-01'},
+  {id:7,title:'Estatutos SESPT 2025',                  type:'PDF',size:'420 KB',cat:'legal',   restricted:false,icon:'📜',date:'2025-09'},
+  {id:8,title:'Relatório Anual 2025',                  type:'PDF',size:'3.2 MB',cat:'legal',   restricted:false,icon:'📊',date:'2026-01'},
 ];
 
 let NEWS = [
-  { id:1, title:"Portugal lidera WG INCOSE sobre Offshore Renewables",  cat:"Destaque",      date:"2026-02-24", excerpt:"A WindFloat Atlantic tornou-se caso de estudo internacional. O capítulo português coordena agora o WG com parceiros de 12 países.", icon:"🌊" },
-  { id:2, title:"Embraer Évora junta-se ao Corporate Advisory Board",    cat:"CAB",           date:"2026-02-18", excerpt:"A fabricante aeronáutica reforça a presença industrial no capítulo.",                                                              icon:"✈️" },
-  { id:3, title:"3ª turma CSEP em Portugal: 12 aprovados",              cat:"Certificação",  date:"2026-02-10", excerpt:"Recordes de aprovação no prep-course de dezembro de 2025. Taxa de aprovação de 92%, acima da média global INCOSE.",               icon:"🏅" },
-  { id:4, title:"INCOSE Portugal no INCOSE IS 2026 – Las Vegas",        cat:"Internacional", date:"2026-01-30", excerpt:"Três membros do capítulo apresentaram papers no Symposium anual.",                                                                icon:"🌍" },
+  {id:1,title:'Portugal lidera WG INCOSE sobre Offshore Renewables', cat:'Destaque',     date:'2026-02-24',excerpt:'A WindFloat Atlantic tornou-se caso de estudo internacional. O capítulo coordena agora o WG com parceiros de 12 países.',icon:'🌊'},
+  {id:2,title:'Embraer Évora junta-se ao Corporate Advisory Board',  cat:'CAB',          date:'2026-02-18',excerpt:'A fabricante aeronáutica reforça a presença industrial no capítulo.',icon:'✈️'},
+  {id:3,title:'3ª turma CSEP em Portugal: 12 aprovados',             cat:'Certificação', date:'2026-02-10',excerpt:'Recordes de aprovação no prep-course de dezembro de 2025. Taxa de 92%, acima da média global.',icon:'🏅'},
+  {id:4,title:'INCOSE Portugal no IS 2026 – Las Vegas',              cat:'Internacional',date:'2026-01-30',excerpt:'Três membros apresentaram papers no Symposium anual.',icon:'🌍'},
 ];
 
 let JOBS = [
-  { id:1, co:"Embraer Portugal",     logo:"EMB", title:"Systems Engineer – Aerostructures", loc:"Évora",          type:"Full-time",  tags:["MBSE","SysML","Aerostructures"],     desc:"Integração de sistemas de estruturas aeronáuticas no novo programa de jatos executivos.", pending:false },
-  { id:2, co:"EDP Renewables",       logo:"EDP", title:"Lead SE – Offshore Wind Division",  loc:"Lisboa",         type:"Full-time",  tags:["Requisitos","Interface Mgmt"],       desc:"Liderança técnica da equipa de SE para o programa WindFloat Atlantic 2.0.",               pending:false },
-  { id:3, co:"IST / INESC-ID",       logo:"IST", title:"Investigador Doutoramento – MBSE",  loc:"Lisboa / Remoto",type:"Bolsa FCT",  tags:["PhD","MBSE","Investigação"],         desc:"Bolsa FCT para doutoramento em Model-Based Systems Engineering.",                          pending:false },
-  { id:4, co:"Thales Alenia Space",  logo:"TAS", title:"Systems Architect – Space Segment", loc:"Porto",          type:"Full-time",  tags:["Space","ECSS","CSEP preferido"],     desc:"Arquitetura de sistemas para segmento espacial em programa de observação da Terra.",      pending:false },
-  { id:5, co:"Critical Software",    logo:"CSW", title:"SE Consultant – Automotive",        loc:"Coimbra / Remoto",type:"Full-time", tags:["ISO 26262","SOTIF","Requisitos"],     desc:"Consultoria em engenharia de sistemas para projetos de veículos autónomos.",             pending:false },
-  { id:6, co:"Hovione",              logo:"HOV", title:"Validation Systems Engineer",        loc:"Lisboa",         type:"Full-time",  tags:["GxP","V&V","Farmacêutico"],          desc:"Engenheiro de validação para linha de produção farmacêutica contínua.",                  pending:false },
+  {id:1,co:'Embraer Portugal',    logo:'EMB',title:'Systems Engineer – Aerostructures',loc:'Évora',          type:'Full-time', tags:['MBSE','SysML','Aerostructures'],  desc:'Integração de sistemas de estruturas aeronáuticas no novo programa de jatos executivos.',pending:false},
+  {id:2,co:'EDP Renewables',      logo:'EDP',title:'Lead SE – Offshore Wind Division', loc:'Lisboa',         type:'Full-time', tags:['Requisitos','Interface Mgmt'],    desc:'Liderança técnica da equipa de SE para o programa WindFloat Atlantic 2.0.',           pending:false},
+  {id:3,co:'IST / INESC-ID',      logo:'IST',title:'Investigador Doutoramento – MBSE', loc:'Lisboa / Remoto',type:'Bolsa FCT', tags:['PhD','MBSE','Investigação'],      desc:'Bolsa FCT para doutoramento em Model-Based Systems Engineering.',                    pending:false},
+  {id:4,co:'Thales Alenia Space',  logo:'TAS',title:'Systems Architect – Space Segment',loc:'Porto',         type:'Full-time', tags:['Space','ECSS','CSEP preferido'], desc:'Arquitetura de sistemas para segmento espacial.',                                     pending:false},
+  {id:5,co:'Critical Software',   logo:'CSW',title:'SE Consultant – Automotive',       loc:'Coimbra/Remoto', type:'Full-time', tags:['ISO 26262','SOTIF','Requisitos'], desc:'Consultoria em engenharia de sistemas para projetos de veículos autónomos.',       pending:false},
+  {id:6,co:'Hovione',             logo:'HOV',title:'Validation Systems Engineer',       loc:'Lisboa',         type:'Full-time', tags:['GxP','V&V','Farmacêutico'],      desc:'Engenheiro de validação para linha de produção farmacêutica contínua.',           pending:false},
 ];
-let PENDING_JOBS = [{ id:99, co:"Nova empresa Lda.", title:"Systems Engineer Jr." }];
+let PENDING_JOBS = [{id:99,co:'Nova empresa Lda.',title:'Systems Engineer Jr.'}];
 
-// ── NAVIGATION ────────────────────────────────────────────────────────────────
+/* State */
+let user        = null;
+let evtFF       = 'all';
+let evtFT       = 'all';
+let docCat      = 'all';
+let jobTag      = 'all';
+let appliedJobs = [];
+let regEvts     = [];
+let lang        = 'pt';
+
+/* ── NAVIGATION ─────────────────────────────────────────────────────────── */
 function navTo(id) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('#desk-nav button').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('#mob-drawer .mob-nav-btn').forEach(b => b.classList.remove('active'));
   const pg = document.getElementById('page-' + id);
   if (pg) pg.classList.add('active');
-  const nb = document.querySelector(`nav button[onclick="navTo('${id}')"]`);
-  if (nb) nb.classList.add('active');
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-  // Render page content
-  if (id === 'events')    renderEvents();
-  if (id === 'knowledge') renderKnowledge();
-  if (id === 'jobs')      renderJobs();
-  if (id === 'dashboard') renderDashboard();
-  if (id === 'admin')     renderAdmin();
+  /* Highlight active nav */
+  const pageNavMap = {home:0,about:1,events:2,knowledge:3,jobs:4,membership:5};
+  if (pageNavMap[id] !== undefined) {
+    const nb = document.querySelector('#desk-nav button[data-nav="'+pageNavMap[id]+'"]');
+    if (nb) nb.classList.add('active');
+  }
+  window.scrollTo({top:0,behavior:'smooth'});
+  if (id==='events')    renderEvents();
+  if (id==='knowledge') renderKnowledge();
+  if (id==='jobs')      renderJobs();
+  if (id==='dashboard') renderDashboard();
+  if (id==='admin')     renderAdmin();
 }
 
-// ── AUTH ──────────────────────────────────────────────────────────────────────
-function openModal(id) { document.getElementById(id).classList.add('open'); }
+/* ── MOBILE DRAWER ──────────────────────────────────────────────────────── */
+function toggleDrawer() {
+  const d = document.getElementById('mob-drawer');
+  const b = document.getElementById('burger');
+  const open = d.classList.toggle('open');
+  b.textContent = open ? '✕' : '☰';
+  document.body.style.overflow = open ? 'hidden' : '';
+}
+function closeDrawer() {
+  document.getElementById('mob-drawer').classList.remove('open');
+  document.getElementById('burger').textContent = '☰';
+  document.body.style.overflow = '';
+}
+window.addEventListener('resize', () => {
+  if (window.innerWidth > 768) closeDrawer();
+});
+
+/* ── LANGUAGE ─────────────────────────────────────────────────────────────*/
+const T = {
+  pt:{badge:'Capítulo oficial INCOSE em Portugal',h1:'Engenharia de Sistemas<br><span class="grad">com raízes atlânticas</span>',sub:'A comunidade portuguesa de profissionais INCOSE. Formação certificada, networking, Working Groups ativos e representação no ecossistema global de Systems Engineering.',cta1:'Tornar-me sócio →',cta2:'Ver eventos',nav:['Início','Sobre Nós','Eventos','Knowledge','Carreiras','Adesão']},
+  en:{badge:'Official INCOSE Chapter in Portugal',h1:'Systems Engineering<br><span class="grad">with Atlantic roots</span>',sub:'The Portuguese community of INCOSE professionals. Certified training, networking, active Working Groups and representation in the global SE ecosystem.',cta1:'Become a member →',cta2:'See events',nav:['Home','About','Events','Knowledge','Careers','Join']},
+};
+function setLang(l) {
+  lang = l;
+  const t = T[l];
+  const el = id => document.getElementById(id);
+  if (el('h-badge')) el('h-badge').textContent = t.badge;
+  if (el('h-h1'))    el('h-h1').innerHTML  = t.h1;
+  if (el('h-sub'))   el('h-sub').textContent = t.sub;
+  if (el('h-cta1'))  el('h-cta1').textContent = t.cta1;
+  if (el('h-cta2'))  el('h-cta2').textContent = t.cta2;
+  /* Nav labels */
+  document.querySelectorAll('#desk-nav button[data-nav]').forEach(btn => {
+    const i = +btn.getAttribute('data-nav');
+    if (t.nav[i]) btn.textContent = t.nav[i];
+  });
+  /* Toggle active state */
+  ['lt-pt','lt-en'].forEach(id => {
+    const btn = el(id);
+    if (btn) btn.className = (id.endsWith(l)) ? 'active' : '';
+  });
+  const mpp = el('mob-lt-pt'), mpe = el('mob-lt-en');
+  if (mpp) mpp.className = l==='pt' ? 'btn btn-teal btn-sm' : 'btn btn-ghost btn-sm';
+  if (mpe) mpe.className = l==='en' ? 'btn btn-teal btn-sm' : 'btn btn-ghost btn-sm';
+}
+
+/* ── AUTH ───────────────────────────────────────────────────────────────── */
+function openModal(id)  { document.getElementById(id).classList.add('open'); }
 function closeModal(id) { document.getElementById(id).classList.remove('open'); }
 
-function switchAuthTab(tab) {
-  document.querySelectorAll('.modal-tab').forEach((t,i) => t.classList.toggle('active', (i===0&&tab==='login')||(i===1&&tab==='register')));
-  document.getElementById('auth-login').style.display    = tab==='login'    ? 'block' : 'none';
-  document.getElementById('auth-register').style.display = tab==='register' ? 'block' : 'none';
-  document.getElementById('auth-modal-title').textContent = tab==='login' ? 'Entrar na plataforma' : 'Criar conta';
+/* Close overlay on bg click */
+document.querySelectorAll('.overlay').forEach(o => {
+  o.addEventListener('click', e => { if (e.target === o) o.classList.remove('open'); });
+});
+
+function authTab(t) {
+  document.querySelectorAll('.mtab').forEach((b,i) => b.classList.toggle('active',(i===0&&t==='login')||(i===1&&t==='register')));
+  document.getElementById('auth-login').style.display    = t==='login'    ? 'block':'none';
+  document.getElementById('auth-register').style.display = t==='register' ? 'block':'none';
+  document.getElementById('auth-title').textContent = t==='login' ? 'Entrar na plataforma' : 'Criar conta';
 }
 
-function fillDemo(email) {
-  document.getElementById('login-email').value = email;
-  document.getElementById('login-pass').value  = DEMO_PASS;
+function fillDemo(e) {
+  document.getElementById('l-email').value = e;
+  document.getElementById('l-pass').value  = PASS;
 }
 
 function doLogin() {
-  const email = document.getElementById('login-email').value.trim().toLowerCase();
-  const pass  = document.getElementById('login-pass').value;
-  const user  = USERS[email];
-  const errEl = document.getElementById('login-err');
-  if (user && pass === DEMO_PASS) {
-    currentUser = { email, ...user };
-    errEl.style.display = 'none';
+  const email = document.getElementById('l-email').value.trim().toLowerCase();
+  const pass  = document.getElementById('l-pass').value;
+  const u     = USERS[email];
+  const err   = document.getElementById('l-err');
+  if (u && pass === PASS) {
+    user = {email, ...u};
+    err.style.display = 'none';
     closeModal('modal-auth');
     updateUI();
     navTo('dashboard');
   } else {
-    errEl.style.display = 'flex';
+    err.style.display = 'flex';
   }
 }
 
 function doLogout() {
-  currentUser = null;
-  appliedJobs = [];
+  user = null; appliedJobs = [];
   updateUI();
   navTo('home');
 }
 
 function updateUI() {
-  const u = currentUser;
-  const utilArea = document.getElementById('util-user-area');
-  const mobUtilArea = document.getElementById('mob-util-area');
-  const showDash  = u ? 'block' : 'none';
-  const showAdmin = (u && u.role==='admin') ? 'block' : 'none';
-  const showJobBtn= (u && (u.role==='cab'||u.role==='admin')) ? 'inline-flex' : 'none';
-
+  const u = user;
+  /* Util bar */
+  const uu = document.getElementById('util-user');
+  /* Mobile user row */
+  const mu = document.getElementById('mob-user');
   if (u) {
-    const userChip = `<span style="display:inline-flex;align-items:center;gap:.6rem">
-      <span style="width:26px;height:26px;border-radius:50%;background:var(--teal);display:inline-flex;align-items:center;justify-content:center;font-size:.63rem;font-weight:800">${u.avatar}</span>
-      <span style="color:rgba(255,255,255,.7);font-size:.74rem">${u.name}</span>
-      <button class="btn btn-ghost btn-sm" onclick="doLogout()" style="font-size:.71rem;padding:.2rem .6rem">Sair</button>
+    const chip = `<span style="display:inline-flex;align-items:center;gap:.55rem">
+      <span style="width:24px;height:24px;border-radius:50%;background:var(--teal);display:inline-flex;align-items:center;justify-content:center;font-size:.6rem;font-weight:800">${u.avatar}</span>
+      <span style="color:rgba(255,255,255,.68);font-size:.73rem">${u.name}</span>
+      <button class="btn btn-ghost btn-sm" onclick="doLogout()" style="font-size:.7rem;padding:.2rem .55rem">Sair</button>
     </span>`;
-    if (utilArea) utilArea.innerHTML = userChip;
-    if (mobUtilArea) mobUtilArea.innerHTML = `<div style="font-size:.82rem;color:var(--muted);margin-bottom:.6rem">Sessão: <strong style="color:#fff">${u.name}</strong> · <span style="color:${u.quota?'var(--success)':'var(--warn)'}">${u.quota?'Quota ativa':'Quota inativa'}</span></div><button class="btn btn-ghost btn-md btn-full" onclick="doLogout();toggleMobile()">Terminar sessão</button>`;
+    if (uu) uu.innerHTML = chip;
+    if (mu) mu.innerHTML = `<div style="font-size:.82rem;color:var(--muted);margin-bottom:.6rem">Sessão: <strong style="color:#fff">${u.name}</strong><br><span style="color:${u.quota?'var(--success)':'var(--warn)'}">${u.quota?'✓ Quota ativa':'⚠ Quota inativa'}</span></div><button class="btn btn-ghost btn-md btn-full" onclick="doLogout();closeDrawer()">Terminar sessão</button>`;
   } else {
-    if (utilArea) utilArea.innerHTML = `<button class="btn btn-primary btn-sm" onclick="openModal('modal-auth')">🔐 Login / Registo</button>`;
-    if (mobUtilArea) mobUtilArea.innerHTML = `<button class="btn btn-primary btn-md btn-full" onclick="openModal('modal-auth');toggleMobile()">🔐 Login / Registo</button>`;
+    if (uu) uu.innerHTML = `<button class="btn btn-primary btn-sm" onclick="openModal('modal-auth')">🔐 Login / Registo</button>`;
+    if (mu) mu.innerHTML = `<button class="btn btn-primary btn-md btn-full" onclick="openModal('modal-auth');closeDrawer()">🔐 Login / Registo</button>`;
   }
-
-  // Desktop nav
-  document.getElementById('nav-dashboard').style.display = showDash;
-  document.getElementById('nav-admin').style.display     = showAdmin;
-  // Mobile nav
-  const md = document.getElementById('mob-dashboard');
-  const ma = document.getElementById('mob-admin');
-  if (md) md.style.display = showDash;
-  if (ma) ma.style.display = showAdmin;
-  // Job post button
-  const jb = document.getElementById('btn-post-job');
-  if (jb) jb.style.display = showJobBtn;
-
-  // Re-render active pages
+  const show  = (el,v) => { const e=document.getElementById(el); if(e) e.style.display=v; };
+  const dash  = u ? 'block' : 'none';
+  const adm   = (u&&u.role==='admin') ? 'block' : 'none';
+  const cab   = (u&&(u.role==='cab'||u.role==='admin')) ? 'inline-flex' : 'none';
+  show('nav-dash',dash); show('nav-adm',adm);
+  show('mob-nav-dash',dash); show('mob-nav-adm',adm);
+  show('btn-post',cab);
   renderEvents(); renderKnowledge(); renderJobs();
 }
 
-// ── LANGUAGE ──────────────────────────────────────────────────────────────────
-const TRANS = {
-  pt: { badge:"Capítulo oficial INCOSE em Portugal", h1:"Engenharia de Sistemas<br><span class='grad'>com raízes atlânticas</span>", p:"A comunidade portuguesa de profissionais INCOSE. Formação certificada, networking, Working Groups ativos e representação no ecossistema global de Systems Engineering.", cta1:"Tornar-me sócio →", cta2:"Ver eventos" },
-  en: { badge:"Official INCOSE Chapter in Portugal",  h1:"Systems Engineering<br><span class='grad'>with Atlantic roots</span>",     p:"The Portuguese community of INCOSE professionals. Certified training, networking, active Working Groups and representation in the global SE ecosystem.", cta1:"Become a member →", cta2:"See events" },
-};
-let currentLang = 'pt';
-function setLang(l) {
-  currentLang = l;
-  const t = TRANS[l];
-  // Hero text
-  const b = document.getElementById('hero-badge-txt');
-  const h = document.getElementById('hero-h1');
-  const p = document.getElementById('hero-p');
-  const c1 = document.getElementById('hero-cta1');
-  const c2 = document.getElementById('hero-cta2');
-  if (b)  b.textContent  = t.badge;
-  if (h)  h.innerHTML    = t.h1;
-  if (p)  p.textContent  = t.p;
-  if (c1) c1.textContent = t.cta1;
-  if (c2) c2.textContent = t.cta2;
-  // Sync ALL lang toggle buttons (desktop + mobile)
-  document.querySelectorAll('.lang-toggle button').forEach(btn => {
-    btn.classList.toggle('active', btn.textContent.trim() === l.toUpperCase());
-  });
-  // Desktop nav labels
-  const NAV_LABELS = { pt:['Início','Sobre Nós','Eventos','Knowledge','Carreiras','Adesão'], en:['Home','About','Events','Knowledge','Careers','Join'] };
-  document.querySelectorAll('#main-nav button[data-nav]').forEach(btn => {
-    const i = parseInt(btn.getAttribute('data-nav'));
-    if (NAV_LABELS[l][i] !== undefined) btn.textContent = NAV_LABELS[l][i];
-  });
-  const mp = document.getElementById('mob-pt');
-  const me = document.getElementById('mob-en');
-  if (mp) mp.className = l==='pt' ? 'btn btn-teal btn-sm' : 'btn btn-ghost btn-sm';
-  if (me) me.className = l==='en' ? 'btn btn-teal btn-sm' : 'btn btn-ghost btn-sm';
+/* ── COOKIE ─────────────────────────────────────────────────────────────── */
+function closeCookie() {
+  const c = document.getElementById('cookie');
+  if (c) c.style.display = 'none';
 }
 
-// ── MOBILE MENU ───────────────────────────────────────────────────────────────
-function toggleMobile() {
-  const m = document.getElementById('mobile-menu');
-  const b = document.getElementById('burger');
-  const open = m.classList.toggle('open');
-  b.textContent = open ? '✕' : '☰';
-  document.body.style.overflow = open ? 'hidden' : '';
-}
-
-// Close mobile menu on resize to desktop
-window.addEventListener('resize', () => {
-  if (window.innerWidth > 768) {
-    const m = document.getElementById('mobile-menu');
-    const b = document.getElementById('burger');
-    if (m) m.classList.remove('open');
-    if (b) b.textContent = '☰';
-    document.body.style.overflow = '';
-  }
-});
-
-
-function closeCookie() { document.getElementById('cookie-banner').style.display='none'; }
-
-// ── HOME NEWS ─────────────────────────────────────────────────────────────────
+/* ── HOME NEWS ──────────────────────────────────────────────────────────── */
 function renderHomeNews() {
   const el = document.getElementById('home-news');
+  if (!el) return;
   el.innerHTML = NEWS.slice(0,3).map((n,i) => `
-    <div class="card news-card" style="${i===0?'grid-row:span 1':''}">
-      <div class="news-card-icon">${n.icon}</div>
-      <span class="badge badge-teal">${n.cat}</span>
-      <h3 style="font-family:'Syne',sans-serif;font-weight:700;font-size:${i===0?'1.02rem':'.88rem'};margin:.45rem 0 .35rem;line-height:1.35">${n.title}</h3>
-      ${i===0?`<p style="font-size:.82rem;color:var(--muted);line-height:1.6">${n.excerpt}</p>`:''}
-      <div style="font-size:.71rem;color:rgba(255,255,255,.28);margin-top:.55rem">${n.date}</div>
+    <div class="card" style="padding:1.2rem;cursor:pointer">
+      <div style="font-size:${i===0?'2rem':'1.7rem'};margin-bottom:.7rem">${n.icon}</div>
+      <span class="badge b-teal">${n.cat}</span>
+      <h3 style="font-size:${i===0?'1rem':'.88rem'};font-weight:700;margin:.45rem 0 .35rem;line-height:1.35">${n.title}</h3>
+      ${i===0 ? `<p style="font-size:.82rem;color:var(--muted);line-height:1.6">${n.excerpt}</p>` : ''}
+      <div style="font-size:.7rem;color:rgba(255,255,255,.25);margin-top:.55rem">${n.date}</div>
     </div>`).join('');
 }
 
-// ── EVENTS ────────────────────────────────────────────────────────────────────
+/* ── EVENTS ─────────────────────────────────────────────────────────────── */
+const evtTypeLabel = {summit:'Summit',webinar:'Webinar',workshop:'Workshop',wg:'Working Group'};
+const evtFmtColor  = {presencial:'b-cork',online:'b-teal'};
+
 function getEvtPrice(e) {
-  if (!currentUser) return e.price.pub;
-  if (currentUser.role==='student') return e.price.stu;
-  if (currentUser.quota) return e.price.mem;
-  return e.price.pub;
+  if (!user)                return e.price.p;
+  if (user.role==='student') return e.price.s;
+  if (user.quota)            return e.price.m;
+  return e.price.p;
 }
-const typeLabel = { summit:"Summit", webinar:"Webinar", workshop:"Workshop", wg:"Working Group" };
-const fmtColor  = { presencial:"badge-cork", online:"badge-teal" };
 
 function renderEvents() {
-  const list = document.getElementById('events-list');
-  if (!list) return;
-  const filtered = EVENTS.filter(e =>
-    (evtFilterFormat==='all'||e.format===evtFilterFormat) &&
-    (evtFilterType==='all'||e.type===evtFilterType)
+  const el = document.getElementById('evts-list');
+  if (!el) return;
+  const list = EVENTS.filter(e =>
+    (evtFF==='all'||e.format===evtFF) &&
+    (evtFT==='all'||e.type===evtFT)
   );
-  list.innerHTML = filtered.map(e => {
-    const d = new Date(e.date);
-    const price = getEvtPrice(e);
-    const isReg = registeredEvts.includes(e.id);
-    const discount = currentUser?.quota && price < e.price.pub;
-    return `<div class="card event-row">
-      <div class="event-date-box">
-        <div class="event-day">${d.getDate()}</div>
-        <div class="event-month">${d.toLocaleString('pt',{month:'short'})}</div>
+  if (!list.length) { el.innerHTML = '<p style="color:var(--muted);padding:2rem 0">Nenhum evento encontrado para os filtros selecionados.</p>'; return; }
+  el.innerHTML = list.map(e => {
+    const d   = new Date(e.date + 'T12:00:00');
+    const pr  = getEvtPrice(e);
+    const isR = regEvts.includes(e.id);
+    const disc= user&&user.quota&&pr<e.price.p;
+    return `<div class="card evt-row">
+      <div class="evt-date">
+        <div class="evt-day">${d.getDate()}</div>
+        <div class="evt-mon">${d.toLocaleString('pt',{month:'short'})}</div>
       </div>
-      <div style="flex:1">
-        <div style="display:flex;gap:.38rem;margin-bottom:.32rem;flex-wrap:wrap">
-          <span class="badge ${fmtColor[e.format]}">${e.format}</span>
-          <span class="badge badge-blue">${typeLabel[e.type]}</span>
-          ${discount?'<span class="badge badge-green">✓ Preço de membro</span>':''}
+      <div class="evt-meta">
+        <div style="display:flex;gap:.35rem;margin-bottom:.28rem;flex-wrap:wrap">
+          <span class="badge ${evtFmtColor[e.format]}">${e.format}</span>
+          <span class="badge b-blue">${evtTypeLabel[e.type]}</span>
+          ${disc?'<span class="badge b-green">✓ Preço membro</span>':''}
         </div>
-        <h3 style="font-family:'Syne',sans-serif;font-weight:700;font-size:.95rem;margin-bottom:.18rem">${e.title}</h3>
-        <p style="font-size:.77rem;color:var(--muted)">${e.loc}</p>
+        <h3>${e.title}</h3>
+        <p>${e.loc}</p>
       </div>
-      <div class="event-right">
-        <div class="event-price ${price===0?'event-price-free':''}">${price===0?'Grátis':price+'€'}</div>
-        ${discount?`<div style="font-size:.63rem;color:var(--muted);text-decoration:line-through">${e.price.pub}€</div>`:''}
-        <div style="display:flex;gap:.38rem;margin-top:.45rem;justify-content:flex-end">
-          <button class="btn btn-ghost btn-sm" onclick="openEventDetail(${e.id})">Detalhes</button>
-          ${isReg
-            ? `<button class="btn btn-success btn-sm">✓ Inscrito</button>`
-            : `<button class="btn btn-primary btn-sm" onclick="registerEvent(${e.id})">${currentUser?'Inscrever':'Login p/ inscrever'}</button>`
+      <div class="evt-right">
+        <div class="evt-price ${pr===0?'price-free':''}">${pr===0?'Grátis':pr+'€'}</div>
+        ${disc?`<div style="font-size:.63rem;color:var(--muted);text-decoration:line-through">${e.price.p}€</div>`:''}
+        <div class="evt-actions">
+          <button class="btn btn-ghost btn-sm" onclick="openEvtModal(${e.id})">Detalhes</button>
+          ${isR
+            ? '<button class="btn btn-success btn-sm">✓ Inscrito</button>'
+            : `<button class="btn btn-primary btn-sm" onclick="regEvt(${e.id})">${user?'Inscrever':'Entrar p/ inscrever'}</button>`
           }
         </div>
       </div>
@@ -1130,304 +1120,297 @@ function renderEvents() {
   }).join('');
 }
 
-function filterEvents(dim, val, btn) {
-  if (dim==='format') {
-    evtFilterFormat = val;
-    document.querySelectorAll('[data-filter-format]').forEach(b=>b.className=b.getAttribute('data-filter-format')===val?'btn btn-teal btn-sm':'btn btn-ghost btn-sm');
+function fEvt(dim, val) {
+  if (dim==='f') {
+    evtFF = val;
+    document.querySelectorAll('[data-ff]').forEach(b => b.className = b.getAttribute('data-ff')===val ? 'btn btn-teal btn-sm':'btn btn-ghost btn-sm');
   } else {
-    evtFilterType = val;
-    document.querySelectorAll('[data-filter-type]').forEach(b=>b.className=b.getAttribute('data-filter-type')===val?'btn btn-teal btn-sm':'btn btn-ghost btn-sm');
+    evtFT = val;
+    document.querySelectorAll('[data-ft]').forEach(b => b.className = b.getAttribute('data-ft')===val ? 'btn btn-teal btn-sm':'btn btn-ghost btn-sm');
   }
   renderEvents();
 }
 
-function registerEvent(id) {
-  if (!currentUser) { openModal('modal-auth'); return; }
-  if (!registeredEvts.includes(id)) registeredEvts.push(id);
-  renderEvents();
-  closeModal('modal-event');
+function regEvt(id) {
+  if (!user) { openModal('modal-auth'); return; }
+  if (!regEvts.includes(id)) regEvts.push(id);
+  renderEvents(); closeModal('modal-evt');
 }
 
-function openEventDetail(id) {
-  const e = EVENTS.find(x=>x.id===id);
+function openEvtModal(id) {
+  const e  = EVENTS.find(x => x.id===id);
   if (!e) return;
-  const price = getEvtPrice(e);
-  const isReg = registeredEvts.includes(e.id);
-  document.getElementById('ev-modal-title').textContent = e.title;
-  document.getElementById('ev-modal-body').innerHTML = `
-    <div style="display:flex;gap:.38rem;margin-bottom:.9rem;flex-wrap:wrap">
-      <span class="badge ${fmtColor[e.format]}">${e.format}</span>
-      <span class="badge badge-blue">${typeLabel[e.type]}</span>
+  const pr = getEvtPrice(e);
+  const isR= regEvts.includes(id);
+  document.getElementById('em-title').textContent = e.title;
+  document.getElementById('em-body').innerHTML = `
+    <div style="display:flex;gap:.35rem;flex-wrap:wrap;margin-bottom:.85rem">
+      <span class="badge ${evtFmtColor[e.format]}">${e.format}</span>
+      <span class="badge b-blue">${evtTypeLabel[e.type]}</span>
     </div>
-    <p style="font-size:.87rem;color:rgba(255,255,255,.7);line-height:1.7;margin-bottom:1rem">${e.desc}</p>
-    <div class="topbox" style="margin-bottom:1rem">
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.55rem;font-size:.81rem">
+    <p style="font-size:.87rem;color:rgba(255,255,255,.68);line-height:1.7;margin-bottom:.9rem">${e.desc}</p>
+    <div class="topbox" style="margin-bottom:.9rem">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem;font-size:.8rem">
         <div><span style="color:var(--muted)">Data: </span>${e.date}</div>
         <div><span style="color:var(--muted)">Local: </span>${e.loc}</div>
         <div><span style="color:var(--muted)">Vagas: </span>${e.cap-e.reg} restantes</div>
         <div><span style="color:var(--muted)">Inscritos: </span>${e.reg}</div>
       </div>
     </div>
-    <p style="font-size:.73rem;font-weight:600;color:var(--muted);letter-spacing:1px;margin-bottom:.45rem">PREÇOS</p>
-    ${[['Público geral',e.price.pub],['Membro ativo',e.price.mem],['Estudante',e.price.stu]].map(([l,p])=>`
-      <div style="display:flex;justify-content:space-between;font-size:.84rem;padding:.28rem 0;border-bottom:1px solid var(--border)">
+    <p style="font-size:.7rem;font-weight:700;color:var(--muted);letter-spacing:.8px;margin-bottom:.4rem;text-transform:uppercase">Preços</p>
+    ${[['Público geral',e.price.p],['Membro ativo',e.price.m],['Estudante',e.price.s]].map(([l,p]) =>
+      `<div style="display:flex;justify-content:space-between;font-size:.83rem;padding:.26rem 0;border-bottom:1px solid var(--border)">
         <span style="color:var(--muted)">${l}</span>
         <strong style="color:${p===0?'var(--success)':'#fff'}">${p===0?'Grátis':p+'€'}</strong>
       </div>`).join('')}
-    <div style="display:flex;gap:.6rem;margin-top:1.2rem">
-      <button class="btn ${isReg?'btn-success':'btn-primary'} btn-md" style="flex:1;justify-content:center" onclick="registerEvent(${e.id})">
-        ${isReg?'✓ Já inscrito':'Inscrever agora'}
+    <div style="display:flex;gap:.6rem;margin-top:1.1rem">
+      <button class="btn ${isR?'btn-success':'btn-primary'} btn-md" style="flex:1" onclick="regEvt(${id})">
+        ${isR?'✓ Já inscrito':'Inscrever agora'}
       </button>
-      <button class="btn btn-ghost btn-md" onclick="downloadICS(${e.id})">⬇ .ics</button>
+      <button class="btn btn-ghost btn-md" onclick="dlICS(${id})">⬇ .ics</button>
     </div>`;
-  openModal('modal-event');
+  openModal('modal-evt');
 }
 
-function downloadICS(id) {
+function dlICS(id) {
   const e = EVENTS.find(x=>x.id===id);
   const d = e.date.replace(/-/g,'');
-  const ics = `BEGIN:VCALENDAR\nVERSION:2.0\nBEGIN:VEVENT\nSUMMARY:${e.title}\nDTSTART:${d}T090000Z\nDTEND:${d}T180000Z\nLOCATION:${e.loc}\nDESCRIPTION:${e.desc}\nEND:VEVENT\nEND:VCALENDAR`;
-  const a = Object.assign(document.createElement('a'),{href:URL.createObjectURL(new Blob([ics],{type:'text/calendar'})),download:'evento-incose.ics'});
+  const s = `BEGIN:VCALENDAR\nVERSION:2.0\nBEGIN:VEVENT\nSUMMARY:${e.title}\nDTSTART:${d}T090000Z\nDTEND:${d}T180000Z\nLOCATION:${e.loc}\nEND:VEVENT\nEND:VCALENDAR`;
+  const a = Object.assign(document.createElement('a'),{href:URL.createObjectURL(new Blob([s],{type:'text/calendar'})),download:'evento.ics'});
   a.click();
 }
 
-// ── KNOWLEDGE ─────────────────────────────────────────────────────────────────
-const catLabels = { all:"Todos", handbook:"Handbook", template:"Templates", webinar:"Webinars", guide:"Guias", legal:"Legal / Estatutos" };
+/* ── KNOWLEDGE ──────────────────────────────────────────────────────────── */
+const CAT_LABELS = {all:'Todos',handbook:'Handbook',template:'Templates',webinar:'Webinars',guide:'Guias',legal:'Legal'};
 
 function renderKnowledge() {
-  const alertEl = document.getElementById('knowledge-alert');
-  const catsEl  = document.getElementById('doc-cats');
-  const gridEl  = document.getElementById('docs-grid');
-  if (!alertEl) return;
-  if (!currentUser)        alertEl.innerHTML = `<div class="alert alert-warn">🔒 Os materiais técnicos requerem login e quota ativa. <button onclick="openModal('modal-auth')" style="background:none;border:none;color:var(--teal2);cursor:pointer;font-weight:600;font-family:inherit">Entrar →</button></div>`;
-  else if (!currentUser.quota) alertEl.innerHTML = `<div class="alert alert-warn">⚠ Quota inativa. Renove a adesão para aceder aos materiais técnicos.</div>`;
-  else                         alertEl.innerHTML = `<div class="alert alert-success">✓ Acesso completo – quota ativa até dezembro 2026.</div>`;
+  const al = document.getElementById('know-alert');
+  const cc = document.getElementById('doc-cats');
+  const gr = document.getElementById('docs-grid');
+  if (!al) return;
+  if (!user)        al.innerHTML = `<div class="alert a-info">🔒 Materiais técnicos requerem login e quota ativa. <button onclick="openModal('modal-auth')" style="background:none;border:none;color:var(--teal2);cursor:pointer;font-weight:600;font-family:inherit">Entrar →</button></div>`;
+  else if(!user.quota) al.innerHTML = `<div class="alert a-warn">⚠ Quota inativa. Renove a adesão para aceder aos materiais.</div>`;
+  else              al.innerHTML = `<div class="alert a-ok">✓ Acesso completo – quota ativa até dezembro 2026.</div>`;
 
-  catsEl.innerHTML = Object.entries(catLabels).map(([k,v])=>
-    `<button class="btn ${docFilterCat===k?'btn-teal':'btn-ghost'} btn-sm" onclick="filterDocs('${k}',this)">${v}</button>`
+  cc.innerHTML = Object.entries(CAT_LABELS).map(([k,v]) =>
+    `<button class="btn ${docCat===k?'btn-teal':'btn-ghost'} btn-sm" onclick="fDoc('${k}')">${v}</button>`
   ).join('');
 
-  const search = (document.getElementById('doc-search')?.value||'').toLowerCase();
-  const filtered = DOCS.filter(d => (docFilterCat==='all'||d.cat===docFilterCat) && d.title.toLowerCase().includes(search));
-  const canAccess = d => !d.restricted || currentUser?.quota;
-
-  gridEl.innerHTML = filtered.map(d => `
-    <div class="card doc-card" style="${!canAccess(d)?'opacity:.6':''}">
-      <div style="font-size:2rem;margin-bottom:.65rem">${d.icon}</div>
-      <div style="display:flex;gap:.35rem;margin-bottom:.45rem;flex-wrap:wrap">
-        <span class="badge badge-blue">${d.type}</span>
-        ${d.restricted?`<span class="badge ${canAccess(d)?'badge-green':'badge-warn'}">${canAccess(d)?'✓ Acesso':'🔒 Membros'}</span>`:''}
+  const q = (document.getElementById('doc-q')?.value||'').toLowerCase();
+  const filtered = DOCS.filter(d => (docCat==='all'||d.cat===docCat) && d.title.toLowerCase().includes(q));
+  const canGet = d => !d.restricted || user?.quota;
+  gr.innerHTML = filtered.map(d => `
+    <div class="card doc-card" style="${!canGet(d)?'opacity:.58':''}">
+      <div style="font-size:1.9rem;margin-bottom:.65rem">${d.icon}</div>
+      <div style="display:flex;gap:.3rem;flex-wrap:wrap;margin-bottom:.45rem">
+        <span class="badge b-blue">${d.type}</span>
+        ${d.restricted?`<span class="badge ${canGet(d)?'b-green':'b-warn'}">${canGet(d)?'✓ Acesso':'🔒 Membros'}</span>`:''}
       </div>
-      <h4 style="font-family:'Syne',sans-serif;font-weight:700;font-size:.86rem;margin-bottom:.22rem;line-height:1.3">${d.title}</h4>
-      <p style="font-size:.71rem;color:var(--muted);margin-bottom:.75rem">${d.size} · ${d.date}</p>
-      ${canAccess(d)
+      <h4 style="font-weight:700;font-size:.86rem;margin-bottom:.22rem;line-height:1.35">${d.title}</h4>
+      <p style="font-size:.7rem;color:var(--muted);margin-bottom:.75rem">${d.size} · ${d.date}</p>
+      ${canGet(d)
         ? `<button class="btn btn-primary btn-sm">⬇ Download</button>`
-        : `<button class="btn btn-ghost btn-sm" onclick="openModal('modal-auth')">${currentUser?'Renovar quota':'🔒 Fazer login'}</button>`
+        : `<button class="btn btn-ghost btn-sm" onclick="openModal('modal-auth')">${user?'Renovar quota':'🔒 Fazer login'}</button>`
       }
     </div>`).join('');
 }
 
-function filterDocs(cat) {
-  docFilterCat = cat;
-  renderKnowledge();
-}
+function fDoc(cat) { docCat = cat; renderKnowledge(); }
 
-// ── JOBS ──────────────────────────────────────────────────────────────────────
+/* ── JOBS ───────────────────────────────────────────────────────────────── */
 function renderJobs() {
-  const alertEl   = document.getElementById('jobs-alert');
-  const tagsEl    = document.getElementById('job-tag-filters');
-  const gridEl    = document.getElementById('jobs-grid');
-  if (!alertEl) return;
-
-  if (!currentUser)              alertEl.innerHTML = `<div class="alert alert-info">🔒 Candidatura 1-click disponível para membros. <button onclick="openModal('modal-auth')" style="background:none;border:none;color:var(--teal2);cursor:pointer;font-weight:600;font-family:inherit">Fazer login →</button></div>`;
-  else if (!currentUser.quota)   alertEl.innerHTML = `<div class="alert alert-warn">⚠ Quota inativa. Renove para usar a candidatura 1-click.</div>`;
-  else                           alertEl.innerHTML = `<div class="alert alert-success">✓ Perfil ativo – candidatura 1-click disponível.</div>`;
+  const al = document.getElementById('jobs-alert');
+  const tg = document.getElementById('job-tags');
+  const gr = document.getElementById('jobs-grid');
+  if (!al) return;
+  if (!user)          al.innerHTML = `<div class="alert a-info">🔒 Candidatura 1-click para membros. <button onclick="openModal('modal-auth')" style="background:none;border:none;color:var(--teal2);cursor:pointer;font-weight:600;font-family:inherit">Entrar →</button></div>`;
+  else if(!user.quota) al.innerHTML = `<div class="alert a-warn">⚠ Quota inativa. Renove para usar candidatura 1-click.</div>`;
+  else                al.innerHTML = `<div class="alert a-ok">✓ Perfil ativo – candidatura 1-click disponível.</div>`;
 
   const allTags = [...new Set(JOBS.flatMap(j=>j.tags))];
-  tagsEl.innerHTML = ['all',...allTags].map(t=>
-    `<button class="btn ${jobFilterTag===t?'btn-teal':'btn-ghost'} btn-sm" onclick="filterJobs('${t}')">${t==='all'?'Todas':t}</button>`
+  tg.innerHTML = ['all',...allTags].map(t =>
+    `<button class="btn ${jobTag===t?'btn-teal':'btn-ghost'} btn-sm" onclick="fJob('${t}')">${t==='all'?'Todas':t}</button>`
   ).join('');
 
-  const search = (document.getElementById('job-search')?.value||'').toLowerCase();
-  const filtered = JOBS.filter(j => !j.pending &&
-    (jobFilterTag==='all'||j.tags.includes(jobFilterTag)) &&
-    (j.title.toLowerCase().includes(search)||j.co.toLowerCase().includes(search))
+  const q = (document.getElementById('job-q')?.value||'').toLowerCase();
+  const list = JOBS.filter(j => !j.pending &&
+    (jobTag==='all'||j.tags.includes(jobTag)) &&
+    (j.title.toLowerCase().includes(q)||j.co.toLowerCase().includes(q))
   );
-  gridEl.innerHTML = filtered.map(j => {
-    const isApplied = appliedJobs.includes(j.id);
+  gr.innerHTML = list.map(j => {
+    const isA = appliedJobs.includes(j.id);
     return `<div class="card job-card">
-      <div style="display:flex;gap:.85rem;margin-bottom:.75rem">
-        <div class="job-logo">${j.logo}</div>
+      <div style="display:flex;gap:.8rem;margin-bottom:.75rem">
+        <div class="job-logo-box">${j.logo}</div>
         <div>
-          <h4 style="font-family:'Syne',sans-serif;font-weight:700;font-size:.9rem;margin-bottom:.12rem">${j.title}</h4>
-          <div style="font-size:.77rem;color:var(--muted)">${j.co} · ${j.loc}</div>
+          <h4 style="font-weight:700;font-size:.9rem;margin-bottom:.12rem">${j.title}</h4>
+          <div style="font-size:.76rem;color:var(--muted)">${j.co} · ${j.loc}</div>
         </div>
       </div>
-      <p style="font-size:.79rem;color:rgba(255,255,255,.55);line-height:1.55;margin-bottom:.75rem">${j.desc}</p>
+      <p style="font-size:.79rem;color:rgba(255,255,255,.52);line-height:1.55;margin-bottom:.75rem">${j.desc}</p>
       <div style="display:flex;gap:.3rem;flex-wrap:wrap;margin-bottom:.75rem">
-        ${j.tags.map(t=>`<span class="badge badge-default">${t}</span>`).join('')}
-        <span class="badge badge-blue">${j.type}</span>
+        ${j.tags.map(t=>`<span class="badge b-def">${t}</span>`).join('')}
+        <span class="badge b-blue">${j.type}</span>
       </div>
       <div style="display:flex;align-items:center;justify-content:space-between">
-        <span style="font-size:.67rem;color:rgba(255,255,255,.22)">Publicado: ${j.posted||'2026-02-28'}</span>
-        ${isApplied
-          ? `<button class="btn btn-success btn-sm">✓ Candidatura enviada</button>`
-          : `<button class="btn ${currentUser?.quota?'btn-primary':'btn-ghost'} btn-sm" onclick="applyJob(${j.id})">${currentUser?.quota?'1-Click Apply ⚡':'Candidatar →'}</button>`
+        <span style="font-size:.67rem;color:rgba(255,255,255,.2)">Publicado: ${j.posted||'2026-02'}</span>
+        ${isA
+          ? '<button class="btn btn-success btn-sm">✓ Candidatura enviada</button>'
+          : `<button class="btn ${user?.quota?'btn-primary':'btn-ghost'} btn-sm" onclick="applyJob(${j.id})">${user?.quota?'1-Click Apply ⚡':'Candidatar →'}</button>`
         }
       </div>
     </div>`;
   }).join('');
 }
 
-function filterJobs(tag) {
-  jobFilterTag = tag;
-  renderJobs();
-}
+function fJob(tag) { jobTag = tag; renderJobs(); }
 
 function applyJob(id) {
-  if (!currentUser) { openModal('modal-auth'); return; }
+  if (!user) { openModal('modal-auth'); return; }
   if (!appliedJobs.includes(id)) appliedJobs.push(id);
   renderJobs();
 }
 
-function showPostJob() { document.getElementById('post-job-form').style.display='block'; }
+function showPostJob() { document.getElementById('post-form').style.display='block'; }
 
 function submitJob() {
-  const title = document.getElementById('nj-title').value.trim();
-  if (!title) return;
+  const t = document.getElementById('nj-t').value.trim();
+  if (!t) return;
   JOBS.unshift({
-    id: Date.now(), co: currentUser?.name||'Empresa',
-    logo: (currentUser?.avatar||'EM'), title,
-    loc: document.getElementById('nj-loc').value,
-    type: document.getElementById('nj-type').value,
-    tags: document.getElementById('nj-tags').value.split(',').map(t=>t.trim()).filter(Boolean),
-    desc: document.getElementById('nj-desc').value,
-    pending: false,
+    id:Date.now(), co:user?.name||'Empresa', logo:user?.avatar||'EM',
+    title:t, loc:document.getElementById('nj-l').value,
+    type:document.getElementById('nj-tp').value,
+    tags:document.getElementById('nj-tg').value.split(',').map(x=>x.trim()).filter(Boolean),
+    desc:document.getElementById('nj-d').value, pending:false,
   });
-  PENDING_JOBS.push({ id: Date.now()+1, co: currentUser?.name||'Empresa', title });
-  ['nj-title','nj-loc','nj-tags','nj-desc'].forEach(i=>document.getElementById(i).value='');
-  document.getElementById('post-job-form').style.display='none';
+  PENDING_JOBS.push({id:Date.now()+1, co:user?.name||'Empresa', title:t});
+  ['nj-t','nj-l','nj-tg','nj-d'].forEach(i => document.getElementById(i).value='');
+  document.getElementById('post-form').style.display='none';
   renderJobs();
-  if (document.getElementById('admin-pending-count')) renderAdminPending();
+  const pc = document.getElementById('a-pcount');
+  if (pc) pc.textContent = PENDING_JOBS.length;
 }
 
-// ── DASHBOARD ─────────────────────────────────────────────────────────────────
+/* ── DASHBOARD ──────────────────────────────────────────────────────────── */
 function renderDashboard() {
-  const u = currentUser;
-  document.getElementById('dash-locked').style.display   = u ? 'none'  : 'block';
-  document.getElementById('dash-content').style.display  = u ? 'block' : 'none';
+  const u = user;
+  document.getElementById('dash-locked').style.display  = u ? 'none'  : 'block';
+  document.getElementById('dash-content').style.display = u ? 'block' : 'none';
   if (!u) return;
-  document.getElementById('dash-avatar').textContent     = u.avatar;
-  document.getElementById('dash-greeting').textContent   = `Olá, ${u.name.split(' ')[0]}!`;
-  document.getElementById('dash-badges').innerHTML       = `<span class="badge badge-blue">${u.type}</span><span class="badge ${u.quota?'badge-green':'badge-warn'}">${u.quota?'✓ Quota ativa 2026':'⚠ Quota inativa'}</span>`;
-  document.getElementById('quota-status-val').textContent = u.quota ? 'Ativo' : 'Inativo';
-  document.getElementById('quota-status-val').style.color = u.quota ? 'var(--success)' : 'var(--warn)';
-  document.getElementById('quota-alert').innerHTML        = u.quota ? '' : `<div class="alert alert-warn">⚠ A sua quota anual expirou. Renove para manter acesso a todos os benefícios.</div>`;
-  document.getElementById('prof-name').value  = u.name;
-  document.getElementById('prof-email').value = u.email;
-  document.getElementById('prof-type').value  = u.type;
+  document.getElementById('d-av').textContent    = u.avatar;
+  document.getElementById('d-greet').textContent = `Olá, ${u.name.split(' ')[0]}!`;
+  document.getElementById('d-badges').innerHTML  = `<span class="badge b-blue">${u.type}</span><span class="badge ${u.quota?'b-green':'b-warn'}">${u.quota?'✓ Quota ativa 2026':'⚠ Quota inativa'}</span>`;
+  document.getElementById('d-qval').textContent  = u.quota ? 'Ativo' : 'Inativo';
+  document.getElementById('d-qval').style.color  = u.quota ? 'var(--success)' : 'var(--warn)';
+  document.getElementById('d-qalert').innerHTML  = u.quota ? '' : '<div class="alert a-warn">⚠ Quota expirada. Renove para manter acesso a todos os benefícios.</div>';
+  document.getElementById('p-name').value  = u.name;
+  document.getElementById('p-email').value = u.email;
+  document.getElementById('p-type').value  = u.type;
 }
 
-function switchDashTab(id, btn) {
-  document.querySelectorAll('.dash-panel').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.dash-tabs .dash-tab').forEach(b=>b.classList.remove('active'));
+function dTab(id, btn) {
+  document.querySelectorAll('#dash-content .dpanel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('#dash-content .dtab').forEach(b => b.classList.remove('active'));
   document.getElementById('dp-'+id).classList.add('active');
   if (btn) btn.classList.add('active');
 }
 
-// ── ADMIN ─────────────────────────────────────────────────────────────────────
+/* ── ADMIN ──────────────────────────────────────────────────────────────── */
 function renderAdmin() {
-  const u = currentUser;
-  document.getElementById('admin-locked').style.display  = (u&&u.role==='admin') ? 'none'  : 'block';
-  document.getElementById('admin-content').style.display = (u&&u.role==='admin') ? 'block' : 'none';
+  const u = user;
+  document.getElementById('adm-locked').style.display  = (u&&u.role==='admin') ? 'none'  : 'block';
+  document.getElementById('adm-content').style.display = (u&&u.role==='admin') ? 'block' : 'none';
   if (!u||u.role!=='admin') return;
-  renderAdminNews();
-  renderAdminPending();
-  renderAdminUsers();
-  renderAdminNewsletter();
+  renderAdmNews(); renderAdmPending(); renderAdmUsers(); renderAdmNL();
 }
 
-function renderAdminNews() {
-  document.getElementById('admin-news-list').innerHTML = NEWS.map(n=>`
-    <div class="card-flat news-manage-row">
-      <div style="font-size:1.4rem">${n.icon}</div>
-      <div style="flex:1">
-        <div style="display:flex;gap:.35rem;margin-bottom:.22rem"><span class="badge badge-teal">${n.cat}</span></div>
-        <h4 style="font-family:'Syne',sans-serif;font-weight:700;font-size:.87rem">${n.title}</h4>
-        <p style="font-size:.71rem;color:var(--muted)">${n.date}</p>
+function renderAdmNews() {
+  const el = document.getElementById('a-news-list');
+  if (!el) return;
+  el.innerHTML = NEWS.map(n => `
+    <div class="card-flat news-row">
+      <div style="font-size:1.3rem">${n.icon}</div>
+      <div style="flex:1;min-width:0">
+        <div style="display:flex;gap:.3rem;flex-wrap:wrap;margin-bottom:.2rem"><span class="badge b-teal">${n.cat}</span></div>
+        <h4 style="font-weight:700;font-size:.86rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${n.title}</h4>
+        <p style="font-size:.7rem;color:var(--muted)">${n.date}</p>
       </div>
-      <button class="btn btn-ghost btn-sm">✏ Editar</button>
-      <button class="btn btn-danger btn-sm" onclick="deleteArticle(${n.id})">🗑 Apagar</button>
+      <div style="display:flex;gap:.4rem;flex-shrink:0">
+        <button class="btn btn-ghost btn-sm">✏</button>
+        <button class="btn btn-danger btn-sm" onclick="delArticle(${n.id})">🗑</button>
+      </div>
     </div>`).join('');
 }
 
-function renderAdminPending() {
-  const el = document.getElementById('admin-pending-list');
-  const count = document.getElementById('admin-pending-count');
-  if (count) count.textContent = PENDING_JOBS.length;
+function renderAdmPending() {
+  const el = document.getElementById('a-pending-list');
+  const ct = document.getElementById('a-pcount');
+  if (ct) ct.textContent = PENDING_JOBS.length;
   if (!el) return;
-  el.innerHTML = PENDING_JOBS.length === 0
+  el.innerHTML = PENDING_JOBS.length===0
     ? '<p style="color:var(--muted)">Sem vagas pendentes.</p>'
-    : PENDING_JOBS.map(j=>`
-      <div class="card-flat news-manage-row">
+    : PENDING_JOBS.map(j => `
+      <div class="card-flat news-row">
         <div style="flex:1">
-          <h4 style="font-family:'Syne',sans-serif;font-weight:700;font-size:.9rem">${j.title}</h4>
-          <p style="font-size:.77rem;color:var(--muted)">${j.co}</p>
+          <h4 style="font-weight:700;font-size:.88rem">${j.title}</h4>
+          <p style="font-size:.76rem;color:var(--muted)">${j.co}</p>
         </div>
-        <span class="badge badge-warn">⏳ Pendente</span>
+        <span class="badge b-warn">⏳ Pendente</span>
         <button class="btn btn-success btn-sm" onclick="approveJob(${j.id})">✓ Aprovar</button>
-        <button class="btn btn-danger btn-sm" onclick="rejectJob(${j.id})">✕ Rejeitar</button>
+        <button class="btn btn-danger btn-sm"  onclick="rejectJob(${j.id})">✕ Rejeitar</button>
       </div>`).join('');
 }
 
-function approveJob(id) { PENDING_JOBS = PENDING_JOBS.filter(j=>j.id!==id); renderAdminPending(); }
-function rejectJob(id)  { PENDING_JOBS = PENDING_JOBS.filter(j=>j.id!==id); renderAdminPending(); }
+function approveJob(id) { PENDING_JOBS = PENDING_JOBS.filter(j=>j.id!==id); renderAdmPending(); }
+function rejectJob(id)  { PENDING_JOBS = PENDING_JOBS.filter(j=>j.id!==id); renderAdmPending(); }
 
-function renderAdminUsers() {
-  document.getElementById('admin-users-tbody').innerHTML = Object.entries(USERS).map(([email,u])=>`
+function renderAdmUsers() {
+  const el = document.getElementById('a-users-tbody');
+  if (!el) return;
+  el.innerHTML = Object.entries(USERS).map(([email,u]) => `
     <tr>
-      <td><div style="display:flex;align-items:center;gap:.55rem"><div style="width:26px;height:26px;border-radius:50%;background:var(--teal);display:inline-flex;align-items:center;justify-content:center;font-size:.63rem;font-weight:800">${u.avatar}</div>${u.name}</div></td>
-      <td style="color:var(--muted)">${email}</td>
-      <td><span class="badge badge-blue">${u.type}</span></td>
-      <td><span class="badge ${u.quota?'badge-green':'badge-warn'}">${u.quota?'Ativa':'Inativa'}</span></td>
+      <td><div style="display:flex;align-items:center;gap:.5rem"><div style="width:25px;height:25px;border-radius:50%;background:var(--teal);display:inline-flex;align-items:center;justify-content:center;font-size:.6rem;font-weight:800">${u.avatar}</div>${u.name}</div></td>
+      <td style="color:var(--muted);font-size:.8rem">${email}</td>
+      <td><span class="badge b-blue">${u.type}</span></td>
+      <td><span class="badge ${u.quota?'b-green':'b-warn'}">${u.quota?'Ativa':'Inativa'}</span></td>
       <td><button class="btn btn-ghost btn-sm">Gerir</button></td>
     </tr>`).join('');
 }
 
-function renderAdminNewsletter() {
-  document.getElementById('newsletter-news-list').innerHTML = NEWS.map(n=>`
-    <label class="card-flat" style="padding:.85rem 1.1rem;display:flex;align-items:center;gap:.8rem;cursor:pointer">
-      <input type="checkbox" style="accent-color:var(--teal)">
-      <span style="font-size:.87rem">${n.icon} ${n.title}</span>
+function renderAdmNL() {
+  const el = document.getElementById('a-nl-list');
+  if (!el) return;
+  el.innerHTML = NEWS.map(n => `
+    <label class="card-flat" style="padding:.8rem 1rem;display:flex;align-items:center;gap:.75rem;cursor:pointer">
+      <input type="checkbox" style="accent-color:var(--teal);width:15px;height:15px">
+      <span style="font-size:.86rem">${n.icon} ${n.title}</span>
     </label>`).join('');
 }
 
 function addArticle() {
-  const title = document.getElementById('na-title').value.trim();
-  if (!title) return;
-  NEWS.unshift({
-    id: Date.now(),
-    title,
-    cat: document.getElementById('na-cat').value,
-    icon: document.getElementById('na-icon').value||'📰',
-    excerpt: document.getElementById('na-excerpt').value,
-    date: new Date().toISOString().slice(0,10),
-  });
-  ['na-title','na-excerpt'].forEach(i=>document.getElementById(i).value='');
-  document.getElementById('na-icon').value='📰';
-  renderAdminNews();
-  renderHomeNews();
-  renderAdminNewsletter();
+  const t = document.getElementById('na-t').value.trim();
+  if (!t) return;
+  NEWS.unshift({id:Date.now(),title:t,cat:document.getElementById('na-c').value,icon:document.getElementById('na-i').value||'📰',excerpt:document.getElementById('na-e').value,date:new Date().toISOString().slice(0,10)});
+  ['na-t','na-e'].forEach(i => document.getElementById(i).value='');
+  document.getElementById('na-i').value='📰';
+  renderAdmNews(); renderHomeNews(); renderAdmNL();
 }
 
-function deleteArticle(id) {
+function delArticle(id) {
   NEWS = NEWS.filter(n=>n.id!==id);
-  renderAdminNews();
-  renderHomeNews();
-  renderAdminNewsletter();
+  renderAdmNews(); renderHomeNews(); renderAdmNL();
 }
 
-function switchAdminTab(id, btn) {
-  document.querySelectorAll('#admin-content .dash-panel').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('#admin-content .dash-tabs .dash-tab').forEach(b=>b.classList.remove('active'));
-  document.getElementBy
+function aTab(id, btn) {
+  document.querySelectorAll('#adm-content .dpanel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('#adm-content .dtab').forEach(b => b.classList.remove('active'));
+  document.getElementById('adp-'+id).classList.add('active');
+  if (btn) btn.classList.add('active');
+}
+
+/* ── INIT ───────────────────────────────────────────────────────────────── */
+renderHomeNews();
+renderEvents();
+</script>
+</body>
+</html>
