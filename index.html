@@ -1,353 +1,1190 @@
 <!DOCTYPE html>
 <html lang="pt">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AeroHelp v3.2 - Clean Design</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&display=swap" rel="stylesheet">
-    
-    <style>
-        /* Variáveis TAP */
-        :root {
-            --tap-green: #00874d;
-            --tap-red: #e31937;
-            --bg-body: #f8fafc; /* Fundo ligeiramente azulado/cinza para contraste */
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>INCOSE Portugal | Engenharia de Sistemas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --incose-blue: #003580;
+    --incose-blue-light: #0055cc;
+    --atlantic-teal: #007a8a;
+    --teal-light: #00b4c8;
+    --cork: #c8a96e;
+    --sand: #f0e8d8;
+    --dark: #0a0f1e;
+    --dark-card: #0d1530;
+    --white: #ffffff;
+    --text-muted: #8899bb;
+    --border: rgba(255,255,255,0.08);
+  }
 
-        body { 
-            font-family: 'Inter', sans-serif; 
-            background-color: var(--bg-body);
-            color: #333;
-        }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-        /* Classes utilitárias personalizadas */
-        .text-tap-green { color: var(--tap-green); }
-        .bg-tap-green { background-color: var(--tap-green); }
-        .text-tap-red { color: var(--tap-red); }
+  html { scroll-behavior: smooth; }
 
-        /* Esconder Scrollbar mas manter funcionalidade */
-        .hide-scroll::-webkit-scrollbar { display: none; }
-        .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
+  body {
+    font-family: 'Outfit', sans-serif;
+    background: var(--dark);
+    color: var(--white);
+    overflow-x: hidden;
+  }
 
-        /* Animação suave para as respostas */
-        .accordion-content {
-            transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out, padding 0.3s ease;
-            max-height: 0;
-            opacity: 0;
-            overflow: hidden;
-        }
-        .accordion-content.open {
-            max-height: 500px; /* Altura suficiente para texto */
-            opacity: 1;
-        }
+  /* ─── COOKIE BANNER ─── */
+  #cookie-banner {
+    position: fixed; bottom: 0; left: 0; right: 0; z-index: 9999;
+    background: rgba(10,15,30,0.97);
+    border-top: 1px solid var(--border);
+    padding: 1.2rem 2rem;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 1rem; flex-wrap: wrap;
+    backdrop-filter: blur(16px);
+    transform: translateY(100%);
+    animation: slideUp 0.5s 1.5s forwards;
+  }
+  @keyframes slideUp { to { transform: translateY(0); } }
+  #cookie-banner p { font-size: 0.85rem; color: var(--text-muted); max-width: 600px; }
+  #cookie-banner a { color: var(--teal-light); }
+  .cookie-btns { display: flex; gap: 0.6rem; }
+  .btn-accept {
+    background: var(--atlantic-teal); color: white;
+    border: none; padding: 0.5rem 1.2rem; border-radius: 4px;
+    font-family: 'Outfit', sans-serif; font-size: 0.85rem; font-weight: 600;
+    cursor: pointer;
+  }
+  .btn-reject {
+    background: transparent; color: var(--text-muted);
+    border: 1px solid var(--border); padding: 0.5rem 1.2rem; border-radius: 4px;
+    font-family: 'Outfit', sans-serif; font-size: 0.85rem;
+    cursor: pointer;
+  }
 
-        /* Rotação do ícone */
-        .icon-rotate { transition: transform 0.3s ease; }
-        .icon-rotate.open { transform: rotate(180deg); }
-    </style>
+  /* ─── UTILITY BAR ─── */
+  .utility-bar {
+    background: rgba(0,20,60,0.95);
+    border-bottom: 1px solid var(--border);
+    padding: 0.4rem 3rem;
+    display: flex; align-items: center; justify-content: flex-end;
+    gap: 1.5rem; font-size: 0.78rem; color: var(--text-muted);
+  }
+  .utility-bar a { color: var(--text-muted); text-decoration: none; transition: color 0.2s; }
+  .utility-bar a:hover { color: var(--teal-light); }
+  .lang-toggle {
+    display: flex; gap: 0; border: 1px solid var(--border); border-radius: 3px; overflow: hidden;
+  }
+  .lang-toggle button {
+    background: transparent; border: none; padding: 0.2rem 0.5rem;
+    font-family: 'Outfit', sans-serif; font-size: 0.75rem; font-weight: 600;
+    color: var(--text-muted); cursor: pointer; transition: all 0.2s;
+  }
+  .lang-toggle button.active { background: var(--atlantic-teal); color: white; }
+  .social-links { display: flex; gap: 0.8rem; }
+  .login-btn {
+    background: var(--incose-blue); color: white !important;
+    padding: 0.25rem 0.8rem; border-radius: 3px; font-weight: 600;
+    font-size: 0.75rem;
+  }
+
+  /* ─── HEADER ─── */
+  header {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(10,15,30,0.95);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 3rem;
+    display: flex; align-items: center; justify-content: space-between;
+    height: 72px;
+  }
+  .logo-group { display: flex; align-items: center; gap: 2rem; }
+  .logo-incose {
+    display: flex; align-items: center; gap: 0.7rem;
+    text-decoration: none;
+  }
+  .logo-mark {
+    width: 44px; height: 44px;
+    background: var(--incose-blue);
+    border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800; font-size: 0.85rem; color: white; letter-spacing: 1px;
+    position: relative; overflow: hidden;
+  }
+  .logo-mark::after {
+    content: '';
+    position: absolute; bottom: 0; left: 0; right: 0;
+    height: 3px; background: var(--teal-light);
+  }
+  .logo-text { line-height: 1.1; }
+  .logo-text .main { font-size: 1.1rem; font-weight: 700; color: white; }
+  .logo-text .sub { font-size: 0.65rem; color: var(--cork); letter-spacing: 2px; text-transform: uppercase; }
+  .logo-divider { width: 1px; height: 32px; background: var(--border); }
+  .logo-sespt {
+    font-size: 0.7rem; font-weight: 600; color: var(--text-muted);
+    letter-spacing: 1px; text-transform: uppercase; text-decoration: none;
+    transition: color 0.2s;
+  }
+  .logo-sespt:hover { color: var(--teal-light); }
+
+  nav { display: flex; gap: 0; }
+  nav a {
+    padding: 0 1.1rem; height: 72px;
+    display: flex; align-items: center;
+    color: rgba(255,255,255,0.75); text-decoration: none;
+    font-size: 0.88rem; font-weight: 500; letter-spacing: 0.3px;
+    border-bottom: 3px solid transparent;
+    transition: all 0.2s; position: relative;
+  }
+  nav a:hover { color: white; border-bottom-color: var(--teal-light); }
+  nav a.active { color: white; border-bottom-color: var(--incose-blue-light); }
+
+  /* ─── HERO ─── */
+  .hero {
+    position: relative; min-height: 92vh;
+    display: flex; align-items: center;
+    overflow: hidden;
+    background: linear-gradient(135deg, #050d20 0%, #001040 50%, #002a4a 100%);
+  }
+  .hero-bg {
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 60% 50% at 70% 50%, rgba(0,122,138,0.18) 0%, transparent 60%),
+      radial-gradient(ellipse 40% 60% at 20% 80%, rgba(0,53,128,0.25) 0%, transparent 60%);
+  }
+  .hero-grid {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(0,122,138,0.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,122,138,0.06) 1px, transparent 1px);
+    background-size: 60px 60px;
+    mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 100%);
+  }
+
+  /* Animated wave */
+  .hero-wave {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    height: 120px; opacity: 0.15;
+  }
+  .hero-wave svg { width: 100%; height: 100%; }
+
+  .hero-content {
+    position: relative; z-index: 2;
+    max-width: 1200px; margin: 0 auto;
+    padding: 0 3rem;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center;
+  }
+  .hero-left { opacity: 0; animation: fadeInLeft 0.8s 0.2s forwards; }
+  @keyframes fadeInLeft {
+    from { opacity: 0; transform: translateX(-30px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    background: rgba(0,122,138,0.15);
+    border: 1px solid rgba(0,122,138,0.4);
+    padding: 0.35rem 0.9rem; border-radius: 20px;
+    font-size: 0.75rem; font-weight: 600; letter-spacing: 1px;
+    text-transform: uppercase; color: var(--teal-light);
+    margin-bottom: 1.5rem;
+  }
+  .hero-badge::before {
+    content: ''; width: 6px; height: 6px; border-radius: 50%;
+    background: var(--teal-light);
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.7); }
+  }
+  .hero h1 {
+    font-size: clamp(2.2rem, 4vw, 3.8rem);
+    font-weight: 800; line-height: 1.1;
+    margin-bottom: 1.5rem; letter-spacing: -1px;
+  }
+  .hero h1 em {
+    font-style: normal;
+    background: linear-gradient(135deg, var(--teal-light), var(--cork));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .hero p {
+    font-size: 1.1rem; color: rgba(255,255,255,0.65);
+    line-height: 1.7; margin-bottom: 2rem; max-width: 480px;
+  }
+  .hero-ctas { display: flex; gap: 1rem; flex-wrap: wrap; }
+  .btn-primary {
+    background: var(--incose-blue); color: white;
+    padding: 0.85rem 2rem; border-radius: 6px;
+    font-weight: 600; font-size: 0.95rem; text-decoration: none;
+    border: none; cursor: pointer;
+    transition: all 0.25s;
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    box-shadow: 0 4px 24px rgba(0,53,128,0.4);
+  }
+  .btn-primary:hover {
+    background: var(--incose-blue-light);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(0,53,128,0.5);
+  }
+  .btn-secondary {
+    background: transparent; color: white;
+    padding: 0.85rem 2rem; border-radius: 6px;
+    font-weight: 600; font-size: 0.95rem; text-decoration: none;
+    border: 1px solid rgba(255,255,255,0.25); cursor: pointer;
+    transition: all 0.25s;
+    display: inline-flex; align-items: center; gap: 0.5rem;
+  }
+  .btn-secondary:hover {
+    border-color: var(--teal-light); color: var(--teal-light);
+    transform: translateY(-2px);
+  }
+
+  /* Hero right: stats */
+  .hero-right {
+    opacity: 0; animation: fadeInRight 0.8s 0.4s forwards;
+  }
+  @keyframes fadeInRight {
+    from { opacity: 0; transform: translateX(30px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+  .hero-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+    border-radius: 16px; padding: 2rem;
+    backdrop-filter: blur(10px);
+    position: relative; overflow: hidden;
+  }
+  .hero-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, var(--incose-blue), var(--atlantic-teal), var(--cork));
+  }
+  .hero-card-title {
+    font-size: 0.75rem; font-weight: 600; letter-spacing: 2px;
+    text-transform: uppercase; color: var(--text-muted); margin-bottom: 1.5rem;
+  }
+  .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; margin-bottom: 1.5rem; }
+  .stat-item { text-align: center; }
+  .stat-num {
+    font-size: 2rem; font-weight: 800; color: white;
+    background: linear-gradient(135deg, var(--teal-light), var(--cork));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .stat-label { font-size: 0.72rem; color: var(--text-muted); margin-top: 0.2rem; }
+
+  .next-event {
+    background: rgba(0,122,138,0.1);
+    border: 1px solid rgba(0,122,138,0.3);
+    border-radius: 8px; padding: 1rem;
+  }
+  .event-label {
+    font-size: 0.65rem; font-weight: 700; letter-spacing: 2px;
+    text-transform: uppercase; color: var(--teal-light); margin-bottom: 0.4rem;
+  }
+  .event-title { font-weight: 600; margin-bottom: 0.3rem; }
+  .event-date { font-size: 0.82rem; color: var(--text-muted); }
+
+  /* ─── SECTION BASE ─── */
+  section { padding: 5rem 0; }
+  .container { max-width: 1200px; margin: 0 auto; padding: 0 3rem; }
+  .section-label {
+    font-size: 0.72rem; font-weight: 700; letter-spacing: 3px;
+    text-transform: uppercase; color: var(--teal-light);
+    margin-bottom: 0.8rem;
+  }
+  .section-title {
+    font-size: clamp(1.8rem, 3vw, 2.8rem);
+    font-weight: 800; letter-spacing: -0.5px; line-height: 1.15;
+    margin-bottom: 1rem;
+  }
+  .section-title em {
+    font-style: normal;
+    background: linear-gradient(135deg, var(--teal-light), var(--cork));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .section-subtitle {
+    font-size: 1rem; color: var(--text-muted); line-height: 1.7;
+    max-width: 560px;
+  }
+
+  /* ─── VALUE PROPS ─── */
+  .value-section { background: var(--dark); }
+  .value-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem;
+    margin-top: 3rem;
+  }
+  .value-card {
+    background: var(--dark-card);
+    border: 1px solid var(--border);
+    border-radius: 12px; padding: 2rem;
+    transition: all 0.3s; position: relative; overflow: hidden;
+  }
+  .value-card:hover {
+    border-color: rgba(0,180,200,0.3);
+    transform: translateY(-4px);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  }
+  .value-card::after {
+    content: '';
+    position: absolute; bottom: 0; left: 0; right: 0; height: 0;
+    background: linear-gradient(to top, rgba(0,122,138,0.08), transparent);
+    transition: height 0.3s;
+  }
+  .value-card:hover::after { height: 100%; }
+  .value-icon {
+    width: 48px; height: 48px; border-radius: 10px;
+    background: rgba(0,53,128,0.3);
+    border: 1px solid rgba(0,85,204,0.3);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.4rem; margin-bottom: 1.2rem;
+  }
+  .value-card h3 { font-size: 1.05rem; font-weight: 700; margin-bottom: 0.6rem; }
+  .value-card p { font-size: 0.88rem; color: var(--text-muted); line-height: 1.65; }
+
+  /* ─── NEWS ─── */
+  .news-section {
+    background: linear-gradient(180deg, var(--dark) 0%, #050d20 100%);
+  }
+  .news-header {
+    display: flex; align-items: flex-end; justify-content: space-between;
+    margin-bottom: 2.5rem; flex-wrap: wrap; gap: 1rem;
+  }
+  .news-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+  .news-card {
+    background: var(--dark-card);
+    border: 1px solid var(--border);
+    border-radius: 12px; overflow: hidden;
+    transition: all 0.3s;
+  }
+  .news-card:hover { transform: translateY(-4px); border-color: rgba(0,180,200,0.25); }
+  .news-card:first-child {
+    grid-column: span 2;
+  }
+  .news-img {
+    height: 200px; display: block;
+    background: linear-gradient(135deg, #001040, #003060);
+    position: relative; overflow: hidden;
+  }
+  .news-card:first-child .news-img { height: 260px; }
+  .news-img-overlay {
+    position: absolute; inset: 0;
+    display: flex; align-items: flex-end; padding: 1.5rem;
+  }
+  .news-img-placeholder {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 3rem; opacity: 0.15;
+  }
+  .news-category {
+    display: inline-block; font-size: 0.65rem; font-weight: 700;
+    letter-spacing: 1.5px; text-transform: uppercase;
+    background: var(--atlantic-teal); color: white;
+    padding: 0.2rem 0.6rem; border-radius: 3px;
+  }
+  .news-body { padding: 1.2rem; }
+  .news-body h3 { font-size: 1rem; font-weight: 700; margin-bottom: 0.5rem; line-height: 1.4; }
+  .news-card:first-child .news-body h3 { font-size: 1.2rem; }
+  .news-body p { font-size: 0.83rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 0.8rem; }
+  .news-meta { font-size: 0.72rem; color: rgba(255,255,255,0.35); display: flex; justify-content: space-between; }
+  .news-link { color: var(--teal-light); text-decoration: none; font-size: 0.83rem; font-weight: 600; }
+
+  /* ─── EVENTS ─── */
+  .events-section { background: var(--dark); }
+  .events-list { margin-top: 2.5rem; display: flex; flex-direction: column; gap: 1rem; }
+  .event-row {
+    background: var(--dark-card);
+    border: 1px solid var(--border);
+    border-radius: 10px; padding: 1.4rem 1.8rem;
+    display: flex; align-items: center; gap: 2rem;
+    transition: all 0.2s;
+  }
+  .event-row:hover { border-color: rgba(0,180,200,0.3); }
+  .event-date-box {
+    min-width: 56px; text-align: center;
+    background: rgba(0,53,128,0.2);
+    border: 1px solid rgba(0,85,204,0.3);
+    border-radius: 8px; padding: 0.6rem 0.4rem;
+  }
+  .event-date-box .day { font-size: 1.5rem; font-weight: 800; line-height: 1; }
+  .event-date-box .month { font-size: 0.65rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--text-muted); }
+  .event-info { flex: 1; }
+  .event-info h3 { font-size: 0.98rem; font-weight: 700; margin-bottom: 0.2rem; }
+  .event-info p { font-size: 0.8rem; color: var(--text-muted); }
+  .event-tags { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+  .tag {
+    font-size: 0.68rem; font-weight: 600; padding: 0.15rem 0.5rem;
+    border-radius: 3px; letter-spacing: 0.5px;
+  }
+  .tag-online { background: rgba(0,180,200,0.15); color: var(--teal-light); border: 1px solid rgba(0,180,200,0.3); }
+  .tag-presencial { background: rgba(200,169,110,0.15); color: var(--cork); border: 1px solid rgba(200,169,110,0.3); }
+  .tag-membro { background: rgba(0,53,128,0.25); color: #6699ff; border: 1px solid rgba(0,85,204,0.3); }
+  .event-action { display: flex; gap: 0.5rem; align-items: center; }
+  .btn-sm {
+    padding: 0.4rem 1rem; border-radius: 5px; font-size: 0.8rem;
+    font-weight: 600; text-decoration: none; border: none; cursor: pointer;
+    transition: all 0.2s; font-family: 'Outfit', sans-serif;
+  }
+  .btn-sm-primary { background: var(--incose-blue); color: white; }
+  .btn-sm-primary:hover { background: var(--incose-blue-light); }
+  .btn-sm-outline { background: transparent; color: var(--text-muted); border: 1px solid var(--border); }
+  .btn-sm-outline:hover { color: white; border-color: rgba(255,255,255,0.3); }
+
+  /* ─── MEMBERSHIP CTA ─── */
+  .membership-section {
+    position: relative; overflow: hidden;
+    background: linear-gradient(135deg, #001040 0%, #002244 50%, #001830 100%);
+  }
+  .membership-section::before {
+    content: '';
+    position: absolute; top: -50%; right: -10%;
+    width: 600px; height: 600px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(0,122,138,0.2) 0%, transparent 70%);
+  }
+  .membership-inner {
+    position: relative; z-index: 2;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center;
+  }
+  .membership-inner h2 { font-size: 2.2rem; font-weight: 800; margin-bottom: 1rem; }
+  .membership-inner p { color: rgba(255,255,255,0.65); line-height: 1.7; margin-bottom: 1.5rem; }
+  .benefits-list { list-style: none; margin-bottom: 2rem; display: flex; flex-direction: column; gap: 0.6rem; }
+  .benefits-list li {
+    display: flex; align-items: center; gap: 0.7rem;
+    font-size: 0.9rem; color: rgba(255,255,255,0.8);
+  }
+  .benefits-list li::before {
+    content: '✓'; width: 20px; height: 20px; border-radius: 50%;
+    background: rgba(0,122,138,0.3); border: 1px solid var(--atlantic-teal);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.65rem; font-weight: 700; color: var(--teal-light);
+    flex-shrink: 0;
+  }
+  .plan-cards { display: flex; flex-direction: column; gap: 1rem; }
+  .plan-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+    border-radius: 10px; padding: 1.4rem;
+    display: flex; align-items: center; justify-content: space-between;
+    transition: all 0.2s;
+  }
+  .plan-card.featured {
+    border-color: var(--atlantic-teal);
+    background: rgba(0,122,138,0.1);
+  }
+  .plan-name { font-weight: 700; margin-bottom: 0.2rem; }
+  .plan-desc { font-size: 0.8rem; color: var(--text-muted); }
+  .plan-price { text-align: right; }
+  .plan-price .amount { font-size: 1.5rem; font-weight: 800; }
+  .plan-price .period { font-size: 0.75rem; color: var(--text-muted); }
+
+  /* ─── JOB BOARD PREVIEW ─── */
+  .jobs-section { background: #050d20; }
+  .jobs-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-top: 2.5rem; }
+  .job-card {
+    background: var(--dark-card);
+    border: 1px solid var(--border);
+    border-radius: 10px; padding: 1.3rem 1.5rem;
+    display: flex; gap: 1rem; align-items: flex-start;
+    transition: all 0.2s;
+  }
+  .job-card:hover { border-color: rgba(0,180,200,0.25); }
+  .job-company-logo {
+    width: 44px; height: 44px; border-radius: 8px;
+    background: rgba(0,53,128,0.3);
+    border: 1px solid rgba(0,85,204,0.2);
+    flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+    font-weight: 800; font-size: 0.75rem; color: var(--teal-light);
+  }
+  .job-info h4 { font-size: 0.93rem; font-weight: 700; margin-bottom: 0.2rem; }
+  .job-info .company { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.5rem; }
+  .job-tags { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+  .job-tag {
+    font-size: 0.65rem; font-weight: 600; padding: 0.12rem 0.45rem;
+    border-radius: 3px;
+    background: rgba(255,255,255,0.05); color: var(--text-muted);
+    border: 1px solid var(--border);
+  }
+
+  /* ─── FOOTER ─── */
+  footer {
+    background: #030810;
+    border-top: 1px solid var(--border);
+  }
+  .footer-top {
+    display: grid; grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 3rem; padding: 4rem 3rem 3rem;
+    max-width: 1200px; margin: 0 auto;
+  }
+  .footer-col h4 {
+    font-size: 0.72rem; font-weight: 700; letter-spacing: 2px;
+    text-transform: uppercase; color: var(--cork);
+    margin-bottom: 1.2rem;
+  }
+  .footer-col p { font-size: 0.85rem; color: var(--text-muted); line-height: 1.7; }
+  .footer-col a {
+    display: block; font-size: 0.85rem; color: var(--text-muted);
+    text-decoration: none; margin-bottom: 0.5rem; transition: color 0.2s;
+  }
+  .footer-col a:hover { color: white; }
+  .footer-logos { display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; }
+  .footer-logo-mark {
+    width: 36px; height: 36px; border-radius: 5px;
+    background: var(--incose-blue);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.65rem; font-weight: 800; color: white;
+  }
+  .footer-social { display: flex; gap: 0.8rem; margin-top: 1rem; }
+  .social-btn {
+    width: 32px; height: 32px; border-radius: 6px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--text-muted); text-decoration: none; font-size: 0.75rem;
+    transition: all 0.2s;
+  }
+  .social-btn:hover { background: var(--atlantic-teal); color: white; border-color: var(--atlantic-teal); }
+  .footer-legal {
+    border-top: 1px solid var(--border);
+    padding: 1.5rem 3rem;
+    max-width: 1200px; margin: 0 auto;
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 0.5rem;
+  }
+  .footer-legal p { font-size: 0.78rem; color: var(--text-muted); line-height: 1.6; }
+  .footer-legal strong { color: rgba(255,255,255,0.5); }
+  .footer-bottom-links { display: flex; gap: 1.5rem; }
+  .footer-bottom-links a { font-size: 0.75rem; color: var(--text-muted); text-decoration: none; }
+  .footer-bottom-links a:hover { color: white; }
+
+  /* ─── MEMBER AREA MODAL ─── */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.85); z-index: 1000;
+    align-items: center; justify-content: center;
+    backdrop-filter: blur(8px);
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: #0d1530;
+    border: 1px solid var(--border);
+    border-radius: 16px; padding: 2.5rem; width: 400px;
+    position: relative; overflow: hidden;
+  }
+  .modal::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, var(--incose-blue), var(--atlantic-teal));
+  }
+  .modal-close {
+    position: absolute; top: 1rem; right: 1rem;
+    background: transparent; border: none; color: var(--text-muted);
+    font-size: 1.2rem; cursor: pointer; padding: 0.3rem;
+  }
+  .modal h3 { font-size: 1.3rem; font-weight: 700; margin-bottom: 0.4rem; }
+  .modal p { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.5rem; }
+  .form-group { margin-bottom: 1rem; }
+  .form-group label { display: block; font-size: 0.78rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.4rem; }
+  .form-group input {
+    width: 100%; background: rgba(255,255,255,0.05);
+    border: 1px solid var(--border); border-radius: 6px;
+    padding: 0.7rem 1rem; color: white;
+    font-family: 'Outfit', sans-serif; font-size: 0.9rem;
+    transition: border-color 0.2s;
+  }
+  .form-group input:focus { outline: none; border-color: var(--atlantic-teal); }
+  .btn-full { width: 100%; padding: 0.85rem; margin-top: 0.5rem; font-size: 1rem; }
+  .modal-tabs { display: flex; gap: 0; margin-bottom: 1.5rem; border-bottom: 1px solid var(--border); }
+  .modal-tab {
+    flex: 1; padding: 0.6rem;
+    background: transparent; border: none;
+    font-family: 'Outfit', sans-serif; font-size: 0.85rem; font-weight: 600;
+    color: var(--text-muted); cursor: pointer;
+    border-bottom: 2px solid transparent; transition: all 0.2s;
+  }
+  .modal-tab.active { color: white; border-bottom-color: var(--teal-light); }
+
+  /* Animations on scroll */
+  .reveal {
+    opacity: 0; transform: translateY(20px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 900px) {
+    .hero-content { grid-template-columns: 1fr; }
+    .hero-right { display: none; }
+    .value-grid { grid-template-columns: 1fr; }
+    .news-grid { grid-template-columns: 1fr; }
+    .news-card:first-child { grid-column: span 1; }
+    .jobs-grid { grid-template-columns: 1fr; }
+    .membership-inner { grid-template-columns: 1fr; }
+    .footer-top { grid-template-columns: 1fr 1fr; }
+    header { padding: 0 1.5rem; }
+    nav { display: none; }
+    .utility-bar { display: none; }
+    .hero-content { padding: 0 1.5rem; }
+    .container { padding: 0 1.5rem; }
+  }
+</style>
 </head>
-<body class="min-h-screen pb-20">
+<body>
 
-    <header class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
-        <div class="max-w-4xl mx-auto px-4 h-16 flex justify-between items-center">
-            <div class="flex items-center gap-2">
-                <div class="w-8 h-8 bg-tap-green rounded flex items-center justify-center text-white">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12h20"/><path d="M20 12v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-8"/><path d="m4 8 8-4 8 4"/><path d="m2 12 10 10 10-10"/></svg>
-                </div>
-                <h1 class="text-xl font-bold tracking-tight text-gray-800">
-                    Aero<span class="text-tap-red">Help</span> <span class="text-xs text-gray-400 font-normal">v3.2</span>
-                </h1>
-            </div>
+<!-- Cookie Banner -->
+<div id="cookie-banner">
+  <p>Usamos cookies para melhorar a sua experiência e para análise de tráfego. Consulte a nossa <a href="#">Política de Privacidade</a>. Pode gerir as suas preferências a qualquer momento.</p>
+  <div class="cookie-btns">
+    <button class="btn-reject" onclick="document.getElementById('cookie-banner').style.display='none'">Recusar não essenciais</button>
+    <button class="btn-accept" onclick="document.getElementById('cookie-banner').style.display='none'">Aceitar todos</button>
+  </div>
+</div>
 
-            <button id="adminToggleBtn" onclick="toggleAdminMode()" class="text-xs font-bold uppercase tracking-wider text-gray-500 hover:text-tap-green border border-gray-200 hover:border-tap-green px-3 py-1.5 rounded-full transition-all bg-gray-50">
-                Gerir Conteúdo
-            </button>
+<!-- Login Modal -->
+<div class="modal-overlay" id="modal-login">
+  <div class="modal">
+    <button class="modal-close" onclick="document.getElementById('modal-login').classList.remove('open')">✕</button>
+    <h3>Área de Membros</h3>
+    <p>Aceda ao seu portal INCOSE Portugal</p>
+    <div class="modal-tabs">
+      <button class="modal-tab active" onclick="switchTab('login')">Login</button>
+      <button class="modal-tab" onclick="switchTab('register')">Registar</button>
+    </div>
+    <div id="tab-login">
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" placeholder="email@empresa.pt">
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" placeholder="••••••••">
+      </div>
+      <button class="btn-primary btn-full btn-sm-primary">Entrar</button>
+    </div>
+    <div id="tab-register" style="display:none">
+      <div class="form-group">
+        <label>Nome completo</label>
+        <input type="text" placeholder="O seu nome">
+      </div>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" placeholder="email@empresa.pt">
+      </div>
+      <div class="form-group">
+        <label>N.º de sócio INCOSE (opcional)</label>
+        <input type="text" placeholder="INCOSE-XXXXXXX">
+      </div>
+      <button class="btn-primary btn-full btn-sm-primary">Criar conta</button>
+    </div>
+  </div>
+</div>
+
+<!-- Utility Bar -->
+<div class="utility-bar">
+  <div class="lang-toggle">
+    <button class="active">PT</button>
+    <button>EN</button>
+  </div>
+  <a href="https://linkedin.com" target="_blank">LinkedIn ↗</a>
+  <a href="https://youtube.com" target="_blank">YouTube ↗</a>
+  <a href="#" class="login-btn" onclick="document.getElementById('modal-login').classList.add('open')">🔐 Login Membro / CAB</a>
+</div>
+
+<!-- Header -->
+<header>
+  <div class="logo-group">
+    <a href="/" class="logo-incose">
+      <div class="logo-mark">INCOSE</div>
+      <div class="logo-text">
+        <div class="main">INCOSE Portugal</div>
+        <div class="sub">Chapter · Est. 2025</div>
+      </div>
+    </a>
+    <div class="logo-divider"></div>
+    <a href="#" class="logo-sespt">SESPT</a>
+  </div>
+
+  <nav>
+    <a href="#" class="active">About</a>
+    <a href="#membership">Membership</a>
+    <a href="#knowledge">Knowledge</a>
+    <a href="#events">Events</a>
+    <a href="#news">News</a>
+    <a href="#join">Join</a>
+  </nav>
+
+  <a href="#join" class="btn-primary btn-sm btn-sm-primary">Aderir agora →</a>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-wave">
+    <svg viewBox="0 0 1440 120" preserveAspectRatio="none">
+      <path d="M0,60 C240,100 480,20 720,60 C960,100 1200,20 1440,60 L1440,120 L0,120 Z" fill="#003580" opacity="0.4"/>
+      <path d="M0,80 C240,40 480,120 720,80 C960,40 1200,120 1440,80 L1440,120 L0,120 Z" fill="#007a8a" opacity="0.2"/>
+    </svg>
+  </div>
+
+  <div class="hero-content">
+    <div class="hero-left">
+      <div class="hero-badge">Capítulo oficial INCOSE em Portugal</div>
+      <h1>
+        Engenharia de Sistemas<br>
+        <em>com raízes atlânticas</em>
+      </h1>
+      <p>
+        A comunidade portuguesa de profissionais INCOSE. Formação certificada, 
+        networking, Working Groups ativos e representação no ecossistema global 
+        de Systems Engineering.
+      </p>
+      <div class="hero-ctas">
+        <a href="#join" class="btn-primary">Tornar-me sócio →</a>
+        <a href="#events" class="btn-secondary">Ver próximos eventos</a>
+      </div>
+    </div>
+
+    <div class="hero-right">
+      <div class="hero-card">
+        <div class="hero-card-title">Capítulo em números</div>
+        <div class="stats-grid">
+          <div class="stat-item">
+            <div class="stat-num">240+</div>
+            <div class="stat-label">Membros ativos</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-num">18</div>
+            <div class="stat-label">Empresas CAB</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-num">32</div>
+            <div class="stat-label">Eventos em 2025</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-num">4</div>
+            <div class="stat-label">Working Groups</div>
+          </div>
         </div>
-    </header>
-
-    <main class="max-w-4xl mx-auto px-4">
-
-        <div class="py-8">
-            <div class="relative shadow-sm rounded-xl">
-                <input type="text" id="searchInput" placeholder="Qual a sua dúvida hoje?" 
-                    class="w-full pl-12 pr-4 py-4 rounded-xl border border-gray-200 focus:border-tap-green focus:ring-2 focus:ring-green-100 outline-none transition-all text-gray-700 bg-white placeholder-gray-400">
-                <svg class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
-            </div>
+        <div class="next-event">
+          <div class="event-label">⚡ Próximo evento</div>
+          <div class="event-title">INCOSE Portugal Summit 2026</div>
+          <div class="event-date">15 de março · Lisboa · Presencial + Online</div>
         </div>
+      </div>
+    </div>
+  </div>
+</section>
 
-        <div class="mb-8">
-            <h2 class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3 ml-1">Navegar por Temas</h2>
-            <nav id="categoryContainer" class="flex gap-3 overflow-x-auto hide-scroll pb-2">
-                </nav>
+<!-- VALUE PROPS -->
+<section class="value-section" id="knowledge">
+  <div class="container">
+    <div class="reveal">
+      <p class="section-label">O que oferecemos</p>
+      <h2 class="section-title">Tudo o que um engenheiro<br>de sistemas <em>precisa</em></h2>
+    </div>
+    <div class="value-grid">
+      <div class="value-card reveal">
+        <div class="value-icon">🎓</div>
+        <h3>Formação & Certificação</h3>
+        <p>Preparação para o exame ASEP/CSEP com materiais traduzidos para português. Workshops técnicos com instrutores certificados.</p>
+      </div>
+      <div class="value-card reveal" style="transition-delay:0.1s">
+        <div class="value-icon">🤝</div>
+        <h3>Networking Profissional</h3>
+        <p>Diretório de membros, eventos presenciais em Lisboa e Porto, e ligação direta a empresas CAB como Embraer, EDP e outras.</p>
+      </div>
+      <div class="value-card reveal" style="transition-delay:0.2s">
+        <div class="value-icon">📚</div>
+        <h3>Biblioteca de Conhecimento</h3>
+        <p>Acesso exclusivo ao INCOSE SE Handbook em PT, webinars gravados, templates MBSE e guias técnicos validados pela comunidade.</p>
+      </div>
+      <div class="value-card reveal" style="transition-delay:0.3s">
+        <div class="value-icon">🔬</div>
+        <h3>Working Groups Ativos</h3>
+        <p>Participe em grupos de trabalho sobre MBSE, AI in SE, Defense Systems e Sustainability. Contribua para o estado da arte.</p>
+      </div>
+      <div class="value-card reveal" style="transition-delay:0.4s">
+        <div class="value-icon">💼</div>
+        <h3>Job Board Especializado</h3>
+        <p>Oportunidades de emprego em Engenharia de Sistemas publicadas por empresas CAB parceiras. Acesso antecipado para membros.</p>
+      </div>
+      <div class="value-card reveal" style="transition-delay:0.5s">
+        <div class="value-icon">🌍</div>
+        <h3>Representação Global</h3>
+        <p>Ligação ao ecossistema INCOSE mundial: acesso ao INCOSE IS, voto em eleições internacionais e visibilidade nos índices globais.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- NEWS -->
+<section class="news-section" id="news">
+  <div class="container">
+    <div class="news-header reveal">
+      <div>
+        <p class="section-label">Últimas notícias</p>
+        <h2 class="section-title">Acontece na <em>comunidade</em></h2>
+      </div>
+      <a href="#" class="btn-secondary btn-sm btn-sm-outline">Ver todas as notícias →</a>
+    </div>
+    <div class="news-grid">
+      <div class="news-card reveal">
+        <div class="news-img" style="background: linear-gradient(135deg, #001850, #003a6a)">
+          <div class="news-img-placeholder">🌊</div>
+          <div class="news-img-overlay">
+            <span class="news-category">Destaque</span>
+          </div>
         </div>
-
-        <section id="adminPanel" class="hidden mb-10 bg-white border border-gray-200 rounded-xl p-6 shadow-lg animate-fade-in">
-            <div class="mb-4 pb-2 border-b border-gray-100 flex justify-between items-center">
-                <h3 class="font-bold text-gray-800">Adicionar Nova Pergunta</h3>
-                <button onclick="toggleAdminMode()" class="text-tap-red text-xs font-bold">FECHAR</button>
-            </div>
-            
-            <div class="space-y-4">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-xs font-bold text-gray-500 mb-1">Categoria</label>
-                        <select id="newCategory" onchange="checkNewCategory(this.value)" class="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:border-tap-green outline-none text-sm"></select>
-                        <input type="text" id="customCategoryName" placeholder="Nome do novo tema" class="hidden mt-2 w-full p-2.5 bg-white border border-tap-green rounded-lg text-sm">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-gray-500 mb-1">Tags</label>
-                        <input type="text" id="newKeywords" placeholder="Ex: bagagem, peso" class="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:border-tap-green outline-none text-sm">
-                    </div>
-                </div>
-
-                <div>
-                    <label class="block text-xs font-bold text-gray-500 mb-1">Pergunta</label>
-                    <input type="text" id="newQuestion" class="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:border-tap-green outline-none font-medium">
-                </div>
-
-                <div>
-                    <label class="block text-xs font-bold text-gray-500 mb-1">Resposta</label>
-                    <textarea id="newAnswer" rows="3" class="w-full p-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:border-tap-green outline-none resize-none"></textarea>
-                </div>
-
-                <button onclick="addNewFAQ()" class="w-full bg-tap-green hover:bg-green-700 text-white font-bold py-3 rounded-lg shadow transition-colors">
-                    Publicar Pergunta
-                </button>
-            </div>
-        </section>
-
-        <div id="faqList" class="flex flex-col gap-4">
-            </div>
-
-        <div id="emptyState" class="hidden text-center py-12">
-            <p class="text-gray-400">Nenhum resultado encontrado.</p>
+        <div class="news-body">
+          <h3>Portugal lidera grupo de trabalho INCOSE sobre Offshore Renewables Engineering</h3>
+          <p>A WindFloat Atlantic tornou-se caso de estudo internacional. O capítulo português coordena agora o WG dedicado a sistemas de energia renovável offshore com parceiros de 12 países.</p>
+          <div class="news-meta">
+            <span>24 Fev 2026</span>
+            <a href="#" class="news-link">Ler mais →</a>
+          </div>
         </div>
+      </div>
+      <div class="news-card reveal" style="transition-delay:0.15s">
+        <div class="news-img" style="background: linear-gradient(135deg, #001a40, #003060); height:160px">
+          <div class="news-img-placeholder">✈️</div>
+          <div class="news-img-overlay">
+            <span class="news-category">CAB</span>
+          </div>
+        </div>
+        <div class="news-body">
+          <h3>Embraer Évora junta-se ao Corporate Advisory Board</h3>
+          <p>A fabricante aeronáutica reforça a presença industrial no capítulo.</p>
+          <div class="news-meta">
+            <span>18 Fev 2026</span>
+            <a href="#" class="news-link">Ler mais →</a>
+          </div>
+        </div>
+      </div>
+      <div class="news-card reveal" style="transition-delay:0.25s">
+        <div class="news-img" style="background: linear-gradient(135deg, #002a20, #003a30); height:160px">
+          <div class="news-img-placeholder">🏅</div>
+          <div class="news-img-overlay">
+            <span class="news-category">Certificação</span>
+          </div>
+        </div>
+        <div class="news-body">
+          <h3>3ª turma CSEP em Portugal: 12 aprovados</h3>
+          <p>Recordes de aprovação no prep-course de dezembro de 2025.</p>
+          <div class="news-meta">
+            <span>10 Fev 2026</span>
+            <a href="#" class="news-link">Ler mais →</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 
-    </main>
+<!-- EVENTS -->
+<section class="events-section" id="events">
+  <div class="container">
+    <div class="reveal">
+      <p class="section-label">Agenda</p>
+      <h2 class="section-title">Próximos <em>eventos</em></h2>
+      <p class="section-subtitle">Participe em person ou online. Membros têm descontos automáticos e acesso prioritário.</p>
+    </div>
+    <div class="events-list">
+      <div class="event-row reveal">
+        <div class="event-date-box">
+          <div class="day">15</div>
+          <div class="month">Mar</div>
+        </div>
+        <div class="event-info">
+          <h3>INCOSE Portugal Summit 2026</h3>
+          <p>Lisboa · Centro de Congressos do Estoril · 9h00–18h00</p>
+        </div>
+        <div class="event-tags">
+          <span class="tag tag-presencial">Presencial</span>
+          <span class="tag tag-online">Online</span>
+        </div>
+        <div class="event-action">
+          <a href="#" class="btn-sm btn-sm-primary">Inscrever</a>
+          <button class="btn-sm btn-sm-outline">+ Calendário</button>
+        </div>
+      </div>
+      <div class="event-row reveal">
+        <div class="event-date-box">
+          <div class="day">28</div>
+          <div class="month">Mar</div>
+        </div>
+        <div class="event-info">
+          <h3>Webinar: MBSE com SysML v2 – Primeiros passos</h3>
+          <p>Online · Zoom · 18h00–19h30</p>
+        </div>
+        <div class="event-tags">
+          <span class="tag tag-online">Online</span>
+          <span class="tag tag-membro">Membros grátis</span>
+        </div>
+        <div class="event-action">
+          <a href="#" class="btn-sm btn-sm-primary">Inscrever</a>
+          <button class="btn-sm btn-sm-outline">+ Calendário</button>
+        </div>
+      </div>
+      <div class="event-row reveal">
+        <div class="event-date-box">
+          <div class="day">12</div>
+          <div class="month">Abr</div>
+        </div>
+        <div class="event-info">
+          <h3>ASEP Prep-Course – Lisboa (Sessão de Primavera)</h3>
+          <p>Lisboa · Local a confirmar · 3 dias (12–14 Abr)</p>
+        </div>
+        <div class="event-tags">
+          <span class="tag tag-presencial">Presencial</span>
+          <span class="tag tag-membro">Desconto membro</span>
+        </div>
+        <div class="event-action">
+          <a href="#" class="btn-sm btn-sm-primary">Inscrever</a>
+          <button class="btn-sm btn-sm-outline">+ Calendário</button>
+        </div>
+      </div>
+      <div class="event-row reveal">
+        <div class="event-date-box">
+          <div class="day">24</div>
+          <div class="month">Mai</div>
+        </div>
+        <div class="event-info">
+          <h3>WG Defense Systems – Reunião aberta Q2</h3>
+          <p>Online · Teams · 17h00–18h30</p>
+        </div>
+        <div class="event-tags">
+          <span class="tag tag-online">Online</span>
+        </div>
+        <div class="event-action">
+          <a href="#" class="btn-sm btn-sm-primary">Inscrever</a>
+          <button class="btn-sm btn-sm-outline">+ Calendário</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 
-    <script>
-        // --- DADOS (Persistência) ---
-        const DataManager = {
-            init() {
-                if (!localStorage.getItem('aero_faqs_v3_2')) {
-                    const defaultData = [
-                        { id: 101, category: 'Bagagem', question: 'Qual o peso máximo da mala de mão?', answer: 'Na TAP, a mala de mão pode pesar até 10kg na Classe Económica e 10kg na Executiva (2 volumes). Medidas: 55x40x20cm.', keywords: 'mala peso mao' },
-                        { id: 102, category: 'Check-in', question: 'Quando abre o check-in online?', answer: 'O check-in online abre 36 horas antes da partida do voo.', keywords: 'checkin tempo' }
-                    ];
-                    localStorage.setItem('aero_faqs_v3_2', JSON.stringify(defaultData));
-                }
-                this.syncCategories();
-            },
+<!-- MEMBERSHIP CTA -->
+<section class="membership-section" id="membership">
+  <div class="container">
+    <div class="membership-inner">
+      <div class="reveal">
+        <p class="section-label">Seja membro</p>
+        <h2 class="section-title">Invista na sua<br>carreira em <em>SE</em></h2>
+        <p>Faça parte da rede portuguesa de engenheiros de sistemas. Acesso imediato a recursos exclusivos, descontos em eventos e certificação com reconhecimento internacional.</p>
+        <ul class="benefits-list">
+          <li>Acesso completo à biblioteca de conhecimento e webinars gravados</li>
+          <li>Certificate Wallet automático após cada evento</li>
+          <li>Preço de membro em formações e Summit anual</li>
+          <li>Presença no Member Directory (opt-in)</li>
+          <li>Voto nas eleições do capítulo e acesso ao fórum privado</li>
+          <li>Ligação ao portal INCOSE global e IS participations</li>
+        </ul>
+        <a href="#" class="btn-primary">Aderir agora — a partir de 80€/ano →</a>
+      </div>
+      <div class="plan-cards reveal" style="transition-delay:0.2s" id="join">
+        <div class="plan-card">
+          <div>
+            <div class="plan-name">Membro Individual</div>
+            <div class="plan-desc">Profissional ou académico</div>
+          </div>
+          <div class="plan-price">
+            <div class="amount">80€</div>
+            <div class="period">/ano</div>
+          </div>
+        </div>
+        <div class="plan-card featured">
+          <div>
+            <div class="plan-name">Membro Estudante</div>
+            <div class="plan-desc">Universidade portuguesa</div>
+          </div>
+          <div class="plan-price">
+            <div class="amount">30€</div>
+            <div class="period">/ano</div>
+          </div>
+        </div>
+        <div class="plan-card">
+          <div>
+            <div class="plan-name">CAB – Corporate Advisory Board</div>
+            <div class="plan-desc">Empresas · 5 seats incluídos</div>
+          </div>
+          <div class="plan-price">
+            <div class="amount">800€</div>
+            <div class="period">/ano</div>
+          </div>
+        </div>
+        <p style="font-size:0.75rem; color: var(--text-muted); margin-top:0.5rem; line-height:1.5">
+          ℹ️ As quotas internacionais INCOSE são pagas separadamente no 
+          <a href="https://www.incose.org" target="_blank" style="color:var(--teal-light)">portal INCOSE global ↗</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
 
-            getFaqs: () => JSON.parse(localStorage.getItem('aero_faqs_v3_2')) || [],
-            
-            setFaqs: (data) => {
-                localStorage.setItem('aero_faqs_v3_2', JSON.stringify(data));
-                DataManager.syncCategories();
-            },
-            
-            getCats: () => JSON.parse(localStorage.getItem('aero_cats_v3_2')) || [],
+<!-- JOB BOARD -->
+<section class="jobs-section">
+  <div class="container">
+    <div class="news-header reveal">
+      <div>
+        <p class="section-label">Carreiras</p>
+        <h2 class="section-title">Job Board <em>SE</em></h2>
+        <p class="section-subtitle">Vagas publicadas por empresas CAB e parceiros. Candidaturas simplificadas para membros.</p>
+      </div>
+      <a href="#" class="btn-secondary btn-sm btn-sm-outline">Ver todas as vagas →</a>
+    </div>
+    <div class="jobs-grid">
+      <div class="job-card reveal">
+        <div class="job-company-logo">EMB</div>
+        <div class="job-info">
+          <h4>Systems Engineer – Aerostructures</h4>
+          <p class="company">Embraer Portugal · Évora</p>
+          <div class="job-tags">
+            <span class="job-tag">MBSE</span>
+            <span class="job-tag">SysML</span>
+            <span class="job-tag">Full-time</span>
+          </div>
+        </div>
+      </div>
+      <div class="job-card reveal" style="transition-delay:0.1s">
+        <div class="job-company-logo">EDP</div>
+        <div class="job-info">
+          <h4>Lead SE – Offshore Wind Division</h4>
+          <p class="company">EDP Renewables · Lisboa</p>
+          <div class="job-tags">
+            <span class="job-tag">Requisitos</span>
+            <span class="job-tag">Interface Mgmt</span>
+            <span class="job-tag">Sénior</span>
+          </div>
+        </div>
+      </div>
+      <div class="job-card reveal" style="transition-delay:0.2s">
+        <div class="job-company-logo">IST</div>
+        <div class="job-info">
+          <h4>Investigador Doutoramento – Model-Based SE</h4>
+          <p class="company">IST / INESC-ID · Lisboa / Remoto</p>
+          <div class="job-tags">
+            <span class="job-tag">PhD</span>
+            <span class="job-tag">Investigação</span>
+            <span class="job-tag">Bolsa FCT</span>
+          </div>
+        </div>
+      </div>
+      <div class="job-card reveal" style="transition-delay:0.3s">
+        <div class="job-company-logo">TLP</div>
+        <div class="job-info">
+          <h4>Systems Architect – Space Segment</h4>
+          <p class="company">Thales Alenia Space Portugal · Porto</p>
+          <div class="job-tags">
+            <span class="job-tag">Space</span>
+            <span class="job-tag">ECSS</span>
+            <span class="job-tag">CSEP preferido</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 
-            syncCategories: () => {
-                const faqs = JSON.parse(localStorage.getItem('aero_faqs_v3_2')) || [];
-                const uniqueCats = [...new Set(faqs.map(item => item.category))].sort();
-                localStorage.setItem('aero_cats_v3_2', JSON.stringify(uniqueCats));
-            }
-        };
+<!-- FOOTER -->
+<footer>
+  <div class="footer-top">
+    <div class="footer-col">
+      <div class="footer-logos">
+        <div class="footer-logo-mark">INC</div>
+        <div>
+          <div style="font-size:0.9rem; font-weight:700">INCOSE Portugal</div>
+          <div style="font-size:0.65rem; color: var(--text-muted)">Capítulo Oficial</div>
+        </div>
+      </div>
+      <p>Comunidade portuguesa de Engenharia de Sistemas. Membro oficial do International Council on Systems Engineering desde 2025.</p>
+      <div class="footer-social">
+        <a href="https://linkedin.com" class="social-btn" target="_blank">in</a>
+        <a href="https://youtube.com" class="social-btn" target="_blank">▶</a>
+        <a href="mailto:info@sespt.pt" class="social-btn">✉</a>
+      </div>
+    </div>
+    <div class="footer-col">
+      <h4>Quick Links</h4>
+      <a href="#">About INCOSE Portugal</a>
+      <a href="#">Estatutos SESPT</a>
+      <a href="#">Membership</a>
+      <a href="#">Eventos</a>
+      <a href="#">Job Board</a>
+      <a href="#">Working Groups</a>
+      <a href="https://www.incose.org" target="_blank">INCOSE Global ↗</a>
+    </div>
+    <div class="footer-col">
+      <h4>Contacto SESPT</h4>
+      <p style="margin-bottom:0.5rem">
+        SESPT – Sociedade de Engenharia de Sistemas de Portugal<br><br>
+        Rua [a completar]<br>
+        1000-000 Lisboa, Portugal
+      </p>
+      <a href="mailto:geral@sespt.pt">geral@sespt.pt</a>
+      <a href="mailto:membership@sespt.pt">membership@sespt.pt</a>
+    </div>
+    <div class="footer-col">
+      <h4>Legal & Compliance</h4>
+      <a href="#">Política de Privacidade</a>
+      <a href="#">Termos de Utilização</a>
+      <a href="#">Política de Cookies</a>
+      <a href="#">RGPD – Direito ao Esquecimento</a>
+      <a href="#">Estatutos SESPT</a>
+      <a href="#">Relatórios Anuais</a>
+    </div>
+  </div>
+  <div class="footer-legal">
+    <p>
+      <strong>O Capítulo INCOSE Portugal é legalmente representado e operado pela SESPT – Sociedade de Engenharia de Sistemas de Portugal, NIF [inserir número].</strong><br>
+      © 2026 SESPT. INCOSE® é marca registada da International Council on Systems Engineering. Todos os direitos reservados. | incose.pt
+    </p>
+    <div class="footer-bottom-links">
+      <a href="#">Mapa do site</a>
+      <a href="#">Acessibilidade</a>
+      <a href="#">Contactos</a>
+    </div>
+  </div>
+</footer>
 
-        // --- ESTADO ---
-        let currentCategory = 'Todas';
-        let isAdmin = false;
+<script>
+  // Scroll reveal
+  const reveals = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); } });
+  }, { threshold: 0.1 });
+  reveals.forEach(r => io.observe(r));
 
-        window.onload = () => {
-            DataManager.init();
-            renderUI();
-            document.getElementById('searchInput').addEventListener('input', renderFAQs);
-        };
+  // Modal tabs
+  function switchTab(tab) {
+    document.querySelectorAll('.modal-tab').forEach((t, i) => {
+      t.classList.toggle('active', (i === 0 && tab === 'login') || (i === 1 && tab === 'register'));
+    });
+    document.getElementById('tab-login').style.display = tab === 'login' ? 'block' : 'none';
+    document.getElementById('tab-register').style.display = tab === 'register' ? 'block' : 'none';
+  }
 
-        function renderUI() {
-            renderCategories();
-            renderAdminSelect();
-            renderFAQs();
-        }
+  // Close modal on overlay click
+  document.getElementById('modal-login').addEventListener('click', function(e) {
+    if (e.target === this) this.classList.remove('open');
+  });
 
-        // Renderiza os botões das categorias
-        function renderCategories() {
-            const container = document.getElementById('categoryContainer');
-            const cats = ['Todas', ...DataManager.getCats()];
-            
-            container.innerHTML = cats.map(cat => {
-                const isActive = currentCategory === cat;
-                
-                // LÓGICA DE CORES CORRIGIDA:
-                // Ativo: Verde TAP, Texto Branco.
-                // Inativo: Fundo Cinza Claro, Texto Cinza Escuro, Hover Cinza Médio (NÃO BRANCO).
-                const activeClasses = 'bg-tap-green text-white shadow-md border-transparent';
-                const inactiveClasses = 'bg-gray-100 text-gray-600 border-transparent hover:bg-gray-200 hover:text-black';
+  // Language toggle
+  document.querySelectorAll('.lang-toggle button').forEach(btn => {
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('.lang-toggle button').forEach(b => b.classList.remove('active'));
+      this.classList.add('active');
+    });
+  });
 
-                return `
-                <button onclick="setCategory('${cat}')" 
-                    class="px-5 py-2 rounded-full text-sm font-bold transition-colors whitespace-nowrap border ${isActive ? activeClasses : inactiveClasses}">
-                    ${cat}
-                </button>
-            `}).join('');
-        }
-
-        function renderAdminSelect() {
-            const select = document.getElementById('newCategory');
-            const cats = DataManager.getCats();
-            let html = cats.map(c => `<option value="${c}">${c}</option>`).join('');
-            html += `<option value="NEW_THEME" class="font-bold text-tap-red">+ Novo Tema</option>`;
-            select.innerHTML = html;
-        }
-
-        function renderFAQs() {
-            const container = document.getElementById('faqList');
-            const emptyState = document.getElementById('emptyState');
-            const term = document.getElementById('searchInput').value.toLowerCase();
-            const faqs = DataManager.getFaqs();
-
-            const filtered = faqs.filter(f => {
-                const matchesTerm = f.question.toLowerCase().includes(term) || f.keywords.toLowerCase().includes(term);
-                const matchesCat = currentCategory === 'Todas' || f.category === currentCategory;
-                return matchesTerm && matchesCat;
-            });
-
-            if (filtered.length === 0) {
-                container.innerHTML = '';
-                emptyState.classList.remove('hidden');
-                return;
-            } else {
-                emptyState.classList.add('hidden');
-            }
-
-            container.innerHTML = filtered.map(f => `
-                <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden hover:border-gray-300 transition-colors">
-                    <button onclick="toggleAccordion(${f.id})" class="w-full text-left px-5 py-4 flex justify-between items-center group bg-white">
-                        <div>
-                            <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-1">${f.category}</span>
-                            <span class="font-bold text-gray-800 group-hover:text-tap-green transition-colors text-base">${f.question}</span>
-                        </div>
-                        <svg id="icon-${f.id}" class="icon-rotate text-gray-300 w-5 h-5 flex-shrink-0 ml-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
-                    </button>
-                    
-                    <div id="ans-${f.id}" class="accordion-content bg-gray-50">
-                        <div class="px-5 pb-5 pt-2 text-gray-600 text-sm leading-relaxed">
-                            ${f.answer}
-                            
-                            <div class="${isAdmin ? 'flex' : 'hidden'} justify-end mt-3 pt-3 border-t border-gray-200">
-                                <button onclick="deleteFAQ(${f.id})" class="text-xs font-bold text-tap-red hover:bg-red-50 px-2 py-1 rounded transition flex items-center gap-1">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
-                                    ELIMINAR
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        // --- AÇÕES ---
-
-        function toggleAccordion(id) {
-            const content = document.getElementById(`ans-${id}`);
-            const icon = document.getElementById(`icon-${id}`);
-            const isOpen = content.classList.contains('open');
-
-            // Fecha todos
-            document.querySelectorAll('.accordion-content').forEach(el => el.classList.remove('open'));
-            document.querySelectorAll('.icon-rotate').forEach(el => el.classList.remove('open'));
-
-            // Abre o clicado se não estava aberto
-            if (!isOpen) {
-                content.classList.add('open');
-                icon.classList.add('open');
-            }
-        }
-
-        function setCategory(cat) {
-            currentCategory = cat;
-            renderUI();
-        }
-
-        function toggleAdminMode() {
-            isAdmin = !isAdmin;
-            const panel = document.getElementById('adminPanel');
-            const btn = document.getElementById('adminToggleBtn');
-            
-            if (isAdmin) {
-                panel.classList.remove('hidden');
-                btn.classList.add('bg-tap-green', 'text-white', 'border-tap-green');
-                btn.classList.remove('text-gray-500', 'bg-gray-50');
-            } else {
-                panel.classList.add('hidden');
-                btn.classList.remove('bg-tap-green', 'text-white', 'border-tap-green');
-                btn.classList.add('text-gray-500', 'bg-gray-50');
-            }
-            renderFAQs(); // Re-render para mostrar botões de delete
-        }
-
-        function checkNewCategory(val) {
-            const input = document.getElementById('customCategoryName');
-            if (val === 'NEW_THEME') {
-                input.classList.remove('hidden');
-                input.focus();
-            } else {
-                input.classList.add('hidden');
-            }
-        }
-
-        function addNewFAQ() {
-            const q = document.getElementById('newQuestion').value.trim();
-            const a = document.getElementById('newAnswer').value.trim();
-            const k = document.getElementById('newKeywords').value.trim();
-            let c = document.getElementById('newCategory').value;
-
-            if (c === 'NEW_THEME') {
-                c = document.getElementById('customCategoryName').value.trim();
-                if (!c) return alert("Insira o nome do tema.");
-            }
-
-            if (!q || !a) return alert("Preencha a pergunta e a resposta.");
-
-            const faqs = DataManager.getFaqs();
-            // Primeira letra maiúscula na categoria
-            c = c.charAt(0).toUpperCase() + c.slice(1);
-
-            faqs.unshift({ id: Date.now(), category: c, question: q, answer: a, keywords: k });
-            DataManager.setFaqs(faqs);
-
-            // Limpar form
-            document.getElementById('newQuestion').value = '';
-            document.getElementById('newAnswer').value = '';
-            document.getElementById('newKeywords').value = '';
-            document.getElementById('customCategoryName').value = '';
-            
-            alert("Pergunta publicada!");
-            toggleAdminMode();
-            renderUI();
-        }
-
-        function deleteFAQ(id) {
-            if (!confirm("Eliminar esta pergunta? Se for a única do tema, o tema também será removido.")) return;
-
-            let faqs = DataManager.getFaqs();
-            const target = faqs.find(f => f.id === id);
-            
-            if (target) {
-                const cat = target.category;
-                faqs = faqs.filter(f => f.id !== id);
-                DataManager.setFaqs(faqs);
-
-                // Verifica se a categoria ainda existe
-                const remaining = faqs.filter(f => f.category === cat);
-                if (remaining.length === 0 && currentCategory === cat) {
-                    currentCategory = 'Todas';
-                }
-                renderUI();
-            }
-        }
-    </script>
+  // ICS download for events
+  document.querySelectorAll('.btn-sm-outline').forEach(btn => {
+    if (btn.textContent.includes('Calendário')) {
+      btn.addEventListener('click', function() {
+        const ics = `BEGIN:VCALENDAR\nVERSION:2.0\nBEGIN:VEVENT\nSUMMARY:INCOSE Portugal – Evento\nDTSTART:20260315T090000Z\nDTEND:20260315T180000Z\nLOCATION:Lisboa\nEND:VEVENT\nEND:VCALENDAR`;
+        const blob = new Blob([ics], {type: 'text/calendar'});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a'); a.href = url; a.download = 'incose-portugal-evento.ics'; a.click();
+      });
+    }
+  });
+</script>
 </body>
 </html>
