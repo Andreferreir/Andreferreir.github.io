@@ -1,2019 +1,274 @@
 <!DOCTYPE html>
 <html lang="pt">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SESPT – Engenharia de Sistemas | Capítulo Oficial INCOSE</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Inter+Tight:wght@500;600;700;800&display=swap" rel="stylesheet">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Digital Twin Experience</title>
+
 <style>
-/* ═══ DESIGN TOKENS ═════════════════════════════════════════════════════════ */
-:root {
-  /* Blues — corporate palette */
-  --navy:    #0a1628;
-  --navy2:   #0d1e38;
-  --blue:    #0e3a8c;
-  --blue2:   #1252c8;
-  --blue3:   #2563eb;
-  --accent:  #1e88e5;
-  --accent2: #42a5f5;
-
-  /* Neutrals */
-  --dark:    #080f1c;
-  --card:    #0d1b30;
-  --card2:   #0f2040;
-  --white:   #ffffff;
-  --text:    rgba(255,255,255,0.90);
-  --text2:   rgba(255,255,255,0.54);
-  --muted:   #4e6a8c;
-  --border:  rgba(255,255,255,0.06);
-  --border2: rgba(255,255,255,0.11);
-
-  /* Status */
-  --success: #16a34a;
-  --warn:    #d97706;
-  --danger:  #dc2626;
-
-  /* Geometry */
-  --radius:    6px;
-  --radius-lg: 10px;
-  --radius-xl: 16px;
-  --shadow:    0 2px 12px rgba(0,0,0,.35);
-  --shadow-lg: 0 8px 32px rgba(0,0,0,.45);
-
-  /* Layout */
-  --wrap:     1200px;
-  --header-h: 60px;
+:root{
+  --bg:#060c18;
+  --bg2:#0b1628;
+  --accent:#1e88e5;
+  --accent2:#42a5f5;
+  --text:#e6edf3;
+  --muted:#8aa0b8;
 }
 
-/* ═══ RESET & BASE ══════════════════════════════════════════════════════════ */
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; }
-body {
-  font-family: 'Inter', sans-serif;
-  background: var(--dark);
-  color: var(--text);
-  overflow-x: hidden;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  font-size: 14.5px;
-  line-height: 1.6;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-h1, h2, h3, h4, h5 {
-  font-family: 'Inter Tight', sans-serif;
-  line-height: 1.15;
-  color: var(--white);
-  letter-spacing: -0.02em;
-  font-weight: 700;
-}
-a { color: inherit; text-decoration: none; }
-button { cursor: pointer; font-family: inherit; }
-img, video, iframe { max-width: 100%; }
-
-::-webkit-scrollbar { width: 4px; }
-::-webkit-scrollbar-track { background: var(--dark); }
-::-webkit-scrollbar-thumb { background: var(--card2); border-radius: 2px; }
-
-@keyframes fadeUp { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:translateY(0)} }
-
-/* ═══ LAYOUT ════════════════════════════════════════════════════════════════ */
-.wrap { max-width: var(--wrap); margin: 0 auto; padding: 0 clamp(1.25rem, 4vw, 2.5rem); width: 100%; }
-main  { flex: 1; }
-.page { display: none; padding: clamp(2.5rem, 5vw, 4rem) 0; animation: fadeUp .35s ease both; }
-.page.active { display: block; }
-
-/* ═══ HEADER ════════════════════════════════════════════════════════════════ */
-#util-bar {
-  background: var(--navy);
-  border-bottom: 1px solid var(--border);
-  padding: .28rem clamp(1.25rem, 4vw, 2.5rem);
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 1.5rem;
-  font-size: .72rem;
-  letter-spacing: .3px;
-  color: var(--muted);
-}
-#util-bar a { color: var(--muted); transition: color .15s; font-weight: 500; }
-#util-bar a:hover { color: var(--accent2); }
-.lang-toggle { display: flex; border: 1px solid var(--border2); border-radius: 4px; overflow: hidden; }
-.lang-toggle button {
-  background: transparent;
-  border: none;
-  padding: .18rem .6rem;
-  color: var(--muted);
-  font-weight: 600;
-  font-size: .68rem;
-  letter-spacing: .8px;
-  transition: all .15s;
-}
-.lang-toggle button.active { background: var(--blue); color: #fff; }
-
-header {
-  position: sticky;
-  top: 0;
-  z-index: 300;
-  background: rgba(8,15,28,.97);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-bottom: 1px solid var(--border2);
-  padding: 0 clamp(1.25rem, 4vw, 2.5rem);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  height: var(--header-h);
-  gap: 1rem;
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+  background:linear-gradient(180deg,var(--bg),var(--bg2));
+  color:var(--text);
+  overflow-x:hidden;
 }
 
-/* Logo */
-.logo-group {
-  display: flex;
-  align-items: center;
-  gap: .9rem;
-  flex-shrink: 0;
-  min-width: 0;
-}
-.logo-mark {
-  width: 34px;
-  height: 34px;
-  min-width: 34px;
-  border-radius: 6px;
-  background: var(--blue);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: .48rem;
-  font-weight: 700;
-  font-family: 'Inter Tight', sans-serif;
-  letter-spacing: .5px;
-  color: #fff;
-  border: 1px solid rgba(255,255,255,.1);
-}
-.logo-text .main {
-  font-size: .88rem;
-  font-weight: 600;
-  font-family: 'Inter Tight', sans-serif;
-  white-space: nowrap;
-  color: var(--white);
-  letter-spacing: -.02em;
-}
-.logo-text .sub {
-  font-size: .54rem;
-  color: var(--muted);
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  margin-top: 1px;
-  font-weight: 500;
-}
-.logo-divider { width: 1px; height: 22px; background: var(--border2); flex-shrink: 0; }
-.logo-sespt { font-size: .6rem; font-weight: 600; color: var(--muted); letter-spacing: 1.5px; text-transform: uppercase; }
-
-/* Desktop nav */
-#desk-nav { display: flex; }
-#desk-nav button {
-  padding: 0 .9rem;
-  height: var(--header-h);
-  background: transparent;
-  border: none;
-  border-bottom: 2px solid transparent;
-  color: var(--text2);
-  font-size: .78rem;
-  font-weight: 500;
-  transition: all .15s;
-  white-space: nowrap;
-  letter-spacing: .01em;
-}
-#desk-nav button:hover { color: var(--white); }
-#desk-nav button.active { color: var(--white); border-bottom-color: var(--accent); }
-.hdr-cta { flex-shrink: 0; }
-
-/* Burger */
-#burger {
-  display: none;
-  background: transparent;
-  border: 1px solid var(--border2);
-  border-radius: var(--radius);
-  padding: .38rem .55rem;
-  color: var(--text2);
-  font-size: .85rem;
-  line-height: 1;
-  flex-shrink: 0;
-  transition: all .15s;
-  font-family: 'Inter', sans-serif;
-  font-weight: 500;
-}
-#burger:hover { color: var(--white); }
-
-/* ═══ MOBILE DRAWER ═════════════════════════════════════════════════════════ */
-#mob-drawer {
-  display: none;
-  position: fixed;
-  top: var(--header-h);
-  left: 0; right: 0; bottom: 0;
-  background: rgba(8,15,28,.99);
-  z-index: 290;
-  overflow-y: auto;
-  flex-direction: column;
-  border-top: 1px solid var(--border);
-  -webkit-overflow-scrolling: touch;
-}
-#mob-drawer.open { display: flex; }
-.mob-section { padding: .4rem 0; border-bottom: 1px solid var(--border); }
-.mob-section:last-child { border: none; }
-#mob-drawer button.mob-nav-btn {
-  width: 100%;
-  text-align: left;
-  padding: .85rem 1.5rem;
-  background: transparent;
-  border: none;
-  color: var(--text2);
-  font-size: .9rem;
-  font-weight: 500;
-  transition: all .15s;
-}
-#mob-drawer button.mob-nav-btn:hover,
-#mob-drawer button.mob-nav-btn.active { color: var(--accent2); background: rgba(30,136,229,.05); }
-.mob-lang-row { display: flex; gap: .6rem; padding: .85rem 1.5rem; align-items: center; }
-.mob-lang-row span { font-size: .72rem; color: var(--muted); font-weight: 600; letter-spacing: .4px; }
-.mob-user-row { padding: .85rem 1.5rem; }
-
-/* ═══ BUTTONS ═══════════════════════════════════════════════════════════════ */
-.btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: .4rem;
-  font-weight: 600;
-  border: none;
-  border-radius: var(--radius);
-  transition: all .15s ease;
-  white-space: nowrap;
-  letter-spacing: .01em;
-  font-family: 'Inter', sans-serif;
-}
-.btn-sm  { padding: .3rem .85rem;  font-size: .72rem; }
-.btn-md  { padding: .6rem 1.35rem; font-size: .82rem; }
-.btn-lg  { padding: .72rem 1.75rem; font-size: .88rem; }
-.btn-xl  { padding: .85rem 2rem; font-size: .92rem; }
-.btn-full { width: 100%; }
-
-.btn-primary { background: var(--blue2); color: #fff; }
-.btn-primary:hover { background: var(--blue3); transform: translateY(-1px); }
-.btn-blue { background: var(--blue); color: #fff; }
-.btn-blue:hover { background: var(--blue2); }
-.btn-ghost { background: transparent; color: var(--text2); border: 1px solid var(--border2); }
-.btn-ghost:hover { color: var(--white); border-color: rgba(255,255,255,.22); background: rgba(255,255,255,.03); }
-.btn-success { background: rgba(22,163,74,.1); color: var(--success); border: 1px solid rgba(22,163,74,.22); }
-.btn-success:hover { background: rgba(22,163,74,.18); }
-.btn-danger  { background: rgba(220,38,38,.08); color: var(--danger); border: 1px solid rgba(220,38,38,.2); }
-.btn-danger:hover  { background: rgba(220,38,38,.15); }
-
-/* ═══ CARDS ═════════════════════════════════════════════════════════════════ */
-.card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  transition: border-color .2s, box-shadow .2s;
-}
-.card:hover {
-  border-color: rgba(30,136,229,.2);
-  box-shadow: 0 8px 32px rgba(0,0,0,.25);
-}
-.card-flat { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-lg); }
-
-/* Left accent bar on cards */
-.card-accent {
-  position: relative;
-}
-.card-accent::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0;
-  width: 3px; height: 100%;
-  background: var(--blue2);
-  border-radius: var(--radius-lg) 0 0 var(--radius-lg);
+/* HERO */
+#hero{
+  position:relative;
+  height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  overflow:hidden;
 }
 
-/* ═══ BADGES ════════════════════════════════════════════════════════════════ */
-.badge {
-  display: inline-flex;
-  align-items: center;
-  padding: .14rem .5rem;
-  border-radius: 4px;
-  font-size: .64rem;
-  font-weight: 600;
-  letter-spacing: .3px;
-  text-transform: uppercase;
-}
-.b-def  { background: rgba(255,255,255,.04); color: var(--muted);   border: 1px solid var(--border); }
-.b-blue { background: rgba(18,82,200,.12);   color: #90b8f8;        border: 1px solid rgba(18,82,200,.22); }
-.b-teal { background: rgba(30,136,229,.1);   color: var(--accent2); border: 1px solid rgba(30,136,229,.2); }
-.b-cork { background: rgba(180,140,80,.1);   color: #d4a96a;        border: 1px solid rgba(180,140,80,.2); }
-.b-green{ background: rgba(22,163,74,.08);   color: var(--success); border: 1px solid rgba(22,163,74,.18); }
-.b-warn { background: rgba(217,119,6,.08);   color: var(--warn);    border: 1px solid rgba(217,119,6,.18); }
-
-/* ═══ ALERTS ════════════════════════════════════════════════════════════════ */
-.alert {
-  border-radius: var(--radius);
-  padding: .72rem 1rem;
-  font-size: .81rem;
-  display: flex;
-  gap: .55rem;
-  align-items: flex-start;
-  margin-bottom: 1rem;
-  line-height: 1.55;
-}
-.a-info { background: rgba(30,136,229,.06); border: 1px solid rgba(30,136,229,.18); color: var(--accent2); }
-.a-warn { background: rgba(217,119,6,.06);  border: 1px solid rgba(217,119,6,.18);  color: var(--warn); }
-.a-ok   { background: rgba(22,163,74,.06);  border: 1px solid rgba(22,163,74,.18);  color: var(--success); }
-.a-err  { background: rgba(220,38,38,.06);  border: 1px solid rgba(220,38,38,.18);  color: var(--danger); }
-
-/* ═══ FORMS ═════════════════════════════════════════════════════════════════ */
-.fg { margin-bottom: .9rem; }
-.fg label {
-  display: block;
-  font-size: .68rem;
-  font-weight: 600;
-  color: var(--muted);
-  margin-bottom: .32rem;
-  letter-spacing: .5px;
-  text-transform: uppercase;
-}
-.fg input, .fg select, .fg textarea {
-  width: 100%;
-  background: rgba(255,255,255,.04);
-  border: 1px solid rgba(255,255,255,.09);
-  border-radius: var(--radius);
-  padding: .6rem .9rem;
-  color: var(--white);
-  font-size: 1rem;
-  font-family: 'Inter', sans-serif;
-  transition: border-color .15s, box-shadow .15s;
-  outline: none;
-}
-.fg input:focus, .fg select:focus, .fg textarea:focus {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 2px rgba(30,136,229,.12);
-}
-.fg textarea { resize: vertical; min-height: 80px; }
-.fg select option { background: var(--card2); }
-
-/* ═══ SECTION LABELS ════════════════════════════════════════════════════════ */
-.slabel {
-  font-size: .62rem;
-  font-weight: 600;
-  letter-spacing: 3px;
-  text-transform: uppercase;
-  color: var(--accent);
-  margin-bottom: .55rem;
-  display: block;
-}
-.stitle {
-  font-size: clamp(1.35rem, 2.8vw, 2rem);
-  font-weight: 800;
-  letter-spacing: -0.03em;
-  margin-bottom: .7rem;
-  color: var(--white);
-  line-height: 1.12;
-}
-.ssub {
-  font-size: clamp(.82rem, 1.2vw, .92rem);
-  color: var(--text2);
-  line-height: 1.7;
-  margin-bottom: 2rem;
-  max-width: 600px;
-  font-weight: 400;
-}
-.accent-text {
-  color: var(--accent2);
-}
-hr.div { border: none; border-top: 1px solid var(--border); margin: 1rem 0; }
-
-/* ═══ COOKIE ════════════════════════════════════════════════════════════════ */
-#cookie {
-  position: fixed;
-  bottom: 0; left: 0; right: 0;
-  z-index: 500;
-  background: var(--navy2);
-  border-top: 1px solid var(--border2);
-  padding: .9rem clamp(1.25rem, 4vw, 2.5rem);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  flex-wrap: wrap;
-  box-shadow: 0 -4px 20px rgba(0,0,0,.4);
-  animation: fadeUp .5s 1.5s both;
-}
-#cookie p { font-size: .78rem; color: var(--text2); max-width: 580px; line-height: 1.55; }
-
-/* ═══ MODAL ═════════════════════════════════════════════════════════════════ */
-.overlay {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,.80);
-  z-index: 400;
-  align-items: flex-end;
-  justify-content: center;
-  padding: 0;
-  backdrop-filter: blur(6px);
-}
-.overlay.open { display: flex; }
-.mbox {
-  background: var(--card2);
-  border: 1px solid var(--border2);
-  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
-  width: 100%;
-  max-width: 440px;
-  max-height: 90vh;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  position: relative;
-  box-shadow: var(--shadow-lg);
-}
-.mbox-top { height: 2px; background: var(--blue2); border-radius: var(--radius-xl) var(--radius-xl) 0 0; }
-.mbody   { padding: 1.4rem 1.5rem; }
-.mhead   { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.2rem; }
-.mhead h3 { font-size: 1rem; font-weight: 700; letter-spacing: -0.02em; }
-.mclose  { background: transparent; border: none; color: var(--muted); font-size: .9rem; padding: .28rem .45rem; border-radius: 5px; transition: all .15s; }
-.mclose:hover { color: var(--white); background: rgba(255,255,255,.06); }
-.mtabs   { display: flex; border-bottom: 1px solid var(--border); margin-bottom: 1.2rem; }
-.mtab    { flex: 1; background: transparent; border: none; border-bottom: 2px solid transparent; padding: .55rem; color: var(--muted); font-weight: 600; font-size: .8rem; transition: all .15s; }
-.mtab.active { color: var(--white); border-bottom-color: var(--accent); }
-
-/* ═══ TABS ══════════════════════════════════════════════════════════════════ */
-.dtabs {
-  display: flex;
-  border-bottom: 1px solid var(--border);
-  margin-bottom: 1.75rem;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
-}
-.dtabs::-webkit-scrollbar { display: none; }
-.dtab {
-  background: transparent;
-  border: none;
-  border-bottom: 2px solid transparent;
-  padding: .6rem 1rem;
-  color: var(--muted);
-  font-weight: 600;
-  font-size: .78rem;
-  transition: all .15s;
-  white-space: nowrap;
-  letter-spacing: .01em;
-}
-.dtab.active { color: var(--white); border-bottom-color: var(--accent); }
-.dpanel { display: none; }
-.dpanel.active { display: block; }
-
-/* ═══ HERO ══════════════════════════════════════════════════════════════════ */
-#hero {
-  position: relative;
-  min-height: 82vh;
-  display: flex;
-  align-items: center;
-  overflow: hidden;
-  background: var(--dark);
-  border-bottom: 1px solid var(--border);
-}
-/* Subtle grid */
-.hero-grid-bg {
-  position: absolute;
-  inset: 0;
-  background-image:
-    linear-gradient(rgba(30,136,229,.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(30,136,229,.03) 1px, transparent 1px);
-  background-size: 60px 60px;
-  pointer-events: none;
-}
-/* Single, contained glow */
-.hero-glow {
-  position: absolute;
-  top: 0; right: 0;
-  width: 50%;
-  height: 100%;
-  background: radial-gradient(ellipse at 80% 40%, rgba(14,58,140,.18) 0%, transparent 70%);
-  pointer-events: none;
-}
-.hero-inner {
-  position: relative;
-  z-index: 2;
-  display: grid;
-  grid-template-columns: 1.1fr 0.9fr;
-  gap: 5rem;
-  align-items: center;
-  padding: 5rem 0 4.5rem;
-}
-.hero-left { }
-.hero-eyebrow {
-  display: inline-flex;
-  align-items: center;
-  gap: .4rem;
-  border: 1px solid rgba(30,136,229,.25);
-  padding: .25rem .75rem;
-  border-radius: 3px;
-  font-size: .64rem;
-  font-weight: 600;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  color: var(--accent2);
-  margin-bottom: 1.4rem;
-  background: rgba(30,136,229,.05);
-}
-.hero-h1 {
-  font-size: clamp(1.9rem, 4.2vw, 3.4rem);
-  font-weight: 800;
-  line-height: 1.06;
-  letter-spacing: -0.04em;
-  margin-bottom: 1.1rem;
-  color: var(--white);
-}
-.hero-h1 span { color: var(--accent2); }
-.hero-sub {
-  font-size: clamp(.84rem, 1.1vw, .97rem);
-  color: var(--text2);
-  line-height: 1.75;
-  margin-bottom: 2rem;
-  max-width: 460px;
-  font-weight: 400;
-}
-.hero-btns { display: flex; gap: .75rem; flex-wrap: wrap; }
-
-/* Stats card on hero right */
-.stat-card   { padding: 1.6rem; }
-.stat-grid   { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; margin-bottom: 1.2rem; }
-.stat-item   {
-  padding: .9rem .75rem;
-  border-radius: var(--radius);
-  background: rgba(255,255,255,.025);
-  border: 1px solid var(--border);
-  text-align: center;
-}
-.stat-n {
-  font-size: clamp(1.3rem, 1.8vw, 1.75rem);
-  font-weight: 800;
-  font-family: 'Inter Tight', sans-serif;
-  color: var(--accent2);
-  letter-spacing: -0.03em;
-  line-height: 1;
-  margin-bottom: 3px;
-}
-.stat-l { font-size: .64rem; color: var(--muted); letter-spacing: .2px; font-weight: 500; }
-.next-evt {
-  background: rgba(30,136,229,.06);
-  border: 1px solid rgba(30,136,229,.15);
-  border-radius: var(--radius);
-  padding: .9rem 1rem;
-}
-.next-evt-label {
-  font-size: .58rem;
-  font-weight: 700;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  color: var(--accent);
-  margin-bottom: .3rem;
-}
-
-/* ═══ SECTION WRAPPERS ══════════════════════════════════════════════════════ */
-.sec { padding: clamp(3rem, 6vw, 5.5rem) 0; }
-.sec-alt {
-  background: var(--navy2);
-  border-top: 1px solid var(--border);
-  border-bottom: 1px solid var(--border);
-}
-.sec-header {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  margin-bottom: 2rem;
-  flex-wrap: wrap;
-  gap: 1rem;
-}
-
-/* ═══ GRIDS ═════════════════════════════════════════════════════════════════ */
-.g-3   { display: grid; grid-template-columns: repeat(3,1fr); gap: 1.15rem; }
-.g-2   { display: grid; grid-template-columns: repeat(2,1fr); gap: 1.15rem; }
-.g-4   { display: grid; grid-template-columns: repeat(4,1fr); gap: 1rem; }
-.g-news  { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 1.15rem; }
-.g-about { display: grid; grid-template-columns: 2fr 1fr; gap: 3rem; }
-
-/* ═══ EVENTS ════════════════════════════════════════════════════════════════ */
-.evts-list { display: flex; flex-direction: column; gap: .7rem; }
-.evt-row {
-  display: flex;
-  align-items: center;
-  gap: 1.25rem;
-  padding: 1.1rem 1.4rem;
-  transition: border-color .18s, background .18s;
-}
-.evt-row:hover { border-color: rgba(30,136,229,.2); background: rgba(30,136,229,.025); }
-.evt-date {
-  min-width: 50px;
-  text-align: center;
-  background: rgba(14,58,140,.2);
-  border: 1px solid rgba(18,82,200,.2);
-  border-radius: var(--radius);
-  padding: .5rem .25rem;
-  flex-shrink: 0;
-}
-.evt-day { font-size: 1.3rem; font-weight: 800; font-family: 'Inter Tight', sans-serif; line-height: 1; letter-spacing: -0.02em; }
-.evt-mon { font-size: .54rem; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); margin-top: 2px; }
-.evt-meta { flex: 1; min-width: 0; }
-.evt-meta h3 {
-  font-family: 'Inter Tight', sans-serif;
-  font-weight: 700;
-  font-size: .9rem;
-  margin-bottom: .2rem;
-  letter-spacing: -0.01em;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.evt-meta p { font-size: .74rem; color: var(--muted); }
-.evt-right { text-align: right; flex-shrink: 0; }
-.evt-price { font-size: 1.1rem; font-weight: 700; font-family: 'Inter Tight', sans-serif; letter-spacing: -0.02em; }
-.price-free { color: var(--success); }
-.evt-actions { display: flex; gap: .35rem; margin-top: .45rem; justify-content: flex-end; flex-wrap: wrap; }
-.filter-bar  { display: flex; gap: .4rem; flex-wrap: wrap; margin-bottom: 1.5rem; align-items: center; }
-.flabel { font-size: .68rem; color: var(--muted); font-weight: 600; letter-spacing: .3px; }
-
-/* ═══ JOBS ══════════════════════════════════════════════════════════════════ */
-.job-card { padding: 1.3rem; }
-.job-logo-box {
-  width: 40px; height: 40px; min-width: 40px;
-  border-radius: 6px;
-  background: rgba(14,58,140,.25);
-  border: 1px solid rgba(18,82,200,.18);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: .6rem;
-  font-weight: 700;
-  color: var(--accent2);
-  letter-spacing: .4px;
-  font-family: 'Inter Tight', sans-serif;
-}
-
-/* ═══ DOCS ══════════════════════════════════════════════════════════════════ */
-.doc-card { padding: 1.2rem; }
-.doc-type-badge {
-  display: inline-block;
-  padding: .18rem .5rem;
-  background: rgba(14,58,140,.2);
-  border: 1px solid rgba(18,82,200,.2);
-  border-radius: 3px;
-  font-size: .62rem;
-  font-weight: 700;
-  letter-spacing: .5px;
-  color: var(--accent2);
-  margin-bottom: .6rem;
-  text-transform: uppercase;
-}
-
-/* ═══ PLANS ═════════════════════════════════════════════════════════════════ */
-.plan-card   { padding: 1.8rem; position: relative; }
-.plan-card.featured {
-  border-color: rgba(30,136,229,.3) !important;
-  background: linear-gradient(165deg, rgba(14,58,140,.1), var(--card));
-}
-.plan-pop {
-  position: absolute;
-  top: -11px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: var(--blue2);
-  padding: .12rem .8rem;
-  border-radius: 3px;
-  font-size: .6rem;
-  font-weight: 700;
-  letter-spacing: .8px;
-  text-transform: uppercase;
-  white-space: nowrap;
-}
-.plan-price { margin-bottom: 1.1rem; }
-.plan-price span { font-size: 2rem; font-weight: 800; font-family: 'Inter Tight', sans-serif; letter-spacing: -0.03em; }
-.plan-price small { font-size: .74rem; color: var(--muted); }
-.plan-ul { list-style: none; margin-bottom: 1.5rem; display: flex; flex-direction: column; }
-.plan-ul li {
-  font-size: .8rem;
-  color: var(--text2);
-  padding: .3rem 0;
-  border-bottom: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  gap: .5rem;
-}
-.plan-ul li::before { content: '—'; color: var(--accent); font-size: .7rem; flex-shrink: 0; font-weight: 700; }
-
-/* ═══ DASHBOARD ═════════════════════════════════════════════════════════════ */
-.user-hero {
-  display: flex;
-  align-items: center;
-  gap: 1.1rem;
-  margin-bottom: 2rem;
-  flex-wrap: wrap;
-  padding: 1.35rem 1.5rem;
-  background: rgba(14,58,140,.08);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-}
-.u-avatar {
-  width: 48px; height: 48px; min-width: 48px;
-  border-radius: 50%;
-  background: var(--blue);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1rem;
-  font-weight: 700;
-  font-family: 'Inter Tight', sans-serif;
-  border: 2px solid rgba(30,136,229,.25);
-}
-.stats4 { display: grid; grid-template-columns: repeat(4,1fr); gap: 1rem; margin-bottom: 1.75rem; }
-.stat-box { padding: 1.2rem 1rem; text-align: center; transition: border-color .18s; }
-.stat-box:hover { border-color: rgba(30,136,229,.2); }
-.stat-box .v { font-size: 1.25rem; font-weight: 800; font-family: 'Inter Tight', sans-serif; letter-spacing: -0.02em; margin-bottom: .2rem; }
-.stat-box .l { font-size: .64rem; color: var(--muted); letter-spacing: .2px; font-weight: 500; }
-.cert-row { display: flex; align-items: center; gap: 1rem; padding: 1rem 1.3rem; margin-bottom: .6rem; }
-
-/* Tables */
-.tbl-wrap { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
-.tbl { width: 100%; border-collapse: collapse; font-size: .8rem; min-width: 480px; }
-.tbl th {
-  padding: .6rem .85rem;
-  text-align: left;
-  font-size: .62rem;
-  font-weight: 700;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  color: var(--muted);
-  border-bottom: 1px solid var(--border2);
-  white-space: nowrap;
-}
-.tbl td { padding: .8rem .85rem; border-bottom: 1px solid var(--border); vertical-align: middle; }
-.tbl tr:hover td { background: rgba(255,255,255,.018); }
-
-/* ═══ ADMIN ═════════════════════════════════════════════════════════════════ */
-.admin4 { display: grid; grid-template-columns: repeat(4,1fr); gap: 1rem; margin-bottom: 1.75rem; }
-.astat  { padding: 1rem 1.2rem; display: flex; gap: .75rem; align-items: center; }
-.astat .ico { font-size: .9rem; font-weight: 700; color: var(--accent); font-family: 'Inter Tight', sans-serif; min-width: 28px; }
-.astat .v   { font-size: 1.35rem; font-weight: 800; font-family: 'Inter Tight', sans-serif; letter-spacing: -0.02em; }
-.astat .l   { font-size: .64rem; color: var(--muted); margin-top: 2px; font-weight: 500; }
-.news-row   { display: flex; align-items: center; gap: .9rem; padding: .9rem 1.2rem; margin-bottom: .55rem; }
-
-/* ═══ ABOUT ═════════════════════════════════════════════════════════════════ */
-.wg-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .8rem; margin-top: 1rem; }
-.wg-card { padding: 1rem 1.1rem; transition: border-color .18s; }
-.wg-card:hover { border-color: rgba(30,136,229,.2); }
-.wg-card-title { font-weight: 700; font-size: .82rem; margin-bottom: .12rem; color: var(--white); }
-.wg-card-sub { font-size: .71rem; color: var(--muted); }
-.wg-tag {
-  display: inline-block;
-  font-size: .6rem;
-  font-weight: 700;
-  letter-spacing: 1.2px;
-  text-transform: uppercase;
-  color: var(--accent);
-  margin-bottom: .45rem;
-}
-.dir-row { display: flex; justify-content: space-between; padding: .45rem 0; border-bottom: 1px solid var(--border); font-size: .8rem; }
-.dir-row:last-child { border: none; }
-
-/* ═══ FOOTER ════════════════════════════════════════════════════════════════ */
-footer {
-  background: var(--navy);
-  border-top: 1px solid var(--border);
-  margin-top: auto;
-}
-.ft-cols {
-  max-width: var(--wrap);
-  margin: 0 auto;
-  padding: 3rem clamp(1.25rem, 4vw, 2.5rem) 2rem;
-  display: grid;
-  grid-template-columns: 2fr 1fr 1fr 1fr;
-  gap: 2.5rem;
-}
-.ft-col h4 {
-  font-size: .6rem;
-  font-weight: 700;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  color: var(--accent);
-  margin-bottom: 1rem;
-}
-.ft-col p, .ft-col a { font-size: .78rem; color: var(--muted); line-height: 1.7; }
-.ft-col a { display: block; margin-bottom: .38rem; transition: color .15s; }
-.ft-col a:hover { color: var(--white); }
-.ft-social { display: flex; gap: .45rem; margin-top: .9rem; }
-.soc-btn {
-  padding: .28rem .6rem;
-  border-radius: 4px;
-  background: transparent;
-  border: 1px solid var(--border2);
-  color: var(--muted);
-  font-size: .65rem;
-  font-weight: 700;
-  transition: all .15s;
-  letter-spacing: .3px;
-}
-.soc-btn:hover { background: var(--blue); color: #fff; border-color: var(--blue); }
-.ft-bottom {
-  max-width: var(--wrap);
-  margin: 0 auto;
-  padding: 1.1rem clamp(1.25rem, 4vw, 2.5rem);
-  border-top: 1px solid var(--border);
-  display: flex;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: .6rem;
-  align-items: flex-start;
-}
-.ft-bottom p { font-size: .68rem; color: rgba(255,255,255,.2); line-height: 1.6; max-width: 620px; }
-.ft-bottom strong { color: rgba(255,255,255,.3); }
-.ft-links { display: flex; gap: 1.1rem; flex-wrap: wrap; }
-.ft-links a { font-size: .68rem; color: rgba(255,255,255,.2); transition: color .15s; }
-.ft-links a:hover { color: rgba(255,255,255,.5); }
-
-/* ═══ MISC ══════════════════════════════════════════════════════════════════ */
-.topbox {
-  background: rgba(14,58,140,.06);
-  border: 1px solid rgba(14,58,140,.18);
-  border-radius: var(--radius);
-  padding: .9rem 1.1rem;
-}
-#quick-grid .card {
-  padding: 1.2rem;
-  text-align: left;
-  cursor: pointer;
-  border-left: 3px solid transparent;
-  transition: border-left-color .18s, box-shadow .18s;
-}
-#quick-grid .card:hover { border-left-color: var(--accent); }
-.search-input {
-  background: rgba(255,255,255,.04);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: .52rem .85rem;
-  color: #fff;
-  font-family: 'Inter', sans-serif;
-  font-size: 1rem;
-  outline: none;
-  flex: 1;
-  max-width: 300px;
-  transition: border-color .15s;
-}
-.search-input:focus { border-color: var(--accent); }
-
-/* ═══ RESPONSIVE – TABLET (≤1024px) ════════════════════════════════════════ */
-@media (max-width: 1024px) {
-  .ft-cols { grid-template-columns: 1fr 1fr; gap: 2rem; }
-  .admin4, .stats4 { grid-template-columns: 1fr 1fr; }
-  .g-4 { grid-template-columns: 1fr 1fr; }
-  .hero-inner { gap: 3rem; }
-}
-
-/* ═══ RESPONSIVE – MOBILE (≤768px) ═════════════════════════════════════════ */
-@media (max-width: 768px) {
-  :root { --header-h: 54px; }
-
-  #util-bar { display: none; }
-  #desk-nav, .hdr-cta, .logo-divider, .logo-sespt { display: none !important; }
-  #burger { display: flex !important; }
-  header { padding: 0 1rem; }
-
-  #hero { min-height: 70vh; }
-  .hero-inner { grid-template-columns: 1fr; gap: 0; padding: 3rem 0 2.5rem; }
-  .hero-right { display: none; }
-  .hero-h1 { font-size: clamp(1.6rem, 7vw, 2.2rem); }
-  .hero-sub { font-size: .88rem; max-width: 100%; margin-bottom: 1.5rem; }
-  .hero-btns { flex-direction: column; gap: .6rem; }
-  .hero-btns .btn { width: 100%; }
-
-  .g-3, .g-2, .g-news, .g-about, .wg-grid { grid-template-columns: 1fr; gap: .85rem; }
-  .g-4, .stats4, .admin4 { grid-template-columns: 1fr 1fr; gap: .7rem; }
-
-  .sec { padding: 2.5rem 0; }
-  .page { padding: 1.75rem 0 3rem; }
-  .sec-header { flex-direction: column; align-items: flex-start; gap: .7rem; }
-
-  .ft-cols { grid-template-columns: 1fr 1fr; gap: 1.5rem; padding-top: 2rem; }
-  .ft-bottom { flex-direction: column; gap: .4rem; }
-
-  .evt-row { flex-wrap: wrap; gap: .65rem; padding: .9rem 1rem; }
-  .evt-meta h3 { white-space: normal; }
-  .evt-right { width: 100%; display: flex; align-items: center; justify-content: space-between; text-align: left; }
-  .evt-actions { justify-content: flex-start; }
-
-  .user-hero { padding: 1rem; gap: .85rem; }
-  .dtab { font-size: .72rem; padding: .5rem .65rem; }
-  .plan-card { padding: 1.4rem; }
-  .mbox { border-radius: var(--radius-xl) var(--radius-xl) 0 0; }
-  .search-input { max-width: 100%; }
-  .news-row { flex-wrap: wrap; }
-}
-
-@media (max-width: 480px) {
-  .wrap { padding: 0 .9rem; }
-  .hero-h1 { font-size: 1.5rem; }
-  .stitle  { font-size: 1.25rem; }
-  .g-3, .g-about { grid-template-columns: 1fr; }
-  .g-4, .stats4, .admin4 { grid-template-columns: 1fr 1fr; }
-  .ft-cols { grid-template-columns: 1fr; gap: 1.1rem; }
-  #cookie { flex-direction: column; align-items: flex-start; }
-  #mob-drawer button.mob-nav-btn { padding: .8rem 1.25rem; }
-  .plan-price span { font-size: 1.75rem; }
-  .plan-card { padding: 1.1rem; }
-  .job-logo-box { width: 34px; height: 34px; min-width: 34px; }
-  .mbox { max-height: 88vh; }
-  .mbody { padding: 1rem; }
-  .astat .v { font-size: 1.15rem; }
-  .stat-box .v { font-size: 1.1rem; }
-}
-
-html, body { overflow-x: hidden; }
-
-/* ===== SESPT Tech Hero Upgrade ===== */
-#hero {
-  background:
-    radial-gradient(
-      ellipse at 80% 40%,
-      rgba(14,58,140,.35),
-      rgba(8,15,28,1) 70%
-    ) !important;
-}
-
-.hero-graph {
+#hero-canvas{
   position:absolute;
   inset:0;
   width:100%;
   height:100%;
-  opacity:.15;
-  stroke:#1e88e5;
-  stroke-width:1;
-  fill:#42a5f5;
-  pointer-events:none;
+  z-index:1;
+  opacity:.9;
 }
 
-.hero-graph circle {
-  animation:pulseNode 3s infinite ease-in-out;
+.hero-inner{
+  position:relative;
+  z-index:2;
+  max-width:800px;
+  padding:2rem;
 }
 
-@keyframes pulseNode {
-  0%,100% { opacity:.6 }
-  50% { opacity:1 }
+.hero-inner h1{
+  font-size:clamp(2rem,4vw,3.5rem);
+  margin-bottom:1rem;
 }
 
-
-/* ===== Advanced Typography Upgrade ===== */
-
-body {
-  font-feature-settings: "ss01", "ss02";
+.hero-inner p{
+  font-size:1.2rem;
+  color:var(--muted);
 }
 
-h1 {
-  font-size: clamp(2.8rem, 5vw, 4.2rem);
-  line-height: 1.02;
-  letter-spacing: -0.04em;
+/* KNOWLEDGE */
+#knowledge{
+  padding:6rem 2rem;
+  max-width:1200px;
+  margin:auto;
 }
 
-h2 {
-  font-size: 2.4rem;
-  letter-spacing: -0.03em;
+#knowledge h2{
+  text-align:center;
+  margin-bottom:3rem;
+  font-size:2.2rem;
 }
 
-h3 {
-  font-size: 1.2rem;
-  font-weight: 600;
+.knowledge-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+  gap:2rem;
 }
 
-.section-subtle {
-  font-size: .8rem;
-  text-transform: uppercase;
-  letter-spacing: 3px;
-  color: #42a5f5;
-  margin-bottom: .75rem;
+.knowledge-card{
+  background:rgba(255,255,255,0.03);
+  border:1px solid rgba(255,255,255,0.06);
+  padding:2rem;
+  border-radius:16px;
+  position:relative;
+  transition:.3s ease;
 }
 
-
-/* ===== Product-style Knowledge Section ===== */
-
-.knowledge-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: 2rem;
-  margin-top: 3rem;
+.knowledge-card:hover{
+  transform:translateY(-6px);
+  border-color:rgba(66,165,245,0.3);
 }
 
-.knowledge-card {
-  background: linear-gradient(
-    145deg,
-    rgba(14,30,60,.8),
-    rgba(10,20,40,.9)
-  );
-  border: 1px solid rgba(66,165,245,.15);
-  border-radius: 18px;
-  padding: 2rem;
-  transition: all .35s ease;
-  position: relative;
-  overflow: hidden;
+.knowledge-card h3{
+  margin-bottom:1rem;
 }
 
-.knowledge-card:hover {
-  transform: translateY(-6px);
-  border-color: rgba(66,165,245,.4);
-  box-shadow: 0 20px 60px rgba(0,0,0,.6);
+.knowledge-card p{
+  color:var(--muted);
 }
 
-.knowledge-card::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(
-    circle at top right,
-    rgba(66,165,245,.15),
-    transparent 60%
-  );
-  opacity: 0;
-  transition: .4s;
+/* PREVIEW */
+.diagram-preview{
+  position:absolute;
+  top:0;
+  right:0;
+  width:300px;
+  height:200px;
+  background:rgba(10,20,40,.95);
+  border-radius:12px;
+  box-shadow:0 20px 50px rgba(0,0,0,.6);
+  transform:translate(40%, -40%) scale(.9);
+  opacity:0;
+  transition:.3s ease;
+  overflow:hidden;
+  display:flex;
+  align-items:center;
+  justify-content:center;
 }
 
-.knowledge-card:hover::after {
-  opacity: 1;
+.knowledge-card:hover .diagram-preview{
+  opacity:1;
+  transform:translate(40%, -40%) scale(1);
 }
 
-.card-eyebrow {
-  font-size: .7rem;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  color: #90caf9;
-  margin-bottom: .6rem;
+.diagram-preview img{
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  cursor:grab;
+  user-select:none;
 }
 
-.card-title {
-  font-size: 1.4rem;
-  margin-bottom: .8rem;
+@media (prefers-reduced-motion: reduce){
+  #hero-canvas{display:none;}
 }
-
-.card-desc {
-  color: rgba(255,255,255,.65);
-  font-size: .95rem;
-  line-height: 1.5;
-}
-
 </style>
 </head>
 <body>
 
-<!-- ══ COOKIE ══════════════════════════════════════════════════════════════ -->
-<div id="cookie" role="banner" aria-label="Aviso de cookies">
-  <p>Utilizamos cookies para melhorar a sua experiência (RGPD). <a href="#" style="color:var(--accent2)">Política de Privacidade</a></p>
-  <div style="display:flex;gap:.55rem;flex-shrink:0;flex-wrap:wrap">
-    <button class="btn btn-ghost btn-sm" onclick="closeCookie()">Recusar não essenciais</button>
-    <button class="btn btn-blue btn-sm" onclick="closeCookie()">Aceitar todos</button>
+<section id="hero">
+  <canvas id="hero-canvas"></canvas>
+  <div class="hero-inner">
+    <h1>Digital Twin Intelligence</h1>
+    <p>Conectando dados, sistemas e conhecimento em tempo real.</p>
   </div>
-</div>
+</section>
 
-<!-- ══ AUTH MODAL ══════════════════════════════════════════════════════════ -->
-<div class="overlay" id="modal-auth" role="dialog" aria-modal="true" aria-labelledby="auth-title">
-  <div class="mbox">
-    <div class="mbox-top"></div>
-    <div class="mbody">
-      <div class="mhead">
-        <h3 id="auth-title">Entrar na plataforma</h3>
-        <button class="mclose" onclick="closeModal('modal-auth')" aria-label="Fechar">&#x2715;</button>
-      </div>
-      <div class="mtabs" role="tablist">
-        <button class="mtab active" role="tab" aria-selected="true" onclick="authTab('login')">Login</button>
-        <button class="mtab" role="tab" aria-selected="false" onclick="authTab('register')">Registar</button>
-      </div>
-      <div id="auth-login">
-        <div class="fg"><label for="l-email">Email</label><input id="l-email" type="email" value="membro@incose.pt" autocomplete="email"></div>
-        <div class="fg"><label for="l-pass">Password</label><input id="l-pass" type="password" value="demo123" autocomplete="current-password"></div>
-        <div id="l-err" class="alert a-err" style="display:none" role="alert">Email ou password incorretos.</div>
-        <button class="btn btn-primary btn-md btn-full" onclick="doLogin()">Entrar &rarr;</button>
-        <hr class="div">
-        <p class="card-desc" style="font-size:.68rem;color:var(--muted);margin-bottom:.45rem;font-weight:600;letter-spacing:.6px;text-transform:uppercase">Demo — selecione um perfil:</p>
-        <div style="display:flex;gap:.35rem;flex-wrap:wrap">
-          <button class="btn btn-ghost btn-sm" onclick="fillDemo('admin@sespt.pt')">Admin SESPT</button>
-          <button class="btn btn-ghost btn-sm" onclick="fillDemo('membro@incose.pt')">Membro Ativo</button>
-          <button class="btn btn-ghost btn-sm" onclick="fillDemo('cab@embraer.pt')">CAB Rep.</button>
-          <button class="btn btn-ghost btn-sm" onclick="fillDemo('estudante@ist.pt')">Estudante</button>
-        </div>
-      </div>
-      <div id="auth-register" style="display:none">
-        <div class="alert a-info">Após registo, a conta aguarda aprovação SESPT.</div>
-        <div class="fg"><label>Nome completo</label><input type="text" placeholder="O seu nome" autocomplete="name"></div>
-        <div class="fg"><label>Email profissional</label><input type="email" placeholder="email@empresa.pt" autocomplete="email"></div>
-        <div class="fg"><label>Tipo de adesão</label>
-          <select><option>Membro Individual (80€/ano)</option><option>Membro Estudante (30€/ano)</option><option>Empresa CAB (800€/ano)</option></select>
-        </div>
-        <button class="btn btn-primary btn-md btn-full">Submeter pedido &rarr;</button>
-      </div>
+<section id="knowledge">
+  <h2>Knowledge</h2>
+
+  <div class="knowledge-grid">
+
+    <div class="knowledge-card" data-diagram="https://upload.wikimedia.org/wikipedia/commons/3/3b/Flowchart_example.svg">
+      <h3>System Architecture</h3>
+      <p>Visualização interativa da arquitetura do sistema.</p>
+      <div class="diagram-preview"></div>
     </div>
+
+    <div class="knowledge-card" data-diagram="https://upload.wikimedia.org/wikipedia/commons/8/8e/Basic_Block_Diagram.svg">
+      <h3>Process Flow</h3>
+      <p>Fluxos operacionais com preview interativo.</p>
+      <div class="diagram-preview"></div>
+    </div>
+
   </div>
-</div>
+</section>
 
-<!-- ══ EVENT MODAL ════════════════════════════════════════════════════════ -->
-<div class="overlay" id="modal-evt" role="dialog" aria-modal="true" aria-labelledby="em-title">
-  <div class="mbox" style="max-width:480px">
-    <div class="mbox-top"></div>
-    <div class="mbody">
-      <div class="mhead">
-        <h3 id="em-title">Evento</h3>
-        <button class="mclose" onclick="closeModal('modal-evt')" aria-label="Fechar">&#x2715;</button>
-      </div>
-      <div id="em-body"></div>
-    </div>
-  </div>
-</div>
-
-<!-- ══ UTILITY BAR ════════════════════════════════════════════════════════ -->
-<div id="util-bar" role="complementary">
-  <div class="lang-toggle" role="group" aria-label="Idioma">
-    <button onclick="setLang('pt')" id="lt-pt" class="active" aria-pressed="true">PT</button>
-    <button onclick="setLang('en')" id="lt-en" aria-pressed="false">EN</button>
-  </div>
-  <a href="https://linkedin.com" target="_blank" rel="noopener">LinkedIn</a>
-  <a href="https://youtube.com" target="_blank" rel="noopener">YouTube</a>
-  <span id="util-user"></span>
-</div>
-
-<!-- ══ HEADER ═════════════════════════════════════════════════════════════ -->
-<header role="banner">
-  <div class="logo-group">
-    <button onclick="navTo('home')" style="display:flex;align-items:center;gap:.75rem;background:none;border:none" aria-label="SESPT – Engenharia de Sistemas — Início">
-      <div class="logo-mark" aria-hidden="true">INC</div>
-      <div class="logo-text">
-        <div class="main">SESPT – Engenharia de Sistemas</div>
-        <div class="sub">Capítulo Oficial</div>
-      </div>
-    </button>
-    <div class="logo-divider" aria-hidden="true"></div>
-    <span class="logo-sespt">SESPT</span>
-  </div>
-  <nav id="desk-nav" role="navigation" aria-label="Navegação principal">
-    <button data-nav="0" onclick="navTo('home')">Início</button>
-    <button data-nav="1" onclick="navTo('about')">Sobre Nós</button>
-    <button data-nav="2" onclick="navTo('events')">Eventos</button>
-    <button data-nav="3" onclick="navTo('knowledge')">Knowledge</button>
-    <button data-nav="4" onclick="navTo('jobs')">Carreiras</button>
-    <button data-nav="5" onclick="navTo('membership')">Adesão</button>
-    <button id="nav-dash" style="display:none" onclick="navTo('dashboard')">Dashboard</button>
-    <button id="nav-adm" style="display:none" onclick="navTo('admin')">Backoffice</button>
-  </nav>
-  <div style="display:flex;align-items:center;gap:.55rem;flex-shrink:0">
-    <button class="btn btn-primary btn-sm hdr-cta" onclick="navTo('membership')">Aderir &rarr;</button>
-    <button id="burger" onclick="toggleDrawer()" aria-label="Menu" aria-expanded="false" aria-controls="mob-drawer">Menu</button>
-  </div>
-</header>
-
-<!-- ══ MOBILE DRAWER ══════════════════════════════════════════════════════ -->
-<nav id="mob-drawer" role="navigation" aria-label="Menu móvel">
-  <div class="mob-section">
-    <button class="mob-nav-btn" onclick="navTo('home');closeDrawer()">Início</button>
-    <button class="mob-nav-btn" onclick="navTo('about');closeDrawer()">Sobre Nós</button>
-    <button class="mob-nav-btn" onclick="navTo('events');closeDrawer()">Eventos</button>
-    <button class="mob-nav-btn" onclick="navTo('knowledge');closeDrawer()">Knowledge</button>
-    <button class="mob-nav-btn" onclick="navTo('jobs');closeDrawer()">Carreiras</button>
-    <button class="mob-nav-btn" onclick="navTo('membership');closeDrawer()">Adesão</button>
-    <button id="mob-nav-dash" class="mob-nav-btn" style="display:none" onclick="navTo('dashboard');closeDrawer()">Dashboard</button>
-    <button id="mob-nav-adm" class="mob-nav-btn" style="display:none" onclick="navTo('admin');closeDrawer()">Backoffice</button>
-  </div>
-  <div class="mob-section">
-    <div class="mob-lang-row">
-      <span>Idioma:</span>
-      <button id="mob-lt-pt" class="btn btn-blue btn-sm" onclick="setLang('pt');closeDrawer()">PT</button>
-      <button id="mob-lt-en" class="btn btn-ghost btn-sm" onclick="setLang('en');closeDrawer()">EN</button>
-    </div>
-  </div>
-  <div class="mob-section">
-    <div class="mob-user-row" id="mob-user"></div>
-  </div>
-</nav>
-
-<!-- ════════════════════════ PAGES ════════════════════════════════════════ -->
-<main>
-
-<!-- ── HOME ─────────────────────────────────────────────────────────────── -->
-<div id="page-home" class="page active">
-  <section id="hero" aria-label="Bem-vindo ao SESPT – Engenharia de Sistemas">
-    <div class="hero-grid-bg" aria-hidden="true"></div>
-    <div class="hero-glow" aria-hidden="true"></div>
-    <div class="wrap hero-inner">
-      <div class="hero-left">
-        <div class="hero-eyebrow">Capítulo oficial INCOSE em Portugal</div>
-        <h1 class="hero-h1" id="h-h1">Engenharia de Sistemas<br><span>com raízes atlânticas</span></h1>
-        <p class="hero-sub" id="h-sub">A comunidade portuguesa de profissionais INCOSE. Formação certificada, networking, Working Groups ativos e representação no ecossistema global de Systems Engineering.</p>
-        <div class="hero-btns">
-          <button id="h-cta1" class="btn btn-primary btn-xl" onclick="navTo('membership')">Tornar-me sócio &rarr;</button>
-          <button id="h-cta2" class="btn btn-ghost btn-xl" onclick="navTo('events')">Ver eventos</button>
-        </div>
-      </div>
-      <div class="hero-right">
-        <div class="card stat-card">
-          <div class="slabel" style="margin-bottom:.9rem">Capítulo em números</div>
-          <div class="stat-grid">
-            <div class="stat-item"><div class="stat-n">240+</div><div class="stat-l">Membros ativos</div></div>
-            <div class="stat-item"><div class="stat-n">18</div><div class="stat-l">Empresas CAB</div></div>
-            <div class="stat-item"><div class="stat-n">32</div><div class="stat-l">Eventos 2025</div></div>
-            <div class="stat-item"><div class="stat-n">4</div><div class="stat-l">Working Groups</div></div>
-          </div>
-          <div class="next-evt">
-            <div class="next-evt-label">Próximo evento</div>
-            <div style="font-weight:700;font-size:.88rem;margin-bottom:.18rem;font-family:'Inter Tight',sans-serif;letter-spacing:-0.01em">SESPT – Engenharia de Sistemas Summit 2026</div>
-            <div style="font-size:.72rem;color:var(--muted)">15 de março &middot; Lisboa &middot; Presencial + Online</div>
-            <button class="btn btn-primary btn-sm" style="margin-top:.6rem" onclick="navTo('events')">Inscrever &rarr;</button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- NEWS -->
-  <section class="sec sec-alt" aria-label="Últimas notícias">
-    <div class="wrap">
-      <div class="sec-header">
-        <div><p class="slabel">Últimas notícias</p><h2 class="stitle">Acontece na <span class="accent-text">comunidade</span></h2></div>
-        <button class="btn btn-ghost btn-sm">Ver todas &rarr;</button>
-      </div>
-      <div class="g-news" id="home-news"></div>
-    </div>
-  </section>
-
-  <!-- QUICK ACCESS -->
-  <section class="sec" aria-label="Serviços">
-    <div class="wrap">
-      <p class="slabel">O que oferecemos</p>
-      <h2 class="stitle">Recursos para <span class="accent-text">Systems Engineers</span></h2>
-      <div class="g-4" style="margin-top:1.5rem" id="quick-grid">
-        <div class="knowledge-card" onclick="navTo('events')">
-          <div style="font-size:.6rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--accent);margin-bottom:.5rem">Certificação</div>
-          <div style="font-weight:700;font-size:.88rem;margin-bottom:.2rem;font-family:'Inter Tight',sans-serif">CSEP / ASEP</div>
-          <div style="font-size:.73rem;color:var(--muted)">Prep-courses e exames certificados</div>
-        </div>
-        <div class="knowledge-card" onclick="navTo('jobs')">
-          <div style="font-size:.6rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--accent);margin-bottom:.5rem">Carreiras</div>
-          <div style="font-weight:700;font-size:.88rem;margin-bottom:.2rem;font-family:'Inter Tight',sans-serif">Job Board SE</div>
-          <div style="font-size:.73rem;color:var(--muted)">Vagas em empresas CAB parceiras</div>
-        </div>
-        <div class="knowledge-card" onclick="navTo('knowledge')">
-          <div style="font-size:.6rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--accent);margin-bottom:.5rem">Biblioteca</div>
-          <div style="font-weight:700;font-size:.88rem;margin-bottom:.2rem;font-family:'Inter Tight',sans-serif">Knowledge Base</div>
-          <div style="font-size:.73rem;color:var(--muted)">Handbook, templates e webinars</div>
-        </div>
-        <div class="knowledge-card" onclick="navTo('about')">
-          <div style="font-size:.6rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--accent);margin-bottom:.5rem">Comunidade</div>
-          <div style="font-weight:700;font-size:.88rem;margin-bottom:.2rem;font-family:'Inter Tight',sans-serif">Working Groups</div>
-          <div style="font-size:.73rem;color:var(--muted)">MBSE &middot; Defense &middot; Space &middot; Sustainability</div>
-        </div>
-      </div>
-    </div>
-  </section>
-</div>
-
-<!-- ── ABOUT ─────────────────────────────────────────────────────────────── -->
-<div id="page-about" class="page">
-  <div class="wrap">
-    <p class="slabel">Quem somos</p>
-    <h1 class="stitle">Sobre o <span class="accent-text">Capítulo</span></h1>
-    <div class="g-about">
-      <div>
-        <p class="card-desc" style="color:rgba(255,255,255,.7);line-height:1.8;margin-bottom:1rem;font-size:.9rem">O SESPT – Engenharia de Sistemas é o capítulo oficial da International Council on Systems Engineering em Portugal. Representado legalmente pela <strong style="color:var(--accent2)">SESPT — Sociedade de Engenharia de Sistemas de Portugal</strong>, o capítulo reúne profissionais, académicos e empresas comprometidos com a excelência em Engenharia de Sistemas.</p>
-        <p class="card-desc" style="color:rgba(255,255,255,.7);line-height:1.8;margin-bottom:1.5rem;font-size:.9rem">Fundado em 2025, cresceu rapidamente para mais de 240 membros e 18 empresas parceiras CAB, tornando-se polo de referência na comunidade europeia de SE.</p>
-        <h3 style="margin-bottom:.8rem;font-size:1rem">Working Groups ativos</h3>
-        <div class="wg-grid">
-          <div class="card-flat wg-card">
-            <div class="wg-tag">MBSE</div>
-            <div class="wg-card-title">MBSE &amp; SysML v2</div>
-            <div class="wg-card-sub">Modelação de sistemas complexos</div>
-          </div>
-          <div class="card-flat wg-card">
-            <div class="wg-tag">Defense</div>
-            <div class="wg-card-title">Defense Systems</div>
-            <div class="wg-card-sub">Sistemas de defesa e segurança</div>
-          </div>
-          <div class="card-flat wg-card">
-            <div class="wg-tag">Space</div>
-            <div class="wg-card-title">Space Systems</div>
-            <div class="wg-card-sub">Projetos espaciais ECSS</div>
-          </div>
-          <div class="card-flat wg-card">
-            <div class="wg-tag">Sustainability</div>
-            <div class="wg-card-title">Sustainability in SE</div>
-            <div class="wg-card-sub">SE aplicado à sustentabilidade</div>
-          </div>
-        </div>
-      </div>
-      <div>
-        <div class="card-flat" style="padding:1.2rem;margin-bottom:1rem">
-          <h4 style="margin-bottom:.85rem;font-size:.85rem">Direção SESPT</h4>
-          <div class="dir-row"><span style="font-weight:600">Sofia Andrade</span><span style="color:var(--muted)">Presidente</span></div>
-          <div class="dir-row"><span style="font-weight:600">João Figueiredo</span><span style="color:var(--muted)">Vice-Presidente</span></div>
-          <div class="dir-row"><span style="font-weight:600">Marta Costa</span><span style="color:var(--muted)">Tesoureira</span></div>
-          <div class="dir-row"><span style="font-weight:600">Pedro Nunes</span><span style="color:var(--muted)">Secretário</span></div>
-        </div>
-        <div class="topbox">
-          <p class="card-desc" style="font-size:.76rem;color:var(--muted);line-height:1.65"><strong style="color:rgba(255,255,255,.45)">Identificação legal:</strong><br>SESPT — Sociedade de Engenharia de Sistemas de Portugal<br>NIF: [inserir número]<br>Sede: Lisboa, Portugal</p>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ── EVENTS ────────────────────────────────────────────────────────────── -->
-<div id="page-events" class="page">
-  <div class="wrap">
-    <p class="slabel">Agenda</p>
-    <h1 class="stitle">Próximos <span class="accent-text">Eventos</span></h1>
-    <p class="ssub">Membros com quota ativa têm desconto automático. Clique em Detalhes para ver preços.</p>
-    <div class="filter-bar" role="group" aria-label="Filtros de eventos">
-      <span class="flabel">Formato:</span>
-      <button class="btn btn-blue btn-sm" data-ff="all" onclick="fEvt('f','all',this)">Todos</button>
-      <button class="btn btn-ghost btn-sm" data-ff="presencial" onclick="fEvt('f','presencial',this)">Presencial</button>
-      <button class="btn btn-ghost btn-sm" data-ff="online" onclick="fEvt('f','online',this)">Online</button>
-      <span class="flabel" style="margin-left:.5rem">Tipo:</span>
-      <button class="btn btn-blue btn-sm" data-ft="all" onclick="fEvt('t','all',this)">Todos</button>
-      <button class="btn btn-ghost btn-sm" data-ft="summit" onclick="fEvt('t','summit',this)">Summit</button>
-      <button class="btn btn-ghost btn-sm" data-ft="webinar" onclick="fEvt('t','webinar',this)">Webinar</button>
-      <button class="btn btn-ghost btn-sm" data-ft="workshop" onclick="fEvt('t','workshop',this)">Workshop</button>
-      <button class="btn btn-ghost btn-sm" data-ft="wg" onclick="fEvt('t','wg',this)">Working Group</button>
-    </div>
-    <div class="evts-list" id="evts-list" role="list"></div>
-  </div>
-</div>
-
-<!-- ── KNOWLEDGE ─────────────────────────────────────────────────────────── -->
-<div id="page-knowledge" class="page">
-  <div class="wrap">
-    <p class="slabel">Biblioteca</p>
-    <h1 class="stitle">Knowledge <span class="accent-text">Base</span></h1>
-    <p class="ssub">Materiais técnicos exclusivos para membros com quota ativa.</p>
-    <div id="know-alert"></div>
-    <div style="display:flex;gap:.75rem;flex-wrap:wrap;margin-bottom:.85rem">
-      <input id="doc-q" class="search-input" type="search" placeholder="Pesquisar documentos..." aria-label="Pesquisar documentos" oninput="debouncedRenderDocs()">
-    </div>
-    <div style="display:flex;gap:.35rem;flex-wrap:wrap;margin-bottom:1.5rem" id="doc-cats" role="group" aria-label="Categorias"></div>
-    <div class="g-3" id="docs-grid"></div>
-  </div>
-</div>
-
-<!-- ── JOBS ──────────────────────────────────────────────────────────────── -->
-<div id="page-jobs" class="page">
-  <div class="wrap">
-    <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:1rem;margin-bottom:.8rem">
-      <div>
-        <p class="slabel">Portal de Carreiras</p>
-        <h1 class="stitle">Job Board <span class="accent-text">SE</span></h1>
-        <p class="ssub" style="margin-bottom:0">Vagas publicadas por empresas CAB. Candidatura 1-click para membros com perfil completo.</p>
-      </div>
-      <button id="btn-post" class="btn btn-primary btn-md" style="display:none;margin-top:.5rem" onclick="showPostJob()">+ Publicar vaga</button>
-    </div>
-    <div id="jobs-alert" style="margin:1rem 0"></div>
-    <div style="display:flex;gap:.65rem;flex-wrap:wrap;margin-bottom:.85rem">
-      <input id="job-q" class="search-input" type="search" placeholder="Pesquisar vagas..." aria-label="Pesquisar vagas" oninput="debouncedRenderJobs()">
-    </div>
-    <div style="display:flex;gap:.35rem;flex-wrap:wrap;margin-bottom:1.5rem" id="job-tags" role="group" aria-label="Filtrar por tag"></div>
-    <div class="g-2" id="jobs-grid"></div>
-    <div id="post-form" style="display:none;margin-top:2rem">
-      <h3 style="margin-bottom:1rem;font-size:.95rem">Publicar nova vaga</h3>
-      <div class="card-flat" style="padding:1.4rem">
-        <div class="g-2">
-          <div class="fg"><label for="nj-t">Título *</label><input id="nj-t" placeholder="Systems Engineer — ..."></div>
-          <div class="fg"><label for="nj-l">Localização</label><input id="nj-l" placeholder="Lisboa / Remoto"></div>
-        </div>
-        <div class="g-2">
-          <div class="fg"><label for="nj-tp">Tipo</label><select id="nj-tp"><option>Full-time</option><option>Part-time</option><option>Contrato</option><option>Bolsa FCT</option><option>Estágio</option></select></div>
-          <div class="fg"><label for="nj-tg">Tags (vírgula)</label><input id="nj-tg" placeholder="MBSE, SysML"></div>
-        </div>
-        <div class="fg"><label for="nj-d">Descrição</label><textarea id="nj-d"></textarea></div>
-        <div class="alert a-warn">A vaga ficará pendente até aprovação pelo administrador.</div>
-        <div style="display:flex;gap:.65rem;margin-top:.5rem;flex-wrap:wrap">
-          <button class="btn btn-primary btn-md" onclick="submitJob()">Submeter &rarr;</button>
-          <button class="btn btn-ghost btn-md" onclick="document.getElementById('post-form').style.display='none'">Cancelar</button>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ── MEMBERSHIP ────────────────────────────────────────────────────────── -->
-<div id="page-membership" class="page">
-  <div class="wrap">
-    <p class="slabel">Seja sócio</p>
-    <h1 class="stitle">Planos de <span class="accent-text">Adesão</span></h1>
-    <p class="ssub">Faça parte da comunidade portuguesa de Systems Engineering. Acesso imediato aos recursos, descontos e representação internacional.</p>
-    <div class="g-3">
-      <div class="card plan-card">
-        <div style="font-size:.68rem;color:var(--muted);margin-bottom:.3rem;font-weight:500">Estudante universitário</div>
-        <h3 style="margin-bottom:.75rem;font-size:.95rem">Membro Estudante</h3>
-        <div class="plan-price"><span style="color:var(--text2)">30€</span><small>/ano</small></div>
-        <ul class="plan-ul" aria-label="Benefícios">
-          <li>Acesso à biblioteca</li><li>Desconto em eventos</li><li>Webinars gravados</li><li>Certificate Wallet</li><li>Member Directory</li>
-        </ul>
-        <button class="btn btn-ghost btn-md btn-full" onclick="openModal('modal-auth')">Aderir agora &rarr;</button>
-      </div>
-      <div class="card plan-card featured">
-        <div class="plan-pop">Mais popular</div>
-        <div style="font-size:.68rem;color:var(--muted);margin-bottom:.3rem;font-weight:500">Profissional de SE</div>
-        <h3 style="margin-bottom:.75rem;font-size:.95rem">Membro Individual</h3>
-        <div class="plan-price"><span style="color:var(--accent2)">80€</span><small>/ano</small></div>
-        <ul class="plan-ul" aria-label="Benefícios">
-          <li>Tudo do Membro Estudante</li><li>Fórum privado</li><li>Voto nas eleições</li><li>Desconto acrescido</li><li>Acesso ao IS internacional</li>
-        </ul>
-        <button class="btn btn-primary btn-md btn-full" onclick="openModal('modal-auth')">Aderir agora &rarr;</button>
-      </div>
-      <div class="card plan-card">
-        <div style="font-size:.68rem;color:var(--muted);margin-bottom:.3rem;font-weight:500">Empresa &middot; 5 seats</div>
-        <h3 style="margin-bottom:.75rem;font-size:.95rem">CAB — Corporate</h3>
-        <div class="plan-price"><span style="color:#d4a96a">800€</span><small>/ano</small></div>
-        <ul class="plan-ul" aria-label="Benefícios">
-          <li>5 membros incluídos</li><li>Perfil empresa no site</li><li>Publicar vagas (Job Board)</li><li>Repositório doc. estratégicos</li><li>Presença no Summit anual</li>
-        </ul>
-        <button class="btn btn-ghost btn-md btn-full" onclick="openModal('modal-auth')">Aderir agora &rarr;</button>
-      </div>
-    </div>
-    <div class="topbox" style="text-align:center;margin-top:1.4rem">
-      <p class="card-desc" style="font-size:.78rem;color:var(--muted)">As quotas internacionais INCOSE são pagas separadamente em <a href="https://www.incose.org" target="_blank" rel="noopener" style="color:var(--accent2)">incose.org &nearr;</a>. A SESPT emite fatura nos termos legais portugueses.</p>
-    </div>
-  </div>
-</div>
-
-<!-- ── DASHBOARD ─────────────────────────────────────────────────────────── -->
-<div id="page-dashboard" class="page">
-  <div class="wrap">
-    <div id="dash-locked" style="text-align:center;padding:4rem 0">
-      <div style="width:48px;height:48px;border-radius:50%;background:rgba(14,58,140,.2);border:1px solid rgba(18,82,200,.2);display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;font-size:.75rem;font-weight:700;color:var(--accent);letter-spacing:1px" aria-hidden="true">LOCK</div>
-      <h2 style="margin-bottom:.45rem;font-size:1.25rem">Área privada</h2>
-      <p class="card-desc" style="color:var(--muted);margin-bottom:1.4rem;font-size:.86rem">Faça login para aceder ao seu dashboard.</p>
-      <button class="btn btn-primary btn-lg" onclick="openModal('modal-auth')">Entrar &rarr;</button>
-    </div>
-    <div id="dash-content" style="display:none">
-      <div class="user-hero">
-        <div class="u-avatar" id="d-av" aria-hidden="true">CM</div>
-        <div>
-          <h1 style="font-size:1.2rem;font-weight:800;letter-spacing:-0.02em" id="d-greet">Olá!</h1>
-          <div style="display:flex;gap:.4rem;margin-top:.28rem;flex-wrap:wrap" id="d-badges"></div>
-        </div>
-      </div>
-      <div class="dtabs" role="tablist">
-        <button class="dtab active" role="tab" aria-selected="true" onclick="dTab('overview',this)">Resumo</button>
-        <button class="dtab" role="tab" aria-selected="false" onclick="dTab('profile',this)">Perfil</button>
-        <button class="dtab" role="tab" aria-selected="false" onclick="dTab('payments',this)">Pagamentos</button>
-        <button class="dtab" role="tab" aria-selected="false" onclick="dTab('wallet',this)">Certificados</button>
-      </div>
-      <div class="dpanel active" id="dp-overview" role="tabpanel">
-        <div class="stats4">
-          <div class="card-flat stat-box"><div class="v">3</div><div class="l">Certificados</div></div>
-          <div class="card-flat stat-box"><div class="v">2</div><div class="l">Eventos inscritos</div></div>
-          <div class="card-flat stat-box"><div class="v">5</div><div class="l">Docs transferidos</div></div>
-          <div class="card-flat stat-box"><div class="v" id="d-qval">Ativo</div><div class="l">Quota</div></div>
-        </div>
-        <div id="d-qalert"></div>
-      </div>
-      <div class="dpanel" id="dp-profile" role="tabpanel" style="max-width:480px">
-        <div class="fg"><label for="p-name">Nome completo</label><input id="p-name"></div>
-        <div class="fg"><label for="p-email">Email</label><input id="p-email" readonly style="opacity:.55" autocomplete="off"></div>
-        <div class="fg"><label for="p-type">Tipo de membro</label><input id="p-type" readonly style="opacity:.55"></div>
-        <div class="fg"><label>N.º sócio INCOSE</label><input value="INC-PT-00342" readonly style="opacity:.55"></div>
-        <div class="fg">
-          <label>Opt-in Member Directory</label>
-          <div style="display:flex;align-items:center;gap:.55rem;margin-top:.28rem">
-            <input type="checkbox" checked style="accent-color:var(--accent);width:15px;height:15px" id="ch-dir">
-            <label for="ch-dir" style="font-size:.8rem;color:rgba(255,255,255,.62)">Visível para outros membros</label>
-          </div>
-        </div>
-        <div class="fg">
-          <label>CV / Currículo (1-Click Apply)</label>
-          <div class="card-flat" style="padding:.85rem;text-align:center;border-style:dashed">
-            <p class="card-desc" style="font-size:.78rem;color:var(--muted)">Arraste o CV ou clique para upload</p>
-            <button class="btn btn-ghost btn-sm" style="margin-top:.45rem">Carregar PDF</button>
-          </div>
-        </div>
-        <button class="btn btn-primary btn-md">Guardar alterações</button>
-      </div>
-      <div class="dpanel" id="dp-payments" role="tabpanel">
-        <div class="tbl-wrap">
-          <table class="tbl">
-            <thead><tr><th>Descrição</th><th>Valor</th><th>Data</th><th>Estado</th><th></th></tr></thead>
-            <tbody>
-              <tr><td>Quota anual 2026 — Membro Individual</td><td style="font-weight:700">80.00€</td><td style="color:var(--muted)">2026-01-10</td><td><span class="badge b-green">Pago</span></td><td><button class="btn btn-ghost btn-sm">Fatura</button></td></tr>
-              <tr><td>Quota anual 2025 — Membro Individual</td><td style="font-weight:700">80.00€</td><td style="color:var(--muted)">2025-01-12</td><td><span class="badge b-green">Pago</span></td><td><button class="btn btn-ghost btn-sm">Fatura</button></td></tr>
-              <tr><td>Summit 2025 — Bilhete membro</td><td style="font-weight:700">60.00€</td><td style="color:var(--muted)">2025-10-20</td><td><span class="badge b-green">Pago</span></td><td><button class="btn btn-ghost btn-sm">Fatura</button></td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-      <div class="dpanel" id="dp-wallet" role="tabpanel">
-        <p class="card-desc" style="color:var(--muted);margin-bottom:1.2rem;font-size:.83rem">Certificados gerados automaticamente após check-in em eventos.</p>
-        <div class="card-flat cert-row" style="border-left:3px solid var(--blue2)"><div style="flex:1;min-width:0"><div style="font-weight:700;font-size:.84rem;font-family:'Inter Tight',sans-serif">SESPT – Engenharia de Sistemas Summit 2025 — Participação</div><div style="font-size:.7rem;color:var(--muted);margin-top:2px">2025-11-15 &middot; CERT-2025-001</div></div><button class="btn btn-ghost btn-sm">PDF &darr;</button></div>
-        <div class="card-flat cert-row" style="border-left:3px solid var(--blue2)"><div style="flex:1;min-width:0"><div style="font-weight:700;font-size:.84rem;font-family:'Inter Tight',sans-serif">ASEP Prep-Course — Dezembro 2025</div><div style="font-size:.7rem;color:var(--muted);margin-top:2px">2025-12-08 &middot; CERT-2025-002</div></div><button class="btn btn-ghost btn-sm">PDF &darr;</button></div>
-        <div class="card-flat cert-row" style="border-left:3px solid var(--blue2)"><div style="flex:1;min-width:0"><div style="font-weight:700;font-size:.84rem;font-family:'Inter Tight',sans-serif">Webinar MBSE Intro — Novembro 2025</div><div style="font-size:.7rem;color:var(--muted);margin-top:2px">2025-11-28 &middot; CERT-2025-003</div></div><button class="btn btn-ghost btn-sm">PDF &darr;</button></div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ── ADMIN ──────────────────────────────────────────────────────────────── -->
-<div id="page-admin" class="page">
-  <div class="wrap">
-    <div id="adm-locked" style="text-align:center;padding:4rem 0">
-      <div style="font-size:.65rem;font-weight:700;letter-spacing:2px;color:var(--danger);margin-bottom:1rem;text-transform:uppercase">Acesso restrito</div>
-      <h2 style="margin-bottom:.45rem;font-size:1.25rem">Área de administração</h2>
-      <p class="card-desc" style="color:var(--muted);font-size:.85rem">Apenas administradores SESPT têm acesso ao Backoffice.</p>
-    </div>
-    <div id="adm-content" style="display:none">
-      <p class="slabel">Administração SESPT</p>
-      <h1 class="stitle">Back<span class="accent-text">office</span></h1>
-      <div class="admin4">
-        <div class="card-flat astat"><div class="ico">Mbr</div><div><div class="v">240</div><div class="l">Membros ativos</div></div></div>
-        <div class="card-flat astat"><div class="ico">CAB</div><div><div class="v">18</div><div class="l">Empresas CAB</div></div></div>
-        <div class="card-flat astat"><div class="ico">Pnd</div><div><div class="v" id="a-pcount">1</div><div class="l">Vagas pendentes</div></div></div>
-        <div class="card-flat astat"><div class="ico">Evt</div><div><div class="v">5</div><div class="l">Eventos futuros</div></div></div>
-      </div>
-      <div class="dtabs" role="tablist">
-        <button class="dtab active" role="tab" onclick="aTab('news',this)">Notícias</button>
-        <button class="dtab" role="tab" onclick="aTab('pending',this)">Vagas pendentes</button>
-        <button class="dtab" role="tab" onclick="aTab('users',this)">Utilizadores</button>
-        <button class="dtab" role="tab" onclick="aTab('newsletter',this)">Newsletter</button>
-      </div>
-      <div class="dpanel active" id="adp-news" role="tabpanel">
-        <div class="card-flat" style="padding:1.2rem;margin-bottom:1.2rem">
-          <h3 style="margin-bottom:.85rem;font-size:.92rem">Criar novo artigo</h3>
-          <div class="g-2" style="margin-bottom:.75rem">
-            <div class="fg" style="margin:0"><label for="na-t">Título *</label><input id="na-t" placeholder="Título..."></div>
-            <div style="display:grid;grid-template-columns:2fr 1fr;gap:.75rem">
-              <div class="fg" style="margin:0"><label for="na-c">Categoria</label><select id="na-c"><option>Destaque</option><option>CAB</option><option>Certificação</option><option>Internacional</option><option>Eventos</option></select></div>
-              <div class="fg" style="margin:0"><label for="na-i">Etiqueta</label><input id="na-i" value="—" maxlength="3"></div>
-            </div>
-          </div>
-          <div class="fg"><label for="na-e">Resumo</label><textarea id="na-e" placeholder="Breve descrição..."></textarea></div>
-          <button class="btn btn-primary btn-md" onclick="addArticle()">Publicar &rarr;</button>
-        </div>
-        <h3 style="margin-bottom:.8rem;font-size:.9rem">Artigos publicados</h3>
-        <div id="a-news-list"></div>
-      </div>
-      <div class="dpanel" id="adp-pending" role="tabpanel">
-        <h3 style="margin-bottom:.85rem;font-size:.9rem">Vagas aguardando aprovação</h3>
-        <div id="a-pending-list"></div>
-      </div>
-      <div class="dpanel" id="adp-users" role="tabpanel">
-        <h3 style="margin-bottom:.85rem;font-size:.9rem">Gestão de utilizadores</h3>
-        <div class="tbl-wrap"><table class="tbl"><thead><tr><th>Nome</th><th>Email</th><th>Tipo</th><th>Quota</th><th></th></tr></thead><tbody id="a-users-tbody"></tbody></table></div>
-      </div>
-      <div class="dpanel" id="adp-newsletter" role="tabpanel">
-        <h3 style="margin-bottom:.7rem;font-size:.9rem">Gerador de Newsletter</h3>
-        <p class="card-desc" style="font-size:.8rem;color:var(--muted);margin-bottom:1.1rem">Selecione notícias para gerar HTML automático para Mailchimp.</p>
-        <div id="a-nl-list" style="display:flex;flex-direction:column;gap:.45rem;max-width:580px;margin-bottom:1.2rem"></div>
-        <div style="display:flex;gap:.55rem;flex-wrap:wrap">
-          <button class="btn btn-primary btn-md">Gerar HTML &rarr;</button>
-          <button class="btn btn-ghost btn-md">Enviar Mailchimp</button>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-</main>
-
-<!-- ══ FOOTER ═════════════════════════════════════════════════════════════ -->
-<footer role="contentinfo">
-  <div class="ft-cols">
-    <div class="ft-col">
-      <div style="display:flex;align-items:center;gap:.6rem;margin-bottom:.75rem">
-        <div class="logo-mark" style="width:28px;height:28px;font-size:.44rem" aria-hidden="true">INC</div>
-        <div style="font-weight:700;font-size:.85rem;font-family:'Inter Tight',sans-serif;letter-spacing:-0.01em">SESPT – Engenharia de Sistemas</div>
-      </div>
-      <p>Capítulo oficial INCOSE. Operado pela SESPT desde 2025.</p>
-      <div class="ft-social">
-        <button class="soc-btn" aria-label="LinkedIn">LinkedIn</button>
-        <button class="soc-btn" aria-label="YouTube">YouTube</button>
-        <button class="soc-btn" aria-label="Email">Email</button>
-      </div>
-    </div>
-    <div class="ft-col">
-      <h4>Quick Links</h4>
-      <a onclick="navTo('about')" href="#">Sobre Nós</a>
-      <a onclick="navTo('membership')" href="#">Membership</a>
-      <a onclick="navTo('events')" href="#">Eventos</a>
-      <a onclick="navTo('knowledge')" href="#">Knowledge Base</a>
-      <a onclick="navTo('jobs')" href="#">Job Board</a>
-      <a href="https://www.incose.org" target="_blank" rel="noopener">INCOSE Global &nearr;</a>
-    </div>
-    <div class="ft-col">
-      <h4>Contacto SESPT</h4>
-      <p>Rua [a completar]<br>1000-000 Lisboa</p>
-      <a href="mailto:geral@sespt.pt">geral@sespt.pt</a>
-      <a href="mailto:incose@sespt.pt">incose@sespt.pt</a>
-    </div>
-    <div class="ft-col">
-      <h4>Legal</h4>
-      <a href="#">Política de Privacidade</a>
-      <a href="#">Termos de Utilização</a>
-      <a href="#">Política de Cookies</a>
-      <a href="#">RGPD — Right to be Forgotten</a>
-      <a href="#">Estatutos SESPT</a>
-    </div>
-  </div>
-  <div class="ft-bottom">
-    <p><strong>O Capítulo SESPT – Engenharia de Sistemas é legalmente representado e operado pela SESPT — Sociedade de Engenharia de Sistemas de Portugal, NIF [inserir número].</strong><br>&copy; 2026 SESPT. INCOSE&reg; marca registada da INCOSE. incose.pt</p>
-    <div class="ft-links"><a href="#">Mapa do site</a><a href="#">Acessibilidade</a><a href="#">Contactos</a></div>
-  </div>
-</footer>
-
-<!-- ════════════════ JAVASCRIPT ════════════════════════════════════════════ -->
 <script>
-'use strict';
+/* PARTICLE DIGITAL TWIN */
+const canvas=document.getElementById("hero-canvas");
+const ctx=canvas.getContext("2d");
+let w,h,particles=[];
+const maxDist=130;
 
-/* ── DATA ───────────────────────────────────────────────────────────────── */
-const USERS = {
-  'admin@sespt.pt':   {name:'Sofia Andrade', role:'admin',   quota:true,  avatar:'SA', type:'Admin SESPT'},
-  'membro@incose.pt': {name:'Carlos Mendes', role:'member',  quota:true,  avatar:'CM', type:'Membro Individual'},
-  'cab@embraer.pt':   {name:'Ana Ferreira',  role:'cab',     quota:true,  avatar:'AF', type:'CAB — Embraer'},
-  'estudante@ist.pt': {name:'Tomás Lima',    role:'student', quota:false, avatar:'TL', type:'Membro Estudante'},
-};
-const PASS = 'demo123';
-
-const EVENTS = [
-  {id:1,title:'SESPT – Engenharia de Sistemas Summit 2026',          date:'2026-03-15',loc:'Centro de Congressos do Estoril, Lisboa',format:'presencial',type:'summit',  desc:'A maior conferência anual do capítulo, com keynotes internacionais.',price:{p:120,m:60,s:25},cap:300,reg:187},
-  {id:2,title:'Webinar: MBSE com SysML v2',           date:'2026-03-28',loc:'Online · Zoom',                          format:'online',    type:'webinar', desc:'Introdução prática ao SysML v2 com exemplos reais de sistemas aeroespaciais.',price:{p:20,m:0,s:0},cap:200,reg:89},
-  {id:3,title:'ASEP Prep-Course — Lisboa (Primavera)',date:'2026-04-12',loc:'Lisboa · Local a confirmar',             format:'presencial',type:'workshop',desc:'3 dias intensivos de preparação para o exame ASEP com instrutores certificados.',price:{p:400,m:280,s:150},cap:30,reg:22},
-  {id:4,title:'WG Defense Systems — Reunião Q2',      date:'2026-05-24',loc:'Online · Teams',                        format:'online',    type:'wg',      desc:'Reunião aberta do Working Group de Defense Systems.',price:{p:0,m:0,s:0},cap:100,reg:34},
-  {id:5,title:'Workshop: Requirements Eng. para ESA', date:'2026-06-10',loc:'Porto · Hotel Sheraton',                format:'presencial',type:'workshop',desc:'Workshop focado nos standards ECSS para engenharia de requisitos em projetos espaciais.',price:{p:350,m:220,s:120},cap:25,reg:18},
-];
-
-const DOCS = [
-  {id:1,title:'INCOSE SE Handbook v5.0 (PT)', type:'PDF', size:'12.4 MB',cat:'handbook',restricted:true, date:'2025-12'},
-  {id:2,title:'Template: Requirements Baseline',type:'DOCX',size:'340 KB',cat:'template',restricted:true, date:'2025-11'},
-  {id:3,title:'Template: System Architecture (SysML)',type:'ZIP',size:'2.1 MB',cat:'template',restricted:true, date:'2025-10'},
-  {id:4,title:'Webinar: Introdução ao MBSE (Nov 2025)',type:'MP4',size:'1.2 GB',cat:'webinar', restricted:true, date:'2025-11'},
-  {id:5,title:'Webinar: SysML v2 Overview (Jan 2026)', type:'MP4',size:'890 MB',cat:'webinar', restricted:true, date:'2026-01'},
-  {id:6,title:'Guia: ASEP Exam Preparation (PT)',      type:'PDF',size:'8.7 MB',cat:'guide',   restricted:true, date:'2026-01'},
-  {id:7,title:'Estatutos SESPT 2025',                  type:'PDF',size:'420 KB',cat:'legal',   restricted:false,date:'2025-09'},
-  {id:8,title:'Relatório Anual 2025',                  type:'PDF',size:'3.2 MB',cat:'legal',   restricted:false,date:'2026-01'},
-];
-
-let NEWS = [
-  {id:1,title:'Portugal lidera WG INCOSE sobre Offshore Renewables', cat:'Destaque',     date:'2026-02-24',excerpt:'A WindFloat Atlantic tornou-se caso de estudo internacional. O capítulo coordena agora o WG com parceiros de 12 países.'},
-  {id:2,title:'Embraer Évora junta-se ao Corporate Advisory Board',  cat:'CAB',          date:'2026-02-18',excerpt:'A fabricante aeronáutica reforça a presença industrial no capítulo.'},
-  {id:3,title:'3.ª turma CSEP em Portugal: 12 aprovados',            cat:'Certificação', date:'2026-02-10',excerpt:'Recordes de aprovação no prep-course de dezembro de 2025. Taxa de 92%, acima da média global.'},
-  {id:4,title:'SESPT – Engenharia de Sistemas no IS 2026 — Las Vegas',              cat:'Internacional',date:'2026-01-30',excerpt:'Três membros apresentaram papers no Symposium anual.'},
-];
-
-let JOBS = [
-  {id:1,co:'Embraer Portugal',    logo:'EMB',title:'Systems Engineer — Aerostructures',   loc:'Évora',          type:'Full-time', tags:['MBSE','SysML','Aerostructures'],  desc:'Integração de sistemas de estruturas aeronáuticas no novo programa de jatos executivos.',pending:false},
-  {id:2,co:'EDP Renewables',      logo:'EDP',title:'Lead SE — Offshore Wind Division',    loc:'Lisboa',         type:'Full-time', tags:['Requisitos','Interface Mgmt'],    desc:'Liderança técnica da equipa de SE para o programa WindFloat Atlantic 2.0.',pending:false},
-  {id:3,co:'IST / INESC-ID',      logo:'IST',title:'Investigador Doutoramento — MBSE',   loc:'Lisboa / Remoto',type:'Bolsa FCT', tags:['PhD','MBSE','Investigação'],      desc:'Bolsa FCT para doutoramento em Model-Based Systems Engineering.',pending:false},
-  {id:4,co:'Thales Alenia Space',  logo:'TAS',title:'Systems Architect — Space Segment', loc:'Porto',          type:'Full-time', tags:['Space','ECSS','CSEP preferido'], desc:'Arquitetura de sistemas para segmento espacial.',pending:false},
-  {id:5,co:'Critical Software',   logo:'CSW',title:'SE Consultant — Automotive',         loc:'Coimbra/Remoto', type:'Full-time', tags:['ISO 26262','SOTIF','Requisitos'], desc:'Consultoria em engenharia de sistemas para projetos de veículos autónomos.',pending:false},
-  {id:6,co:'Hovione',             logo:'HOV',title:'Validation Systems Engineer',          loc:'Lisboa',         type:'Full-time', tags:['GxP','V&V','Farmacêutico'],      desc:'Engenheiro de validação para linha de produção farmacêutica contínua.',pending:false},
-];
-let PENDING_JOBS = [{id:99,co:'Nova empresa Lda.',title:'Systems Engineer Jr.'}];
-
-let user=null, evtFF='all', evtFT='all', docCat='all', jobTag='all', appliedJobs=[], regEvts=[], lang='pt';
-
-function debounce(fn,delay){let t;return function(...a){clearTimeout(t);t=setTimeout(()=>fn.apply(this,a),delay);}}
-const debouncedRenderDocs = debounce(renderDocs,250);
-const debouncedRenderJobs = debounce(renderJobs,250);
-
-/* ── NAVIGATION ─────────────────────────────────────────────────────────── */
-function navTo(id) {
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('#desk-nav button').forEach(b=>b.classList.remove('active'));
-  document.querySelectorAll('#mob-drawer .mob-nav-btn').forEach(b=>b.classList.remove('active'));
-  const pg=document.getElementById('page-'+id);
-  if(pg) pg.classList.add('active');
-  const m={home:0,about:1,events:2,knowledge:3,jobs:4,membership:5};
-  if(m[id]!==undefined){const nb=document.querySelector('#desk-nav button[data-nav="'+m[id]+'"]');if(nb)nb.classList.add('active');}
-  window.scrollTo({top:0,behavior:'smooth'});
-  if(id==='events')    renderEvents();
-  if(id==='knowledge') renderKnowledge();
-  if(id==='jobs')      renderJobs();
-  if(id==='dashboard') renderDashboard();
-  if(id==='admin')     renderAdmin();
+function resize(){
+  w=canvas.width=window.innerWidth;
+  h=canvas.height=window.innerHeight;
 }
+window.addEventListener("resize",resize);
+resize();
 
-/* ── DRAWER ─────────────────────────────────────────────────────────────── */
-function toggleDrawer(){
-  const d=document.getElementById('mob-drawer'),b=document.getElementById('burger');
-  const open=d.classList.toggle('open');
-  b.textContent=open?'Fechar':'Menu';
-  b.setAttribute('aria-expanded',open);
-  document.body.style.overflow=open?'hidden':'';
-}
-function closeDrawer(){
-  const d=document.getElementById('mob-drawer'),b=document.getElementById('burger');
-  d.classList.remove('open');b.textContent='Menu';b.setAttribute('aria-expanded','false');document.body.style.overflow='';
-}
-window.addEventListener('resize',()=>{if(window.innerWidth>768)closeDrawer();});
-document.addEventListener('keydown',e=>{
-  if(e.key==='Escape'){closeDrawer();document.querySelectorAll('.overlay.open').forEach(o=>o.classList.remove('open'));}
-});
-
-/* ── LANGUAGE ────────────────────────────────────────────────────────────── */
-const T={
-  pt:{badge:'Capítulo oficial INCOSE em Portugal',h1:'Engenharia de Sistemas<br><span>com raízes atlânticas</span>',sub:'A comunidade portuguesa de profissionais INCOSE. Formação certificada, networking, Working Groups ativos e representação no ecossistema global de Systems Engineering.',cta1:'Tornar-me sócio →',cta2:'Ver eventos',nav:['Início','Sobre Nós','Eventos','Knowledge','Carreiras','Adesão']},
-  en:{badge:'Official INCOSE Chapter in Portugal',h1:'Systems Engineering<br><span>with Atlantic roots</span>',sub:'The Portuguese community of INCOSE professionals. Certified training, networking, active Working Groups and representation in the global SE ecosystem.',cta1:'Become a member →',cta2:'See events',nav:['Home','About','Events','Knowledge','Careers','Join']},
-};
-function setLang(l){
-  lang=l;const t=T[l];const el=id=>document.getElementById(id);
-  if(el('h-h1')) el('h-h1').innerHTML=t.h1;
-  if(el('h-sub')) el('h-sub').textContent=t.sub;
-  if(el('h-cta1')) el('h-cta1').textContent=t.cta1;
-  if(el('h-cta2')) el('h-cta2').textContent=t.cta2;
-  document.querySelectorAll('#desk-nav button[data-nav]').forEach(btn=>{const i=+btn.getAttribute('data-nav');if(t.nav[i])btn.textContent=t.nav[i];});
-  ['lt-pt','lt-en'].forEach(id=>{const btn=el(id);if(btn){btn.className=(id.endsWith(l))?'active':'';btn.setAttribute('aria-pressed',id.endsWith(l));}});
-  const mpp=el('mob-lt-pt'),mpe=el('mob-lt-en');
-  if(mpp)mpp.className=l==='pt'?'btn btn-blue btn-sm':'btn btn-ghost btn-sm';
-  if(mpe)mpe.className=l==='en'?'btn btn-blue btn-sm':'btn btn-ghost btn-sm';
-}
-
-/* ── AUTH ───────────────────────────────────────────────────────────────── */
-function openModal(id){document.getElementById(id).classList.add('open');}
-function closeModal(id){document.getElementById(id).classList.remove('open');}
-document.querySelectorAll('.overlay').forEach(o=>{o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open');});});
-function authTab(t){
-  document.querySelectorAll('.mtab').forEach((b,i)=>{const a=(i===0&&t==='login')||(i===1&&t==='register');b.classList.toggle('active',a);b.setAttribute('aria-selected',a);});
-  document.getElementById('auth-login').style.display=t==='login'?'block':'none';
-  document.getElementById('auth-register').style.display=t==='register'?'block':'none';
-  document.getElementById('auth-title').textContent=t==='login'?'Entrar na plataforma':'Criar conta';
-}
-function fillDemo(e){document.getElementById('l-email').value=e;document.getElementById('l-pass').value=PASS;}
-function doLogin(){
-  const email=document.getElementById('l-email').value.trim().toLowerCase();
-  const pass=document.getElementById('l-pass').value;
-  const u=USERS[email],err=document.getElementById('l-err');
-  if(u&&pass===PASS){user={email,...u};err.style.display='none';closeModal('modal-auth');updateUI();navTo('dashboard');}
-  else{err.style.display='flex';}
-}
-function doLogout(){user=null;appliedJobs=[];updateUI();navTo('home');}
-
-function updateUI(){
-  const u=user;
-  const uu=document.getElementById('util-user'),mu=document.getElementById('mob-user');
-  if(u){
-    const chip=`<span style="display:inline-flex;align-items:center;gap:.5rem"><span style="width:22px;height:22px;border-radius:50%;background:var(--blue);display:inline-flex;align-items:center;justify-content:center;font-size:.55rem;font-weight:700">${u.avatar}</span><span style="color:rgba(255,255,255,.6);font-size:.71rem">${u.name}</span><button class="btn btn-ghost btn-sm" onclick="doLogout()" style="font-size:.68rem;padding:.18rem .5rem">Sair</button></span>`;
-    if(uu)uu.innerHTML=chip;
-    if(mu)mu.innerHTML=`<div style="font-size:.8rem;color:var(--muted);margin-bottom:.55rem">Sessão: <strong style="color:#fff">${u.name}</strong><br><span style="color:${u.quota?'var(--success)':'var(--warn)'}">${u.quota?'Quota ativa':'Quota inativa'}</span></div><button class="btn btn-ghost btn-md btn-full" onclick="doLogout();closeDrawer()">Terminar sessão</button>`;
-  }else{
-    if(uu)uu.innerHTML=`<button class="btn btn-primary btn-sm" onclick="openModal('modal-auth')">Login / Registo</button>`;
-    if(mu)mu.innerHTML=`<button class="btn btn-primary btn-md btn-full" onclick="openModal('modal-auth');closeDrawer()">Login / Registo</button>`;
+class Particle{
+  constructor(){
+    this.x=Math.random()*w;
+    this.y=Math.random()*h;
+    this.vx=(Math.random()-.5)*.7;
+    this.vy=(Math.random()-.5)*.7;
   }
-  const show=(el,v)=>{const e=document.getElementById(el);if(e)e.style.display=v;};
-  show('nav-dash',u?'block':'none');show('nav-adm',(u&&u.role==='admin')?'block':'none');
-  show('mob-nav-dash',u?'block':'none');show('mob-nav-adm',(u&&u.role==='admin')?'block':'none');
-  show('btn-post',(u&&(u.role==='cab'||u.role==='admin'))?'inline-flex':'none');
-  renderEvents();renderKnowledge();renderJobs();
+  move(){
+    this.x+=this.vx;
+    this.y+=this.vy;
+    if(this.x<0||this.x>w) this.vx*=-1;
+    if(this.y<0||this.y>h) this.vy*=-1;
+  }
 }
 
-function closeCookie(){const c=document.getElementById('cookie');if(c)c.style.display='none';}
+function initParticles(){
+  particles=[];
+  let count=Math.min(120,Math.floor((w*h)/9000));
+  for(let i=0;i<count;i++) particles.push(new Particle());
+}
+initParticles();
 
-/* ── HOME NEWS ──────────────────────────────────────────────────────────── */
-function renderHomeNews(){
-  const el=document.getElementById('home-news');if(!el)return;
-  el.innerHTML=NEWS.slice(0,3).map((n,i)=>`
-    <div class="knowledge-card" style="padding:1.15rem;cursor:pointer${i===0?';border-left:3px solid var(--blue2)':''}" tabindex="0" role="article">
-      <span class="badge b-teal" style="margin-bottom:.5rem">${n.cat}</span>
-      <h3 style="font-size:${i===0?'.95rem':'.84rem'};font-weight:700;margin:.4rem 0 .3rem;line-height:1.3;letter-spacing:-0.01em">${n.title}</h3>
-      ${i===0?`<p class="card-desc" style="font-size:.79rem;color:var(--muted);line-height:1.58">${n.excerpt}</p>`:''}
-      <div style="font-size:.67rem;color:rgba(255,255,255,.2);margin-top:.5rem"><time>${n.date}</time></div>
-    </div>`).join('');
-}
+function animate(){
+  ctx.clearRect(0,0,w,h);
 
-/* ── EVENTS ─────────────────────────────────────────────────────────────── */
-const evtTypeLabel={summit:'Summit',webinar:'Webinar',workshop:'Workshop',wg:'Working Group'};
-const evtFmtColor={presencial:'b-cork',online:'b-teal'};
-function getEvtPrice(e){if(!user)return e.price.p;if(user.role==='student')return e.price.s;if(user.quota)return e.price.m;return e.price.p;}
+  for(let p of particles){
+    p.move();
+    ctx.beginPath();
+    ctx.arc(p.x,p.y,2,0,Math.PI*2);
+    ctx.fillStyle="rgba(66,165,245,.8)";
+    ctx.fill();
+  }
 
-function renderEvents(){
-  const el=document.getElementById('evts-list');if(!el)return;
-  const list=EVENTS.filter(e=>(evtFF==='all'||e.format===evtFF)&&(evtFT==='all'||e.type===evtFT));
-  if(!list.length){el.innerHTML='<p class="card-desc" style="color:var(--muted);padding:2rem 0">Nenhum evento encontrado para os filtros selecionados.</p>';return;}
-  el.innerHTML=list.map(e=>{
-    const d=new Date(e.date+'T12:00:00'),pr=getEvtPrice(e),isR=regEvts.includes(e.id),disc=user&&user.quota&&pr<e.price.p;
-    return `<div class="card evt-row" role="listitem">
-      <div class="evt-date" aria-label="${d.getDate()} de ${d.toLocaleString('pt',{month:'long'})}">
-        <div class="evt-day">${d.getDate()}</div>
-        <div class="evt-mon">${d.toLocaleString('pt',{month:'short'})}</div>
-      </div>
-      <div class="evt-meta">
-        <div style="display:flex;gap:.3rem;margin-bottom:.22rem;flex-wrap:wrap">
-          <span class="badge ${evtFmtColor[e.format]}">${e.format}</span>
-          <span class="badge b-blue">${evtTypeLabel[e.type]}</span>
-          ${disc?'<span class="badge b-green">Preço membro</span>':''}
-        </div>
-        <div class="card-eyebrow">MBSE MODULE</div><h3 class="card-title">${e.title}</h3><p>${e.loc}</p>
-      </div>
-      <div class="evt-right">
-        <div class="evt-price ${pr===0?'price-free':''}">${pr===0?'Grátis':pr+'€'}</div>
-        ${disc?`<div style="font-size:.61rem;color:var(--muted);text-decoration:line-through">${e.price.p}€</div>`:''}
-        <div class="evt-actions">
-          <button class="btn btn-ghost btn-sm" onclick="openEvtModal(${e.id})">Detalhes</button>
-          ${isR?'<button class="btn btn-success btn-sm">Inscrito</button>':`<button class="btn btn-primary btn-sm" onclick="regEvt(${e.id})">${user?'Inscrever':'Entrar'}</button>`}
-        </div>
-      </div>
-    </div>`;
-  }).join('');
-}
+  for(let i=0;i<particles.length;i++){
+    for(let j=i+1;j<particles.length;j++){
+      let dx=particles[i].x-particles[j].x;
+      let dy=particles[i].y-particles[j].y;
+      let dist=Math.sqrt(dx*dx+dy*dy);
+      if(dist<maxDist){
+        ctx.beginPath();
+        ctx.moveTo(particles[i].x,particles[i].y);
+        ctx.lineTo(particles[j].x,particles[j].y);
+        ctx.strokeStyle="rgba(30,136,229,"+(1-dist/maxDist)*.15+")";
+        ctx.stroke();
+      }
+    }
+  }
 
-function fEvt(dim,val){
-  if(dim==='f'){evtFF=val;document.querySelectorAll('[data-ff]').forEach(b=>b.className=b.getAttribute('data-ff')===val?'btn btn-blue btn-sm':'btn btn-ghost btn-sm');}
-  else{evtFT=val;document.querySelectorAll('[data-ft]').forEach(b=>b.className=b.getAttribute('data-ft')===val?'btn btn-blue btn-sm':'btn btn-ghost btn-sm');}
-  renderEvents();
+  requestAnimationFrame(animate);
 }
-function regEvt(id){if(!user){openModal('modal-auth');return;}if(!regEvts.includes(id))regEvts.push(id);renderEvents();closeModal('modal-evt');}
-function openEvtModal(id){
-  const e=EVENTS.find(x=>x.id===id);if(!e)return;
-  const pr=getEvtPrice(e),isR=regEvts.includes(id);
-  document.getElementById('em-title').textContent=e.title;
-  document.getElementById('em-body').innerHTML=`
-    <div style="display:flex;gap:.3rem;flex-wrap:wrap;margin-bottom:.8rem"><span class="badge ${evtFmtColor[e.format]}">${e.format}</span><span class="badge b-blue">${evtTypeLabel[e.type]}</span></div>
-    <p class="card-desc" style="font-size:.84rem;color:rgba(255,255,255,.65);line-height:1.68;margin-bottom:.85rem">${e.desc}</p>
-    <div class="topbox" style="margin-bottom:.85rem">
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.45rem;font-size:.78rem">
-        <div><span style="color:var(--muted)">Data: </span>${e.date}</div>
-        <div><span style="color:var(--muted)">Local: </span>${e.loc}</div>
-        <div><span style="color:var(--muted)">Vagas: </span>${e.cap-e.reg} restantes</div>
-        <div><span style="color:var(--muted)">Inscritos: </span>${e.reg}</div>
-      </div>
-    </div>
-    <p class="card-desc" style="font-size:.67rem;font-weight:700;color:var(--muted);letter-spacing:.8px;margin-bottom:.35rem;text-transform:uppercase">Preços</p>
-    ${[['Público geral',e.price.p],['Membro ativo',e.price.m],['Estudante',e.price.s]].map(([l,p])=>`<div style="display:flex;justify-content:space-between;font-size:.8rem;padding:.22rem 0;border-bottom:1px solid var(--border)"><span style="color:var(--muted)">${l}</span><strong style="color:${p===0?'var(--success)':'#fff'}">${p===0?'Grátis':p+'€'}</strong></div>`).join('')}
-    <div style="display:flex;gap:.55rem;margin-top:1rem;flex-wrap:wrap">
-      <button class="btn ${isR?'btn-success':'btn-primary'} btn-md" style="flex:1;min-width:130px" onclick="regEvt(${id})">${isR?'Já inscrito':'Inscrever agora'}</button>
-      <button class="btn btn-ghost btn-md" onclick="dlICS(${id})">.ics &darr;</button>
-    </div>`;
-  openModal('modal-evt');
-}
-function dlICS(id){const e=EVENTS.find(x=>x.id===id);const d=e.date.replace(/-/g,'');const s=`BEGIN:VCALENDAR\nVERSION:2.0\nBEGIN:VEVENT\nSUMMARY:${e.title}\nDTSTART:${d}T090000Z\nDTEND:${d}T180000Z\nLOCATION:${e.loc}\nEND:VEVENT\nEND:VCALENDAR`;const a=Object.assign(document.createElement('a'),{href:URL.createObjectURL(new Blob([s],{type:'text/calendar'})),download:'evento.ics'});a.click();}
+animate();
 
-/* ── KNOWLEDGE ──────────────────────────────────────────────────────────── */
-const CAT_LABELS={all:'Todos',handbook:'Handbook',template:'Templates',webinar:'Webinars',guide:'Guias',legal:'Legal'};
-function renderKnowledge(){
-  const al=document.getElementById('know-alert'),cc=document.getElementById('doc-cats');if(!al)return;
-  if(!user)al.innerHTML=`<div class="alert a-info">Materiais técnicos requerem login e quota ativa. <button onclick="openModal('modal-auth')" style="background:none;border:none;color:var(--accent2);cursor:pointer;font-weight:600;font-family:inherit">Entrar &rarr;</button></div>`;
-  else if(!user.quota)al.innerHTML=`<div class="alert a-warn">Quota inativa. Renove a adesão para aceder aos materiais.</div>`;
-  else al.innerHTML=`<div class="alert a-ok">Acesso completo — quota ativa até dezembro 2026.</div>`;
-  cc.innerHTML=Object.entries(CAT_LABELS).map(([k,v])=>`<button class="btn ${docCat===k?'btn-blue':'btn-ghost'} btn-sm" onclick="fDoc('${k}')">${v}</button>`).join('');
-  renderDocs();
-}
-function renderDocs(){
-  const gr=document.getElementById('docs-grid');if(!gr)return;
-  const q=(document.getElementById('doc-q')?.value||'').toLowerCase();
-  const filtered=DOCS.filter(d=>(docCat==='all'||d.cat===docCat)&&d.title.toLowerCase().includes(q));
-  const canGet=d=>!d.restricted||user?.quota;
-  gr.innerHTML=filtered.length===0?'<p class="card-desc" style="color:var(--muted);padding:1rem 0">Nenhum documento encontrado.</p>':filtered.map(d=>`
-    <div class="card doc-card" style="${!canGet(d)?'opacity:.55':''}">
-      <div class="doc-type-badge">${d.type}</div>
-      <div style="display:flex;gap:.3rem;flex-wrap:wrap;margin-bottom:.4rem">
-        ${d.restricted?`<span class="badge ${canGet(d)?'b-green':'b-warn'}">${canGet(d)?'Acesso':'Membros'}</span>`:'<span class="badge b-def">Público</span>'}
-      </div>
-      <h4 style="font-weight:700;font-size:.84rem;margin-bottom:.2rem;line-height:1.32;letter-spacing:-0.01em">${d.title}</h4>
-      <p class="card-desc" style="font-size:.68rem;color:var(--muted);margin-bottom:.7rem">${d.size} &middot; ${d.date}</p>
-      ${canGet(d)?`<button class="btn btn-primary btn-sm">Download &darr;</button>`:`<button class="btn btn-ghost btn-sm" onclick="openModal('modal-auth')">${user?'Renovar quota':'Fazer login'}</button>`}
-    </div>`).join('');
-}
-function fDoc(cat){docCat=cat;renderKnowledge();}
+/* KNOWLEDGE PREVIEW + PAN/ZOOM */
+document.querySelectorAll(".knowledge-card").forEach(card=>{
+  const preview=card.querySelector(".diagram-preview");
+  const src=card.dataset.diagram;
+  let img=document.createElement("img");
+  img.src=src;
+  preview.appendChild(img);
 
-/* ── JOBS ───────────────────────────────────────────────────────────────── */
-function renderJobs(){
-  const al=document.getElementById('jobs-alert'),tg=document.getElementById('job-tags'),gr=document.getElementById('jobs-grid');if(!al)return;
-  if(!user)al.innerHTML=`<div class="alert a-info">Candidatura 1-click para membros. <button onclick="openModal('modal-auth')" style="background:none;border:none;color:var(--accent2);cursor:pointer;font-weight:600;font-family:inherit">Entrar &rarr;</button></div>`;
-  else if(!user.quota)al.innerHTML=`<div class="alert a-warn">Quota inativa. Renove para usar candidatura 1-click.</div>`;
-  else al.innerHTML=`<div class="alert a-ok">Perfil ativo — candidatura 1-click disponível.</div>`;
-  const allTags=[...new Set(JOBS.flatMap(j=>j.tags))];
-  tg.innerHTML=['all',...allTags].map(t=>`<button class="btn ${jobTag===t?'btn-blue':'btn-ghost'} btn-sm" onclick="fJob('${t}')">${t==='all'?'Todas':t}</button>`).join('');
-  const q=(document.getElementById('job-q')?.value||'').toLowerCase();
-  const list=JOBS.filter(j=>!j.pending&&(jobTag==='all'||j.tags.includes(jobTag))&&(j.title.toLowerCase().includes(q)||j.co.toLowerCase().includes(q)));
-  gr.innerHTML=list.map(j=>{
-    const isA=appliedJobs.includes(j.id);
-    return `<div class="card job-card">
-      <div style="display:flex;gap:.75rem;margin-bottom:.7rem;align-items:flex-start">
-        <div class="job-logo-box" aria-hidden="true">${j.logo}</div>
-        <div style="min-width:0"><h4 style="font-weight:700;font-size:.88rem;margin-bottom:.1rem;font-family:'Inter Tight',sans-serif;letter-spacing:-0.01em;word-break:break-word">${j.title}</h4><div style="font-size:.73rem;color:var(--muted)">${j.co} &middot; ${j.loc}</div></div>
-      </div>
-      <p class="card-desc" style="font-size:.77rem;color:rgba(255,255,255,.48);line-height:1.55;margin-bottom:.7rem">${j.desc}</p>
-      <div style="display:flex;gap:.28rem;flex-wrap:wrap;margin-bottom:.7rem">${j.tags.map(t=>`<span class="badge b-def">${t}</span>`).join('')}<span class="badge b-blue">${j.type}</span></div>
-      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.45rem">
-        <span style="font-size:.65rem;color:rgba(255,255,255,.18)">Publicado: ${j.posted||'2026-02'}</span>
-        ${isA?'<button class="btn btn-success btn-sm">Candidatura enviada</button>':`<button class="btn ${user?.quota?'btn-primary':'btn-ghost'} btn-sm" onclick="applyJob(${j.id})">${user?.quota?'1-Click Apply &rarr;':'Candidatar &rarr;'}</button>`}
-      </div>
-    </div>`;
-  }).join('');
-}
-function fJob(tag){jobTag=tag;renderJobs();}
-function applyJob(id){if(!user){openModal('modal-auth');return;}if(!appliedJobs.includes(id))appliedJobs.push(id);renderJobs();}
-function showPostJob(){document.getElementById('post-form').style.display='block';window.scrollTo({top:document.getElementById('post-form').offsetTop-80,behavior:'smooth'});}
-function submitJob(){
-  const t=document.getElementById('nj-t').value.trim();if(!t)return;
-  JOBS.unshift({id:Date.now(),co:user?.name||'Empresa',logo:user?.avatar||'EM',title:t,loc:document.getElementById('nj-l').value,type:document.getElementById('nj-tp').value,tags:document.getElementById('nj-tg').value.split(',').map(x=>x.trim()).filter(Boolean),desc:document.getElementById('nj-d').value,pending:false});
-  PENDING_JOBS.push({id:Date.now()+1,co:user?.name||'Empresa',title:t});
-  ['nj-t','nj-l','nj-tg','nj-d'].forEach(i=>document.getElementById(i).value='');
-  document.getElementById('post-form').style.display='none';renderJobs();
-  const pc=document.getElementById('a-pcount');if(pc)pc.textContent=PENDING_JOBS.length;
-}
+  let scale=1, pos={x:0,y:0}, dragging=false, start={x:0,y:0};
 
-/* ── DASHBOARD ──────────────────────────────────────────────────────────── */
-function renderDashboard(){
-  const u=user;
-  document.getElementById('dash-locked').style.display=u?'none':'block';
-  document.getElementById('dash-content').style.display=u?'block':'none';
-  if(!u)return;
-  document.getElementById('d-av').textContent=u.avatar;
-  document.getElementById('d-greet').textContent=`Olá, ${u.name.split(' ')[0]}!`;
-  document.getElementById('d-badges').innerHTML=`<span class="badge b-blue">${u.type}</span><span class="badge ${u.quota?'b-green':'b-warn'}">${u.quota?'Quota ativa 2026':'Quota inativa'}</span>`;
-  document.getElementById('d-qval').textContent=u.quota?'Ativo':'Inativo';
-  document.getElementById('d-qval').style.color=u.quota?'var(--success)':'var(--warn)';
-  document.getElementById('d-qalert').innerHTML=u.quota?'':'<div class="alert a-warn">Quota expirada. Renove para manter acesso a todos os benefícios.</div>';
-  document.getElementById('p-name').value=u.name;
-  document.getElementById('p-email').value=u.email;
-  document.getElementById('p-type').value=u.type;
-}
-function dTab(id,btn){
-  document.querySelectorAll('#dash-content .dpanel').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('#dash-content .dtab').forEach(b=>{b.classList.remove('active');b.setAttribute('aria-selected','false');});
-  document.getElementById('dp-'+id).classList.add('active');
-  if(btn){btn.classList.add('active');btn.setAttribute('aria-selected','true');}
-}
+  img.addEventListener("wheel",e=>{
+    e.preventDefault();
+    scale*=e.deltaY<0?1.1:.9;
+    scale=Math.min(Math.max(.6,scale),4);
+    img.style.transform=`translate(${pos.x}px,${pos.y}px) scale(${scale})`;
+  });
 
-/* ── ADMIN ──────────────────────────────────────────────────────────────── */
-function renderAdmin(){
-  const u=user;
-  document.getElementById('adm-locked').style.display=(u&&u.role==='admin')?'none':'block';
-  document.getElementById('adm-content').style.display=(u&&u.role==='admin')?'block':'none';
-  if(!u||u.role!=='admin')return;
-  renderAdmNews();renderAdmPending();renderAdmUsers();renderAdmNL();
-}
-function renderAdmNews(){
-  const el=document.getElementById('a-news-list');if(!el)return;
-  el.innerHTML=NEWS.map(n=>`
-    <div class="card-flat news-row">
-      <div style="flex:1;min-width:0">
-        <div style="margin-bottom:.18rem"><span class="badge b-teal">${n.cat}</span></div>
-        <h4 style="font-weight:700;font-size:.84rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;letter-spacing:-0.01em">${n.title}</h4>
-        <p class="card-desc" style="font-size:.68rem;color:var(--muted)"><time>${n.date}</time></p>
-      </div>
-      <div style="display:flex;gap:.35rem;flex-shrink:0">
-        <button class="btn btn-ghost btn-sm" aria-label="Editar">Editar</button>
-        <button class="btn btn-danger btn-sm" onclick="delArticle(${n.id})" aria-label="Eliminar">Eliminar</button>
-      </div>
-    </div>`).join('');
-}
-function renderAdmPending(){
-  const el=document.getElementById('a-pending-list'),ct=document.getElementById('a-pcount');
-  if(ct)ct.textContent=PENDING_JOBS.length;if(!el)return;
-  el.innerHTML=PENDING_JOBS.length===0?'<p class="card-desc" style="color:var(--muted)">Sem vagas pendentes.</p>':PENDING_JOBS.map(j=>`
-    <div class="card-flat news-row" style="flex-wrap:wrap;gap:.55rem">
-      <div style="flex:1;min-width:150px"><h4 style="font-weight:700;font-size:.86rem;letter-spacing:-0.01em">${j.title}</h4><p class="card-desc" style="font-size:.73rem;color:var(--muted)">${j.co}</p></div>
-      <span class="badge b-warn">Pendente</span>
-      <button class="btn btn-success btn-sm" onclick="approveJob(${j.id})">Aprovar</button>
-      <button class="btn btn-danger btn-sm" onclick="rejectJob(${j.id})">Rejeitar</button>
-    </div>`).join('');
-}
-function approveJob(id){PENDING_JOBS=PENDING_JOBS.filter(j=>j.id!==id);renderAdmPending();}
-function rejectJob(id){PENDING_JOBS=PENDING_JOBS.filter(j=>j.id!==id);renderAdmPending();}
-function renderAdmUsers(){
-  const el=document.getElementById('a-users-tbody');if(!el)return;
-  el.innerHTML=Object.entries(USERS).map(([email,u])=>`
-    <tr>
-      <td><div style="display:flex;align-items:center;gap:.45rem"><div style="width:22px;height:22px;border-radius:50%;background:var(--blue);display:inline-flex;align-items:center;justify-content:center;font-size:.52rem;font-weight:700;flex-shrink:0" aria-hidden="true">${u.avatar}</div>${u.name}</div></td>
-      <td style="color:var(--muted);font-size:.78rem">${email}</td>
-      <td><span class="badge b-blue">${u.type}</span></td>
-      <td><span class="badge ${u.quota?'b-green':'b-warn'}">${u.quota?'Ativa':'Inativa'}</span></td>
-      <td><button class="btn btn-ghost btn-sm">Gerir</button></td>
-    </tr>`).join('');
-}
-function renderAdmNL(){
-  const el=document.getElementById('a-nl-list');if(!el)return;
-  el.innerHTML=NEWS.map(n=>`
-    <label class="card-flat" style="padding:.72rem .95rem;display:flex;align-items:center;gap:.7rem;cursor:pointer">
-      <input type="checkbox" style="accent-color:var(--accent);width:14px;height:14px;flex-shrink:0">
-      <span style="font-size:.83rem">${n.title}</span>
-    </label>`).join('');
-}
-function addArticle(){
-  const t=document.getElementById('na-t').value.trim();if(!t)return;
-  NEWS.unshift({id:Date.now(),title:t,cat:document.getElementById('na-c').value,icon:'—',excerpt:document.getElementById('na-e').value,date:new Date().toISOString().slice(0,10)});
-  ['na-t','na-e'].forEach(i=>document.getElementById(i).value='');
-  document.getElementById('na-i').value='—';
-  renderAdmNews();renderHomeNews();renderAdmNL();
-}
-function delArticle(id){NEWS=NEWS.filter(n=>n.id!==id);renderAdmNews();renderHomeNews();renderAdmNL();}
-function aTab(id,btn){
-  document.querySelectorAll('#adm-content .dpanel').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('#adm-content .dtab').forEach(b=>{b.classList.remove('active');b.setAttribute('aria-selected','false');});
-  document.getElementById('adp-'+id).classList.add('active');
-  if(btn){btn.classList.add('active');btn.setAttribute('aria-selected','true');}
-}
+  img.addEventListener("pointerdown",e=>{
+    dragging=true;
+    start.x=e.clientX;
+    start.y=e.clientY;
+  });
 
-/* ── INIT ───────────────────────────────────────────────────────────────── */
-(function(){renderHomeNews();renderEvents();renderKnowledge();renderJobs();})();
+  window.addEventListener("pointermove",e=>{
+    if(!dragging) return;
+    pos.x+=e.clientX-start.x;
+    pos.y+=e.clientY-start.y;
+    start.x=e.clientX;
+    start.y=e.clientY;
+    img.style.transform=`translate(${pos.x}px,${pos.y}px) scale(${scale})`;
+  });
+
+  window.addEventListener("pointerup",()=>dragging=false);
+});
 </script>
+
 </body>
 </html>
-
