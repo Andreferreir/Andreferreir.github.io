@@ -39,8 +39,10 @@
   --shadow-lg:  0 16px 48px rgba(0,0,0,.6), 0 4px 16px rgba(0,0,0,.4);
   --glow-teal:  0 0 40px rgba(0,180,200,.15);
   --glow-blue:  0 0 40px rgba(0,85,204,.2);
+  --header-h: 64px;
 }
 
+/* ═══ RESET & BASE ══════════════════════════════════════════════════════════ */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; font-size: 15px; }
 body {
@@ -53,36 +55,44 @@ body {
   flex-direction: column;
   line-height: 1.65;
 }
-h1, h2, h3, h4, h5 { font-family: 'Syne', sans-serif; line-height: 1.15; color: var(--white); }
+h1, h2, h3, h4, h5 {
+  font-family: 'Syne', sans-serif;
+  line-height: 1.15;
+  color: var(--white);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
 a { color: inherit; text-decoration: none; }
 button { cursor: pointer; font-family: inherit; }
+img, video, iframe { max-width: 100%; }
+.stitle, .hero-h1 { word-break: break-word; overflow-wrap: break-word; }
 
 ::-webkit-scrollbar { width: 5px; }
 ::-webkit-scrollbar-track { background: var(--dark); }
 ::-webkit-scrollbar-thumb { background: var(--card2); border-radius: 3px; }
 
-@keyframes pulse      { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.35;transform:scale(.6)} }
-@keyframes fadeUp     { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
-@keyframes fadeLeft   { from{opacity:0;transform:translateX(-28px)} to{opacity:1;transform:translateX(0)} }
-@keyframes fadeRight  { from{opacity:0;transform:translateX(28px)} to{opacity:1;transform:translateX(0)} }
-@keyframes cookieIn   { from{transform:translateY(100%)} to{transform:translateY(0)} }
-@keyframes shimmer    { from{background-position:200% center} to{background-position:-200% center} }
+@keyframes pulse    { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.35;transform:scale(.6)} }
+@keyframes fadeUp   { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
+@keyframes fadeLeft { from{opacity:0;transform:translateX(-28px)} to{opacity:1;transform:translateX(0)} }
+@keyframes fadeRight{ from{opacity:0;transform:translateX(28px)} to{opacity:1;transform:translateX(0)} }
+@keyframes cookieIn { from{transform:translateY(100%)} to{transform:translateY(0)} }
 
 /* ═══ LAYOUT ════════════════════════════════════════════════════════════════ */
-.wrap { max-width: 1100px; margin: 0 auto; padding: 0 clamp(1.25rem, 4vw, 2.75rem); width: 100%; }
+.wrap { max-width: 1100px; margin: 0 auto; padding: 0 clamp(1rem, 4vw, 2.75rem); width: 100%; }
 main  { flex: 1; }
-.page { display: none; padding: clamp(2.5rem, 5vw, 4.5rem) 0; animation: fadeUp .45s ease both; }
+.page { display: none; padding: clamp(2rem, 5vw, 4.5rem) 0; animation: fadeUp .45s ease both; }
 .page.active { display: block; }
 
 /* ═══ UTILITY BAR ═══════════════════════════════════════════════════════════ */
 #util-bar {
-  background: rgba(3, 8, 22, 0.98);
+  background: rgba(3,8,22,.98);
   border-bottom: 1px solid var(--border);
-  padding: .35rem clamp(1.25rem, 4vw, 2.75rem);
+  padding: .35rem clamp(1rem, 4vw, 2.75rem);
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: 1.4rem;
+  gap: 1.2rem;
   font-size: .72rem;
   letter-spacing: .2px;
 }
@@ -106,21 +116,21 @@ header {
   position: sticky;
   top: 0;
   z-index: 300;
-  background: rgba(6, 15, 30, 0.96);
+  background: rgba(6,15,30,.96);
   backdrop-filter: blur(28px);
   -webkit-backdrop-filter: blur(28px);
   border-bottom: 1px solid var(--border);
-  padding: 0 clamp(1.25rem, 4vw, 2.75rem);
+  padding: 0 clamp(1rem, 4vw, 2.75rem);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 64px;
-  gap: 1rem;
+  height: var(--header-h);
+  gap: .75rem;
 }
 .logo-group {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: .85rem;
   flex-shrink: 0;
   min-width: 0;
 }
@@ -145,9 +155,7 @@ header {
 .logo-mark::after {
   content: '';
   position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
+  bottom: 0; left: 0; right: 0;
   height: 2.5px;
   background: linear-gradient(90deg, var(--teal2), var(--cork));
 }
@@ -172,7 +180,7 @@ header {
 #desk-nav { display: flex; }
 #desk-nav button {
   padding: 0 .85rem;
-  height: 64px;
+  height: var(--header-h);
   background: transparent;
   border: none;
   border-bottom: 2px solid transparent;
@@ -198,18 +206,20 @@ header {
   flex-shrink: 0;
   transition: all .2s;
 }
-#burger:hover { color: var(--white); border-color: var(--border2); }
+#burger:hover { color: var(--white); }
 
 /* ═══ MOBILE DRAWER ═════════════════════════════════════════════════════════ */
 #mob-drawer {
   display: none;
   position: fixed;
-  inset: 64px 0 0 0;
-  background: rgba(6, 15, 30, .99);
+  top: var(--header-h);
+  left: 0; right: 0; bottom: 0;
+  background: rgba(6,15,30,.99);
   z-index: 290;
   overflow-y: auto;
   flex-direction: column;
   border-top: 1px solid var(--border);
+  -webkit-overflow-scrolling: touch;
 }
 #mob-drawer.open { display: flex; }
 .mob-section { padding: .5rem 0; border-bottom: 1px solid var(--border); }
@@ -217,7 +227,7 @@ header {
 #mob-drawer button.mob-nav-btn {
   width: 100%;
   text-align: left;
-  padding: 1rem 1.75rem;
+  padding: .9rem 1.5rem;
   background: transparent;
   border: none;
   color: var(--text2);
@@ -230,9 +240,9 @@ header {
 }
 #mob-drawer button.mob-nav-btn:hover,
 #mob-drawer button.mob-nav-btn.active { color: var(--teal2); background: rgba(0,180,200,.04); }
-.mob-lang-row { display: flex; gap: .7rem; padding: 1rem 1.75rem; align-items: center; }
+.mob-lang-row { display: flex; gap: .7rem; padding: .9rem 1.5rem; align-items: center; }
 .mob-lang-row span { font-size: .73rem; color: var(--muted); font-weight: 600; letter-spacing: .5px; }
-.mob-user-row { padding: 1rem 1.75rem; }
+.mob-user-row { padding: .9rem 1.5rem; }
 
 /* ═══ BUTTONS ═══════════════════════════════════════════════════════════════ */
 .btn {
@@ -253,31 +263,11 @@ header {
 .btn-xl  { padding: .95rem 2.25rem; font-size: 1rem; }
 .btn-full { width: 100%; }
 
-.btn-primary {
-  background: linear-gradient(135deg, #0044bb, #0066ee);
-  color: #fff;
-  box-shadow: 0 2px 8px rgba(0,85,204,.3);
-}
-.btn-primary:hover {
-  background: linear-gradient(135deg, #0055cc, #1a77ff);
-  transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(0,85,204,.4);
-}
-.btn-teal {
-  background: linear-gradient(135deg, #007a8a, #009cb0);
-  color: #fff;
-  box-shadow: 0 2px 8px rgba(0,122,138,.3);
-}
-.btn-teal:hover {
-  background: linear-gradient(135deg, #009cb0, #00c0d8);
-  transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(0,180,200,.35);
-}
-.btn-ghost {
-  background: transparent;
-  color: var(--text2);
-  border: 1px solid var(--border2);
-}
+.btn-primary { background: linear-gradient(135deg, #0044bb, #0066ee); color: #fff; box-shadow: 0 2px 8px rgba(0,85,204,.3); }
+.btn-primary:hover { background: linear-gradient(135deg, #0055cc, #1a77ff); transform: translateY(-1px); box-shadow: 0 6px 20px rgba(0,85,204,.4); }
+.btn-teal { background: linear-gradient(135deg, #007a8a, #009cb0); color: #fff; box-shadow: 0 2px 8px rgba(0,122,138,.3); }
+.btn-teal:hover { background: linear-gradient(135deg, #009cb0, #00c0d8); transform: translateY(-1px); box-shadow: 0 6px 20px rgba(0,180,200,.35); }
+.btn-ghost { background: transparent; color: var(--text2); border: 1px solid var(--border2); }
 .btn-ghost:hover { color: var(--white); border-color: rgba(255,255,255,.28); background: rgba(255,255,255,.04); }
 .btn-success { background: rgba(34,197,94,.1); color: var(--success); border: 1px solid rgba(34,197,94,.25); }
 .btn-success:hover { background: rgba(34,197,94,.18); }
@@ -297,21 +287,12 @@ header {
   transform: translateY(-3px);
   box-shadow: 0 16px 48px rgba(0,0,0,.35), 0 4px 12px rgba(0,180,200,.08);
 }
-.card-flat {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-}
-.card-accent {
-  position: relative;
-  overflow: hidden;
-}
+.card-flat { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-lg); }
+.card-accent { position: relative; overflow: hidden; }
 .card-accent::before {
   content: '';
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
+  top: 0; left: 0; right: 0;
   height: 2px;
   background: linear-gradient(90deg, var(--blue3), var(--teal2), var(--cork));
 }
@@ -331,7 +312,7 @@ header {
 .b-teal { background: rgba(0,180,200,.1);    color: var(--teal3); border: 1px solid rgba(0,180,200,.2); }
 .b-blue { background: rgba(0,100,220,.15);   color: #80b8ff;      border: 1px solid rgba(0,100,220,.25); }
 .b-cork { background: rgba(200,169,110,.1);  color: var(--cork2); border: 1px solid rgba(200,169,110,.2); }
-.b-green{ background: rgba(34,197,94,.09);   color: var(--success);border: 1px solid rgba(34,197,94,.18); }
+.b-green{ background: rgba(34,197,94,.09);   color: var(--success); border: 1px solid rgba(34,197,94,.18); }
 .b-warn { background: rgba(245,158,11,.09);  color: var(--warn);  border: 1px solid rgba(245,158,11,.18); }
 
 /* ═══ ALERTS ════════════════════════════════════════════════════════════════ */
@@ -368,7 +349,7 @@ header {
   border-radius: var(--radius);
   padding: .65rem 1rem;
   color: var(--white);
-  font-size: .86rem;
+  font-size: 1rem; /* prevents iOS zoom */
   transition: border-color .2s, background .2s, box-shadow .2s;
   outline: none;
 }
@@ -391,14 +372,14 @@ header {
   display: block;
 }
 .stitle {
-  font-size: clamp(1.55rem, 2.6vw, 2.2rem);
+  font-size: clamp(1.4rem, 3vw, 2.2rem);
   font-weight: 800;
   letter-spacing: -.4px;
   margin-bottom: .8rem;
   color: var(--white);
 }
 .ssub {
-  font-size: clamp(.83rem, .9vw + .25rem, .95rem);
+  font-size: clamp(.82rem, 1.5vw, .95rem);
   color: var(--text2);
   line-height: 1.75;
   margin-bottom: 2rem;
@@ -425,27 +406,26 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 1rem 0; }
   backdrop-filter: blur(8px);
 }
 .overlay.open { display: flex; }
-@media (min-width: 600px) { .overlay { align-items: center; padding: 1rem; } }
 .mbox {
   background: var(--card2);
   border: 1px solid var(--border2);
   border-radius: var(--radius-xl) var(--radius-xl) 0 0;
   width: 100%;
   max-width: 460px;
-  max-height: 92vh;
+  max-height: 90vh;
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
   position: relative;
   box-shadow: var(--shadow-lg);
 }
-@media (min-width: 600px) { .mbox { border-radius: var(--radius-xl); } }
 .mbox-top {
   height: 3px;
   background: linear-gradient(90deg, var(--blue2), var(--teal2), var(--cork));
   border-radius: var(--radius-xl) var(--radius-xl) 0 0;
 }
-.mbody   { padding: 1.6rem 1.8rem; }
+.mbody   { padding: 1.5rem; }
 .mhead   { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.3rem; }
-.mhead h3 { font-size: 1.15rem; font-weight: 700; }
+.mhead h3 { font-size: 1.1rem; font-weight: 700; }
 .mclose  { background: transparent; border: none; color: var(--muted); font-size: 1rem; padding: .3rem .5rem; border-radius: 6px; transition: all .2s; }
 .mclose:hover { color: var(--white); background: rgba(255,255,255,.07); }
 .mtabs   { display: flex; border-bottom: 1px solid var(--border); margin-bottom: 1.3rem; }
@@ -458,8 +438,10 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 1rem 0; }
   border-bottom: 1px solid var(--border);
   margin-bottom: 2rem;
   overflow-x: auto;
-  gap: 0;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
 }
+.dtabs::-webkit-scrollbar { display: none; }
 .dtab {
   background: transparent;
   border: none;
@@ -478,13 +460,11 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 1rem 0; }
 /* ═══ COOKIE BANNER ═════════════════════════════════════════════════════════ */
 #cookie {
   position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
+  bottom: 0; left: 0; right: 0;
   z-index: 500;
-  background: rgba(6, 15, 30, .98);
+  background: rgba(6,15,30,.98);
   border-top: 1px solid var(--border2);
-  padding: 1.1rem clamp(1.25rem, 4vw, 2.75rem);
+  padding: 1rem clamp(1rem, 4vw, 2.75rem);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -498,7 +478,7 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 1rem 0; }
 /* ═══ HERO ══════════════════════════════════════════════════════════════════ */
 #hero {
   position: relative;
-  min-height: 90vh;
+  min-height: 88vh;
   display: flex;
   align-items: center;
   overflow: hidden;
@@ -516,20 +496,16 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 1rem 0; }
 }
 .hero-glow-r {
   position: absolute;
-  top: -10%;
-  right: -5%;
-  width: 600px;
-  height: 600px;
+  top: -10%; right: -5%;
+  width: 600px; height: 600px;
   border-radius: 50%;
   background: radial-gradient(circle, rgba(0,122,138,.18) 0%, transparent 65%);
   pointer-events: none;
 }
 .hero-glow-l {
   position: absolute;
-  bottom: -15%;
-  left: -5%;
-  width: 450px;
-  height: 450px;
+  bottom: -15%; left: -5%;
+  width: 450px; height: 450px;
   border-radius: 50%;
   background: radial-gradient(circle, rgba(0,53,128,.12) 0%, transparent 65%);
   pointer-events: none;
@@ -543,9 +519,8 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 1rem 0; }
   align-items: center;
   padding: 5rem 0 4rem;
 }
-.hero-left  { animation: fadeLeft  .75s .1s  both; }
-.hero-right { animation: fadeRight .75s .3s  both; }
-
+.hero-left  { animation: fadeLeft  .75s .1s both; }
+.hero-right { animation: fadeRight .75s .3s both; }
 .hero-eyebrow {
   display: inline-flex;
   align-items: center;
@@ -562,8 +537,7 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 1rem 0; }
   margin-bottom: 1.5rem;
 }
 .hero-dot {
-  width: 6px;
-  height: 6px;
+  width: 6px; height: 6px;
   min-width: 6px;
   border-radius: 50%;
   background: var(--teal2);
@@ -571,21 +545,20 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 1rem 0; }
   box-shadow: 0 0 6px var(--teal2);
 }
 .hero-h1 {
-  font-size: clamp(1.85rem, 3.5vw, 3.2rem);
+  font-size: clamp(1.8rem, 4vw, 3.2rem);
   font-weight: 800;
   line-height: 1.08;
   letter-spacing: -.6px;
   margin-bottom: 1.2rem;
 }
 .hero-sub {
-  font-size: clamp(.85rem, .9vw + .3rem, 1rem);
+  font-size: clamp(.85rem, 1.2vw, 1rem);
   color: var(--text2);
   line-height: 1.8;
   margin-bottom: 2rem;
   max-width: 480px;
 }
 .hero-btns { display: flex; gap: .85rem; flex-wrap: wrap; }
-
 .stat-card   { padding: 1.8rem; position: relative; }
 .stat-grid   { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.4rem; }
 .stat-item   {
@@ -596,7 +569,7 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 1rem 0; }
   border: 1px solid var(--border);
 }
 .stat-n {
-  font-size: clamp(1.35rem, 1.8vw, 1.8rem);
+  font-size: clamp(1.3rem, 2vw, 1.8rem);
   font-weight: 800;
   font-family: 'Syne', sans-serif;
   background: linear-gradient(135deg, var(--teal2), var(--cork));
@@ -622,16 +595,14 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 1rem 0; }
 }
 .hero-wave {
   position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
+  bottom: 0; left: 0; right: 0;
   height: 80px;
   opacity: .08;
   pointer-events: none;
 }
 
 /* ═══ SECTION WRAPPERS ══════════════════════════════════════════════════════ */
-.sec { padding: clamp(3.5rem, 7vw, 6rem) 0; }
+.sec { padding: clamp(3rem, 7vw, 6rem) 0; }
 .sec-dark {
   background: linear-gradient(180deg, #050d1c 0%, #060f20 100%);
   border-top: 1px solid var(--border);
@@ -658,12 +629,11 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 1rem 0; }
 .evt-row {
   display: flex;
   align-items: center;
-  gap: 1.35rem;
-  padding: 1.25rem 1.6rem;
+  gap: 1.25rem;
+  padding: 1.25rem 1.5rem;
   transition: border-color .2s, background .2s;
 }
 .evt-row:hover { border-color: rgba(0,180,200,.22); background: rgba(0,180,200,.03); }
-
 .evt-date {
   min-width: 52px;
   text-align: center;
@@ -681,9 +651,9 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 1rem 0; }
   font-weight: 700;
   font-size: .94rem;
   margin-bottom: .22rem;
-  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .evt-meta p  { font-size: .76rem; color: var(--muted); }
 .evt-right   { text-align: right; flex-shrink: 0; }
@@ -696,9 +666,7 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 1rem 0; }
 /* ═══ JOBS ══════════════════════════════════════════════════════════════════ */
 .job-card { padding: 1.4rem; }
 .job-logo-box {
-  width: 44px;
-  height: 44px;
-  min-width: 44px;
+  width: 44px; height: 44px; min-width: 44px;
   border-radius: 10px;
   background: rgba(0,40,100,.3);
   border: 1px solid rgba(0,85,204,.2);
@@ -764,15 +732,13 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 1rem 0; }
   gap: 1.25rem;
   margin-bottom: 2.25rem;
   flex-wrap: wrap;
-  padding: 1.75rem 2rem;
+  padding: 1.5rem;
   background: linear-gradient(135deg, rgba(0,40,100,.2), rgba(0,122,138,.08));
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
 }
 .u-avatar {
-  width: 56px;
-  height: 56px;
-  min-width: 56px;
+  width: 56px; height: 56px; min-width: 56px;
   border-radius: 50%;
   background: linear-gradient(135deg, #0044bb, var(--teal));
   display: flex;
@@ -799,7 +765,9 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 1rem 0; }
 .stat-box .l { font-size: .68rem; color: var(--muted); letter-spacing: .3px; }
 .cert-row { display: flex; align-items: center; gap: 1.1rem; padding: 1.1rem 1.4rem; margin-bottom: .7rem; }
 
-.tbl { width: 100%; border-collapse: collapse; font-size: .83rem; }
+/* ─ Tables ─ */
+.tbl-wrap { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.tbl { width: 100%; border-collapse: collapse; font-size: .83rem; min-width: 480px; }
 .tbl th {
   padding: .65rem .9rem;
   text-align: left;
@@ -809,6 +777,7 @@ hr.div { border: none; border-top: 1px solid var(--border); margin: 1rem 0; }
   text-transform: uppercase;
   color: var(--muted);
   border-bottom: 1px solid var(--border2);
+  white-space: nowrap;
 }
 .tbl td { padding: .85rem .9rem; border-bottom: 1px solid var(--border); vertical-align: middle; }
 .tbl tr:hover td { background: rgba(255,255,255,.02); }
@@ -837,7 +806,7 @@ footer {
 .ft-cols {
   max-width: 1100px;
   margin: 0 auto;
-  padding: 3.5rem clamp(1.25rem, 4vw, 2.75rem) 2rem;
+  padding: 3.5rem clamp(1rem, 4vw, 2.75rem) 2rem;
   display: grid;
   grid-template-columns: 2fr 1fr 1fr 1fr;
   gap: 2.5rem;
@@ -850,17 +819,12 @@ footer {
   color: var(--cork);
   margin-bottom: 1.1rem;
 }
-.ft-col p, .ft-col a {
-  font-size: .8rem;
-  color: var(--muted);
-  line-height: 1.75;
-}
+.ft-col p, .ft-col a { font-size: .8rem; color: var(--muted); line-height: 1.75; }
 .ft-col a { display: block; margin-bottom: .4rem; transition: color .2s; }
 .ft-col a:hover { color: var(--white); }
 .ft-social { display: flex; gap: .55rem; margin-top: 1rem; }
 .soc-btn {
-  width: 34px;
-  height: 34px;
+  width: 34px; height: 34px;
   border-radius: 8px;
   background: rgba(255,255,255,.04);
   border: 1px solid var(--border2);
@@ -876,7 +840,7 @@ footer {
 .ft-bottom {
   max-width: 1100px;
   margin: 0 auto;
-  padding: 1.25rem clamp(1.25rem, 4vw, 2.75rem);
+  padding: 1.25rem clamp(1rem, 4vw, 2.75rem);
   border-top: 1px solid var(--border);
   display: flex;
   justify-content: space-between;
@@ -890,67 +854,73 @@ footer {
 .ft-links a { font-size: .69rem; color: rgba(255,255,255,.22); transition: color .2s; }
 .ft-links a:hover { color: rgba(255,255,255,.55); }
 
-/* ═══ TOPBOX ════════════════════════════════════════════════════════════════ */
+/* ═══ TOPBOX & MISC ═════════════════════════════════════════════════════════ */
 .topbox {
   background: linear-gradient(135deg, rgba(0,122,138,.08), rgba(0,53,128,.05));
   border: 1px solid rgba(0,122,138,.18);
   border-radius: var(--radius);
   padding: 1rem 1.25rem;
 }
-
-/* ═══ PAGE HERO BAND ════════════════════════════════════════════════════════ */
-.page > .wrap:first-child .slabel,
-.page > .wrap > .slabel:first-child {
-  margin-top: 0;
-}
-
-/* ═══ QUICK ACCESS CARDS ════════════════════════════════════════════════════ */
 #quick-grid .card {
-  padding: 1.6rem 1.2rem;
+  padding: 1.3rem;
   text-align: center;
   cursor: pointer;
   border-top: 3px solid transparent;
-  transition: border-color .2s, transform .25s, box-shadow .25s;
+  transition: border-top-color .2s, transform .25s, box-shadow .25s;
 }
-#quick-grid .card:hover {
-  border-top-color: var(--teal2);
-}
+#quick-grid .card:hover { border-top-color: var(--teal2); }
 
-/* ═══ FONT RENDERING ════════════════════════════════════════════════════════ */
-/* Fix Syne appearing too condensed on some Android/Windows devices */
-h1, h2, h3, h4, h5 {
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-rendering: optimizeLegibility;
+/* ─── Search inputs ─ */
+.search-input {
+  background: rgba(255,255,255,.04);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: .55rem .9rem;
+  color: #fff;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 1rem; /* prevents iOS zoom */
+  outline: none;
+  flex: 1;
+  max-width: 300px;
+  transition: border-color .2s;
 }
-.stitle, .hero-h1 {
-  word-break: break-word;
-  overflow-wrap: break-word;
-}
+.search-input:focus { border-color: var(--teal2); }
 
-/* ═══ RESPONSIVE ════════════════════════════════════════════════════════════ */
+/* ═══ RESPONSIVE – TABLET (≤1024px) ════════════════════════════════════════ */
 @media (max-width: 1024px) {
-  .ft-cols { grid-template-columns: 1fr 1fr; }
+  .ft-cols { grid-template-columns: 1fr 1fr; gap: 2rem; }
   .admin4, .stats4 { grid-template-columns: 1fr 1fr; }
   .g-4 { grid-template-columns: 1fr 1fr; }
+  .hero-inner { gap: 2.5rem; }
 }
-@media (max-width: 768px) {
-  /* Hide desktop elements */
-  #desk-nav, #util-bar, .hdr-cta, .logo-sep, .logo-sespt { display: none !important; }
-  #burger { display: flex !important; }
 
-  /* Tighter header */
-  header { height: 56px; padding: 0 1rem; }
-  #mob-drawer { inset: 56px 0 0 0; }
+/* ═══ RESPONSIVE – MOBILE (≤768px) ═════════════════════════════════════════ */
+@media (max-width: 768px) {
+  :root { --header-h: 56px; }
+
+  /* Util bar hidden */
+  #util-bar { display: none; }
+
+  /* Header */
+  #desk-nav, .hdr-cta, .logo-sep, .logo-sespt { display: none !important; }
+  #burger { display: flex !important; }
+  header { padding: 0 1rem; }
+
+  /* Drawer */
+  #mob-drawer { top: var(--header-h); }
 
   /* Hero */
-  .hero-inner { grid-template-columns: 1fr; gap: 0; padding: 3rem 0 2.5rem; }
+  #hero { min-height: 75vh; }
+  .hero-inner {
+    grid-template-columns: 1fr;
+    gap: 0;
+    padding: 3rem 0 2.5rem;
+  }
   .hero-right { display: none; }
-  .hero-h1 { font-size: clamp(1.7rem, 6vw, 2.2rem); letter-spacing: -.2px; }
-  .hero-sub { font-size: .9rem; max-width: 100%; }
-  .hero-btns { flex-direction: column; gap: .7rem; }
-  .hero-btns .btn { width: 100%; justify-content: center; }
-  #hero { min-height: auto; }
+  .hero-h1 { font-size: clamp(1.6rem, 7vw, 2.2rem); letter-spacing: -.2px; }
+  .hero-sub { font-size: .9rem; max-width: 100%; margin-bottom: 1.5rem; }
+  .hero-btns { flex-direction: column; gap: .65rem; }
+  .hero-btns .btn { width: 100%; }
 
   /* Grids */
   .g-3, .g-2, .g-news, .g-about, .wg-grid { grid-template-columns: 1fr; gap: .9rem; }
@@ -958,20 +928,24 @@ h1, h2, h3, h4, h5 {
 
   /* Sections */
   .sec { padding: 2.5rem 0; }
-  .page { padding: 2rem 0 3rem; }
+  .page { padding: 1.75rem 0 3rem; }
   .sec-header { flex-direction: column; align-items: flex-start; gap: .75rem; }
 
   /* Footer */
-  .ft-cols { grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+  .ft-cols { grid-template-columns: 1fr 1fr; gap: 1.5rem; padding-top: 2.5rem; }
   .ft-bottom { flex-direction: column; gap: .5rem; }
 
   /* Events */
   .evt-row { flex-wrap: wrap; gap: .7rem; padding: 1rem; }
-  .evt-right { width: 100%; display: flex; align-items: center; justify-content: space-between; text-align: left; }
+  .evt-meta h3 { white-space: normal; }
+  .evt-right {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    text-align: left;
+  }
   .evt-actions { justify-content: flex-start; }
-
-  /* Tables */
-  .tbl { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
 
   /* Dashboard */
   .user-hero { padding: 1.1rem; gap: .9rem; }
@@ -982,28 +956,36 @@ h1, h2, h3, h4, h5 {
   /* Plans */
   .plan-card { padding: 1.5rem; }
 
-  /* iOS - prevent zoom on input focus */
-  .fg input, .fg select, .fg textarea { font-size: 1rem; }
+  /* Modal on mobile: sheet from bottom */
+  .mbox { border-radius: var(--radius-xl) var(--radius-xl) 0 0; }
 
   /* Quick access */
-  #quick-grid .card { padding: 1.2rem 1rem; }
+  #quick-grid .card { padding: 1.1rem .9rem; }
+
+  /* Search inputs full width */
+  .search-input { max-width: 100%; }
+
+  /* News admin rows */
+  .news-row { flex-wrap: wrap; }
 }
 
+/* ═══ RESPONSIVE – SMALL MOBILE (≤480px) ═══════════════════════════════════ */
 @media (max-width: 480px) {
   .wrap { padding: 0 .9rem; }
-  .hero-h1 { font-size: 1.6rem; }
-  .stitle { font-size: 1.35rem; }
+  .hero-h1 { font-size: 1.55rem; }
+  .stitle  { font-size: 1.3rem; }
 
-  /* 2 col where it works, 1 col otherwise */
+  /* Plans stack */
+  .g-3 { grid-template-columns: 1fr; }
+
+  /* 2-col grids stay 2-col only if they fit */
   .g-4, .stats4, .admin4 { grid-template-columns: 1fr 1fr; }
-  .g-2 { grid-template-columns: 1fr; }
 
   /* Modal */
-  .overlay { align-items: flex-end; padding: 0; }
-  .mbox { border-radius: var(--radius-xl) var(--radius-xl) 0 0; max-height: 85vh; }
-  .mbody { padding: 1.2rem 1.1rem; }
+  .mbox { max-height: 88vh; }
+  .mbody { padding: 1.1rem 1rem; }
 
-  /* Footer */
+  /* Footer single col */
   .ft-cols { grid-template-columns: 1fr; gap: 1.25rem; }
 
   /* Cookie banner */
@@ -1019,43 +1001,52 @@ h1, h2, h3, h4, h5 {
   /* Jobs */
   .job-logo-box { width: 36px; height: 36px; min-width: 36px; }
 
+  /* Events actions */
   .evt-actions { flex-wrap: wrap; }
+
+  /* Stats: stack on very small */
+  .stats4, .admin4 { grid-template-columns: 1fr 1fr; }
+
+  /* Astat: compact */
+  .astat .v { font-size: 1.2rem; }
+  .stat-box .v { font-size: 1.1rem; }
+
+  /* Hero eyebrow truncate */
+  .hero-eyebrow { font-size: .62rem; }
 }
 
 /* ═══ ANTI-OVERFLOW (global) ════════════════════════════════════════════════ */
 html, body { overflow-x: hidden; }
-img, video, iframe { max-width: 100%; }
 </style>
 </head>
 <body>
 
 <!-- ══ COOKIE ══════════════════════════════════════════════════════════════ -->
-<div id="cookie">
+<div id="cookie" role="banner" aria-label="Aviso de cookies">
   <p>Usamos cookies para melhorar a experiência (RGPD). <a href="#" style="color:var(--teal2)">Política de Privacidade</a></p>
-  <div style="display:flex;gap:.6rem;flex-shrink:0">
+  <div style="display:flex;gap:.6rem;flex-shrink:0;flex-wrap:wrap">
     <button class="btn btn-ghost btn-sm" onclick="closeCookie()">Recusar não essenciais</button>
     <button class="btn btn-teal btn-sm" onclick="closeCookie()">Aceitar todos</button>
   </div>
 </div>
 
 <!-- ══ AUTH MODAL ══════════════════════════════════════════════════════════ -->
-<div class="overlay" id="modal-auth">
+<div class="overlay" id="modal-auth" role="dialog" aria-modal="true" aria-labelledby="auth-title">
   <div class="mbox">
     <div class="mbox-top"></div>
     <div class="mbody">
       <div class="mhead">
         <h3 id="auth-title">Entrar na plataforma</h3>
-        <button class="mclose" onclick="closeModal('modal-auth')">✕</button>
+        <button class="mclose" onclick="closeModal('modal-auth')" aria-label="Fechar">✕</button>
       </div>
-      <div class="mtabs">
-        <button class="mtab active" onclick="authTab('login')">Login</button>
-        <button class="mtab" onclick="authTab('register')">Registar</button>
+      <div class="mtabs" role="tablist">
+        <button class="mtab active" role="tab" aria-selected="true" onclick="authTab('login')">Login</button>
+        <button class="mtab" role="tab" aria-selected="false" onclick="authTab('register')">Registar</button>
       </div>
-      <!-- Login -->
       <div id="auth-login">
-        <div class="fg"><label>Email</label><input id="l-email" type="email" value="membro@incose.pt"></div>
-        <div class="fg"><label>Password</label><input id="l-pass" type="password" value="demo123"></div>
-        <div id="l-err" class="alert a-err" style="display:none">⚠ Email ou password incorretos.</div>
+        <div class="fg"><label for="l-email">Email</label><input id="l-email" type="email" value="membro@incose.pt" autocomplete="email"></div>
+        <div class="fg"><label for="l-pass">Password</label><input id="l-pass" type="password" value="demo123" autocomplete="current-password"></div>
+        <div id="l-err" class="alert a-err" style="display:none" role="alert">⚠ Email ou password incorretos.</div>
         <button class="btn btn-primary btn-md btn-full" onclick="doLogin()">Entrar →</button>
         <hr class="div">
         <p style="font-size:.7rem;color:var(--muted);margin-bottom:.5rem;font-weight:600;letter-spacing:.8px">DEMO – clique para preencher:</p>
@@ -1066,11 +1057,10 @@ img, video, iframe { max-width: 100%; }
           <button class="btn btn-ghost btn-sm" onclick="fillDemo('estudante@ist.pt')">Estudante</button>
         </div>
       </div>
-      <!-- Register -->
       <div id="auth-register" style="display:none">
         <div class="alert a-info">📋 Após registo, a conta aguarda aprovação SESPT.</div>
-        <div class="fg"><label>Nome completo</label><input type="text" placeholder="O seu nome"></div>
-        <div class="fg"><label>Email profissional</label><input type="email" placeholder="email@empresa.pt"></div>
+        <div class="fg"><label>Nome completo</label><input type="text" placeholder="O seu nome" autocomplete="name"></div>
+        <div class="fg"><label>Email profissional</label><input type="email" placeholder="email@empresa.pt" autocomplete="email"></div>
         <div class="fg"><label>Tipo de adesão</label>
           <select><option>Membro Individual (80€/ano)</option><option>Membro Estudante (30€/ano)</option><option>Empresa CAB (800€/ano)</option></select>
         </div>
@@ -1081,41 +1071,44 @@ img, video, iframe { max-width: 100%; }
 </div>
 
 <!-- ══ EVENT MODAL ════════════════════════════════════════════════════════ -->
-<div class="overlay" id="modal-evt">
+<div class="overlay" id="modal-evt" role="dialog" aria-modal="true" aria-labelledby="em-title">
   <div class="mbox" style="max-width:500px">
     <div class="mbox-top"></div>
     <div class="mbody">
-      <div class="mhead"><h3 id="em-title">Evento</h3><button class="mclose" onclick="closeModal('modal-evt')">✕</button></div>
+      <div class="mhead">
+        <h3 id="em-title">Evento</h3>
+        <button class="mclose" onclick="closeModal('modal-evt')" aria-label="Fechar">✕</button>
+      </div>
       <div id="em-body"></div>
     </div>
   </div>
 </div>
 
 <!-- ══ UTILITY BAR ════════════════════════════════════════════════════════ -->
-<div id="util-bar">
-  <div class="lang-toggle">
-    <button onclick="setLang('pt')" id="lt-pt" class="active">PT</button>
-    <button onclick="setLang('en')" id="lt-en">EN</button>
+<div id="util-bar" role="complementary">
+  <div class="lang-toggle" role="group" aria-label="Seleção de idioma">
+    <button onclick="setLang('pt')" id="lt-pt" class="active" aria-pressed="true">PT</button>
+    <button onclick="setLang('en')" id="lt-en" aria-pressed="false">EN</button>
   </div>
-  <a href="https://linkedin.com" target="_blank">LinkedIn ↗</a>
-  <a href="https://youtube.com" target="_blank">YouTube ↗</a>
+  <a href="https://linkedin.com" target="_blank" rel="noopener">LinkedIn ↗</a>
+  <a href="https://youtube.com" target="_blank" rel="noopener">YouTube ↗</a>
   <span id="util-user"></span>
 </div>
 
 <!-- ══ HEADER ═════════════════════════════════════════════════════════════ -->
-<header>
+<header role="banner">
   <div class="logo-group">
-    <button onclick="navTo('home')" style="display:flex;align-items:center;gap:.75rem;background:none;border:none">
-      <div class="logo-mark">INCOSE</div>
+    <button onclick="navTo('home')" style="display:flex;align-items:center;gap:.75rem;background:none;border:none" aria-label="INCOSE Portugal – Início">
+      <div class="logo-mark" aria-hidden="true">INCOSE</div>
       <div class="logo-text">
         <div class="main">INCOSE Portugal</div>
         <div class="sub">Capítulo Oficial</div>
       </div>
     </button>
-    <div class="logo-sep"></div>
+    <div class="logo-sep" aria-hidden="true"></div>
     <span class="logo-sespt">SESPT</span>
   </div>
-  <nav id="desk-nav">
+  <nav id="desk-nav" role="navigation" aria-label="Navegação principal">
     <button data-nav="0" onclick="navTo('home')">Início</button>
     <button data-nav="1" onclick="navTo('about')">Sobre Nós</button>
     <button data-nav="2" onclick="navTo('events')">Eventos</button>
@@ -1127,12 +1120,12 @@ img, video, iframe { max-width: 100%; }
   </nav>
   <div style="display:flex;align-items:center;gap:.6rem;flex-shrink:0">
     <button class="btn btn-teal btn-sm hdr-cta" onclick="navTo('membership')">Aderir →</button>
-    <button id="burger" onclick="toggleDrawer()" aria-label="Menu">☰</button>
+    <button id="burger" onclick="toggleDrawer()" aria-label="Menu" aria-expanded="false" aria-controls="mob-drawer">☰</button>
   </div>
 </header>
 
 <!-- ══ MOBILE DRAWER ══════════════════════════════════════════════════════ -->
-<div id="mob-drawer">
+<nav id="mob-drawer" role="navigation" aria-label="Menu móvel">
   <div class="mob-section">
     <button class="mob-nav-btn" onclick="navTo('home');closeDrawer()">🏠 Início</button>
     <button class="mob-nav-btn" onclick="navTo('about');closeDrawer()">ℹ Sobre Nós</button>
@@ -1153,22 +1146,21 @@ img, video, iframe { max-width: 100%; }
   <div class="mob-section">
     <div class="mob-user-row" id="mob-user"></div>
   </div>
-</div>
+</nav>
 
 <!-- ════════════════════════ PAGES ════════════════════════════════════════ -->
 <main>
 
 <!-- ── HOME ─────────────────────────────────────────────────────────────── -->
 <div id="page-home" class="page active">
-  <!-- HERO -->
-  <section id="hero">
-    <div class="hero-grid-bg"></div>
-    <div class="hero-glow-r"></div>
-    <div class="hero-glow-l"></div>
+  <section id="hero" aria-label="Bem-vindo ao INCOSE Portugal">
+    <div class="hero-grid-bg" aria-hidden="true"></div>
+    <div class="hero-glow-r" aria-hidden="true"></div>
+    <div class="hero-glow-l" aria-hidden="true"></div>
     <div class="wrap hero-inner">
       <div class="hero-left">
         <div class="hero-eyebrow">
-          <span class="hero-dot"></span>
+          <span class="hero-dot" aria-hidden="true"></span>
           <span id="h-badge">Capítulo oficial INCOSE em Portugal</span>
         </div>
         <h1 class="hero-h1" id="h-h1">Engenharia de Sistemas<br><span class="grad">com raízes atlânticas</span></h1>
@@ -1196,7 +1188,7 @@ img, video, iframe { max-width: 100%; }
         </div>
       </div>
     </div>
-    <div class="hero-wave">
+    <div class="hero-wave" aria-hidden="true">
       <svg viewBox="0 0 1440 70" preserveAspectRatio="none" style="width:100%;height:100%">
         <path d="M0,35 C360,65 720,5 1080,35 C1260,50 1380,25 1440,35 L1440,70 L0,70Z" fill="#003580"/>
       </svg>
@@ -1204,7 +1196,7 @@ img, video, iframe { max-width: 100%; }
   </section>
 
   <!-- NEWS -->
-  <section class="sec sec-dark">
+  <section class="sec sec-dark" aria-label="Últimas notícias">
     <div class="wrap">
       <div class="sec-header">
         <div><p class="slabel">Últimas notícias</p><h2 class="stitle">Acontece na <span class="grad">comunidade</span></h2></div>
@@ -1215,28 +1207,28 @@ img, video, iframe { max-width: 100%; }
   </section>
 
   <!-- QUICK ACCESS -->
-  <section class="sec">
+  <section class="sec" aria-label="Serviços">
     <div class="wrap">
       <p class="slabel">O que oferecemos</p>
       <h2 class="stitle">Tudo o que precisa em <span class="grad">SE</span></h2>
       <div class="g-4" style="margin-top:1.5rem" id="quick-grid">
         <div class="card" style="padding:1.3rem;text-align:center;cursor:pointer" onclick="navTo('events')">
-          <div style="font-size:1.8rem;margin-bottom:.6rem">🎓</div>
+          <div style="font-size:1.8rem;margin-bottom:.6rem" aria-hidden="true">🎓</div>
           <div style="font-weight:700;font-size:.88rem;margin-bottom:.2rem">Certificação CSEP/ASEP</div>
           <div style="font-size:.75rem;color:var(--muted)">Prep-courses e exames</div>
         </div>
         <div class="card" style="padding:1.3rem;text-align:center;cursor:pointer" onclick="navTo('jobs')">
-          <div style="font-size:1.8rem;margin-bottom:.6rem">💼</div>
+          <div style="font-size:1.8rem;margin-bottom:.6rem" aria-hidden="true">💼</div>
           <div style="font-weight:700;font-size:.88rem;margin-bottom:.2rem">Job Board SE</div>
           <div style="font-size:.75rem;color:var(--muted)">Vagas em empresas CAB</div>
         </div>
         <div class="card" style="padding:1.3rem;text-align:center;cursor:pointer" onclick="navTo('knowledge')">
-          <div style="font-size:1.8rem;margin-bottom:.6rem">📚</div>
+          <div style="font-size:1.8rem;margin-bottom:.6rem" aria-hidden="true">📚</div>
           <div style="font-weight:700;font-size:.88rem;margin-bottom:.2rem">Knowledge Base</div>
           <div style="font-size:.75rem;color:var(--muted)">Handbook, templates, webinars</div>
         </div>
         <div class="card" style="padding:1.3rem;text-align:center;cursor:pointer" onclick="navTo('about')">
-          <div style="font-size:1.8rem;margin-bottom:.6rem">🤝</div>
+          <div style="font-size:1.8rem;margin-bottom:.6rem" aria-hidden="true">🤝</div>
           <div style="font-weight:700;font-size:.88rem;margin-bottom:.2rem">Working Groups</div>
           <div style="font-size:.75rem;color:var(--muted)">MBSE · Defense · Space</div>
         </div>
@@ -1256,10 +1248,10 @@ img, video, iframe { max-width: 100%; }
         <p style="color:rgba(255,255,255,.72);line-height:1.8;margin-bottom:1.5rem;font-size:.93rem">Fundado em 2025, cresceu rapidamente para mais de 240 membros e 18 empresas parceiras CAB, tornando-se polo de referência na comunidade europeia de SE.</p>
         <h3 style="margin-bottom:.85rem">Working Groups ativos</h3>
         <div class="wg-grid">
-          <div class="card-flat wg-card"><div style="font-size:1.3rem;margin-bottom:.35rem">🏗️</div><div style="font-weight:700;font-size:.83rem;margin-bottom:.15rem">MBSE &amp; SysML v2</div><div style="font-size:.73rem;color:var(--muted)">Modelação de sistemas complexos</div></div>
-          <div class="card-flat wg-card"><div style="font-size:1.3rem;margin-bottom:.35rem">🛡️</div><div style="font-weight:700;font-size:.83rem;margin-bottom:.15rem">Defense Systems</div><div style="font-size:.73rem;color:var(--muted)">Sistemas de defesa e segurança</div></div>
-          <div class="card-flat wg-card"><div style="font-size:1.3rem;margin-bottom:.35rem">🚀</div><div style="font-weight:700;font-size:.83rem;margin-bottom:.15rem">Space Systems</div><div style="font-size:.73rem;color:var(--muted)">Projetos espaciais ECSS</div></div>
-          <div class="card-flat wg-card"><div style="font-size:1.3rem;margin-bottom:.35rem">🌱</div><div style="font-weight:700;font-size:.83rem;margin-bottom:.15rem">Sustainability in SE</div><div style="font-size:.73rem;color:var(--muted)">SE aplicado à sustentabilidade</div></div>
+          <div class="card-flat wg-card"><div style="font-size:1.3rem;margin-bottom:.35rem" aria-hidden="true">🏗️</div><div style="font-weight:700;font-size:.83rem;margin-bottom:.15rem">MBSE &amp; SysML v2</div><div style="font-size:.73rem;color:var(--muted)">Modelação de sistemas complexos</div></div>
+          <div class="card-flat wg-card"><div style="font-size:1.3rem;margin-bottom:.35rem" aria-hidden="true">🛡️</div><div style="font-weight:700;font-size:.83rem;margin-bottom:.15rem">Defense Systems</div><div style="font-size:.73rem;color:var(--muted)">Sistemas de defesa e segurança</div></div>
+          <div class="card-flat wg-card"><div style="font-size:1.3rem;margin-bottom:.35rem" aria-hidden="true">🚀</div><div style="font-weight:700;font-size:.83rem;margin-bottom:.15rem">Space Systems</div><div style="font-size:.73rem;color:var(--muted)">Projetos espaciais ECSS</div></div>
+          <div class="card-flat wg-card"><div style="font-size:1.3rem;margin-bottom:.35rem" aria-hidden="true">🌱</div><div style="font-weight:700;font-size:.83rem;margin-bottom:.15rem">Sustainability in SE</div><div style="font-size:.73rem;color:var(--muted)">SE aplicado à sustentabilidade</div></div>
         </div>
       </div>
       <div>
@@ -1268,7 +1260,7 @@ img, video, iframe { max-width: 100%; }
           <div class="dir-row"><span style="font-weight:600">Sofia Andrade</span><span style="color:var(--muted)">Presidente</span></div>
           <div class="dir-row"><span style="font-weight:600">João Figueiredo</span><span style="color:var(--muted)">Vice-Presidente</span></div>
           <div class="dir-row"><span style="font-weight:600">Marta Costa</span><span style="color:var(--muted)">Tesoureira</span></div>
-          <div style="display:flex;justify-content:space-between;padding:.35rem 0;font-size:.82rem"><span style="font-weight:600">Pedro Nunes</span><span style="color:var(--muted)">Secretário</span></div>
+          <div class="dir-row"><span style="font-weight:600">Pedro Nunes</span><span style="color:var(--muted)">Secretário</span></div>
         </div>
         <div class="topbox">
           <p style="font-size:.77rem;color:var(--muted);line-height:1.65"><strong style="color:rgba(255,255,255,.5)">Identificação legal:</strong><br>SESPT – Sociedade de Engenharia de Sistemas de Portugal<br>NIF: [inserir número]<br>Sede: Lisboa, Portugal</p>
@@ -1284,7 +1276,7 @@ img, video, iframe { max-width: 100%; }
     <p class="slabel">Agenda</p>
     <h1 class="stitle">Próximos <span class="grad">Eventos</span></h1>
     <p class="ssub">Membros com quota ativa têm desconto automático. Clique em Detalhes para ver preços.</p>
-    <div class="filter-bar">
+    <div class="filter-bar" role="group" aria-label="Filtros de eventos">
       <span class="flabel">Formato:</span>
       <button class="btn btn-teal btn-sm" data-ff="all" onclick="fEvt('f','all',this)">Todos</button>
       <button class="btn btn-ghost btn-sm" data-ff="presencial" onclick="fEvt('f','presencial',this)">Presencial</button>
@@ -1296,7 +1288,7 @@ img, video, iframe { max-width: 100%; }
       <button class="btn btn-ghost btn-sm" data-ft="workshop" onclick="fEvt('t','workshop',this)">Workshop</button>
       <button class="btn btn-ghost btn-sm" data-ft="wg" onclick="fEvt('t','wg',this)">Working Group</button>
     </div>
-    <div class="evts-list" id="evts-list"></div>
+    <div class="evts-list" id="evts-list" role="list"></div>
   </div>
 </div>
 
@@ -1308,9 +1300,9 @@ img, video, iframe { max-width: 100%; }
     <p class="ssub">Materiais técnicos exclusivos para membros com quota ativa.</p>
     <div id="know-alert"></div>
     <div style="display:flex;gap:.8rem;flex-wrap:wrap;margin-bottom:.9rem">
-      <input id="doc-q" style="background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:var(--radius);padding:.55rem .9rem;color:#fff;font-family:'DM Sans',sans-serif;font-size:.85rem;outline:none;flex:1;max-width:300px;transition:border-color .2s" placeholder="🔍 Pesquisar..." onfocus="this.style.borderColor='var(--teal2)'" onblur="this.style.borderColor='var(--border)'" oninput="renderDocs()">
+      <input id="doc-q" class="search-input" type="search" placeholder="🔍 Pesquisar..." aria-label="Pesquisar documentos" oninput="debouncedRenderDocs()">
     </div>
-    <div style="display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:1.6rem" id="doc-cats"></div>
+    <div style="display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:1.6rem" id="doc-cats" role="group" aria-label="Categorias"></div>
     <div class="g-3" id="docs-grid"></div>
   </div>
 </div>
@@ -1328,18 +1320,24 @@ img, video, iframe { max-width: 100%; }
     </div>
     <div id="jobs-alert" style="margin:1rem 0"></div>
     <div style="display:flex;gap:.7rem;flex-wrap:wrap;margin-bottom:.9rem">
-      <input id="job-q" style="background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:var(--radius);padding:.55rem .9rem;color:#fff;font-family:'DM Sans',sans-serif;font-size:.85rem;outline:none;flex:1;max-width:300px;transition:border-color .2s" placeholder="🔍 Pesquisar..." onfocus="this.style.borderColor='var(--teal2)'" onblur="this.style.borderColor='var(--border)'" oninput="renderJobs()">
+      <input id="job-q" class="search-input" type="search" placeholder="🔍 Pesquisar..." aria-label="Pesquisar vagas" oninput="debouncedRenderJobs()">
     </div>
-    <div style="display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:1.6rem" id="job-tags"></div>
+    <div style="display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:1.6rem" id="job-tags" role="group" aria-label="Filtrar por tag"></div>
     <div class="g-2" id="jobs-grid"></div>
     <div id="post-form" style="display:none;margin-top:2rem">
       <h3 style="margin-bottom:1rem">Publicar nova vaga</h3>
       <div class="card-flat" style="padding:1.5rem">
-        <div class="g-2"><div class="fg"><label>Título *</label><input id="nj-t" placeholder="Systems Engineer – ..."></div><div class="fg"><label>Localização</label><input id="nj-l" placeholder="Lisboa / Remoto"></div></div>
-        <div class="g-2"><div class="fg"><label>Tipo</label><select id="nj-tp"><option>Full-time</option><option>Part-time</option><option>Contrato</option><option>Bolsa FCT</option><option>Estágio</option></select></div><div class="fg"><label>Tags (vírgula)</label><input id="nj-tg" placeholder="MBSE, SysML"></div></div>
-        <div class="fg"><label>Descrição</label><textarea id="nj-d"></textarea></div>
+        <div class="g-2">
+          <div class="fg"><label for="nj-t">Título *</label><input id="nj-t" placeholder="Systems Engineer – ..."></div>
+          <div class="fg"><label for="nj-l">Localização</label><input id="nj-l" placeholder="Lisboa / Remoto"></div>
+        </div>
+        <div class="g-2">
+          <div class="fg"><label for="nj-tp">Tipo</label><select id="nj-tp"><option>Full-time</option><option>Part-time</option><option>Contrato</option><option>Bolsa FCT</option><option>Estágio</option></select></div>
+          <div class="fg"><label for="nj-tg">Tags (vírgula)</label><input id="nj-tg" placeholder="MBSE, SysML"></div>
+        </div>
+        <div class="fg"><label for="nj-d">Descrição</label><textarea id="nj-d"></textarea></div>
         <div class="alert a-warn">⏳ A vaga ficará pendente até aprovação pelo Admin.</div>
-        <div style="display:flex;gap:.7rem;margin-top:.5rem">
+        <div style="display:flex;gap:.7rem;margin-top:.5rem;flex-wrap:wrap">
           <button class="btn btn-primary btn-md" onclick="submitJob()">Submeter →</button>
           <button class="btn btn-ghost btn-md" onclick="document.getElementById('post-form').style.display='none'">Cancelar</button>
         </div>
@@ -1359,7 +1357,9 @@ img, video, iframe { max-width: 100%; }
         <div style="font-size:.72rem;color:var(--muted);margin-bottom:.35rem">Estudante universitário</div>
         <h3 style="margin-bottom:.8rem">Membro Estudante</h3>
         <div class="plan-price"><span style="color:var(--muted)">30€</span><small>/ano</small></div>
-        <ul class="plan-ul"><li>Acesso à biblioteca</li><li>Desconto em eventos</li><li>Webinars gravados</li><li>Certificate Wallet</li><li>Member Directory</li></ul>
+        <ul class="plan-ul" aria-label="Benefícios">
+          <li>Acesso à biblioteca</li><li>Desconto em eventos</li><li>Webinars gravados</li><li>Certificate Wallet</li><li>Member Directory</li>
+        </ul>
         <button class="btn btn-ghost btn-md btn-full" onclick="openModal('modal-auth')">Aderir agora →</button>
       </div>
       <div class="card plan-card featured">
@@ -1367,19 +1367,23 @@ img, video, iframe { max-width: 100%; }
         <div style="font-size:.72rem;color:var(--muted);margin-bottom:.35rem">Profissional de SE</div>
         <h3 style="margin-bottom:.8rem">Membro Individual</h3>
         <div class="plan-price"><span style="color:var(--teal2)">80€</span><small>/ano</small></div>
-        <ul class="plan-ul"><li>Tudo do Estudante</li><li>Fórum privado</li><li>Voto nas eleições</li><li>Desconto acrescido</li><li>Acesso ao IS internacional</li></ul>
+        <ul class="plan-ul" aria-label="Benefícios">
+          <li>Tudo do Estudante</li><li>Fórum privado</li><li>Voto nas eleições</li><li>Desconto acrescido</li><li>Acesso ao IS internacional</li>
+        </ul>
         <button class="btn btn-teal btn-md btn-full" onclick="openModal('modal-auth')">Aderir agora →</button>
       </div>
       <div class="card plan-card">
         <div style="font-size:.72rem;color:var(--muted);margin-bottom:.35rem">Empresa · 5 seats</div>
         <h3 style="margin-bottom:.8rem">CAB – Corporate</h3>
         <div class="plan-price"><span style="color:var(--cork)">800€</span><small>/ano</small></div>
-        <ul class="plan-ul"><li>5 membros incluídos</li><li>Perfil empresa no site</li><li>Publicar vagas (Job Board)</li><li>Repositório doc. estratégicos</li><li>Presença no Summit anual</li></ul>
+        <ul class="plan-ul" aria-label="Benefícios">
+          <li>5 membros incluídos</li><li>Perfil empresa no site</li><li>Publicar vagas (Job Board)</li><li>Repositório doc. estratégicos</li><li>Presença no Summit anual</li>
+        </ul>
         <button class="btn btn-ghost btn-md btn-full" onclick="openModal('modal-auth')">Aderir agora →</button>
       </div>
     </div>
     <div class="topbox" style="text-align:center;margin-top:1.5rem">
-      <p style="font-size:.8rem;color:var(--muted)">ℹ️ As quotas internacionais INCOSE são pagas separadamente em <a href="https://www.incose.org" target="_blank" style="color:var(--teal2)">incose.org ↗</a>. A SESPT emite fatura nos termos legais portugueses.</p>
+      <p style="font-size:.8rem;color:var(--muted)">ℹ️ As quotas internacionais INCOSE são pagas separadamente em <a href="https://www.incose.org" target="_blank" rel="noopener" style="color:var(--teal2)">incose.org ↗</a>. A SESPT emite fatura nos termos legais portugueses.</p>
     </div>
   </div>
 </div>
@@ -1388,46 +1392,46 @@ img, video, iframe { max-width: 100%; }
 <div id="page-dashboard" class="page">
   <div class="wrap">
     <div id="dash-locked" style="text-align:center;padding:4rem 0">
-      <div style="font-size:3rem;margin-bottom:1rem">🔒</div>
+      <div style="font-size:3rem;margin-bottom:1rem" aria-hidden="true">🔒</div>
       <h2 style="margin-bottom:.5rem">Área privada</h2>
       <p style="color:var(--muted);margin-bottom:1.5rem">Faça login para aceder ao seu dashboard.</p>
       <button class="btn btn-primary btn-lg" onclick="openModal('modal-auth')">Entrar →</button>
     </div>
     <div id="dash-content" style="display:none">
       <div class="user-hero">
-        <div class="u-avatar" id="d-av">CM</div>
+        <div class="u-avatar" id="d-av" aria-hidden="true">CM</div>
         <div>
           <h1 style="font-size:1.4rem;font-weight:800" id="d-greet">Olá!</h1>
           <div style="display:flex;gap:.45rem;margin-top:.3rem;flex-wrap:wrap" id="d-badges"></div>
         </div>
       </div>
-      <div class="dtabs">
-        <button class="dtab active" onclick="dTab('overview',this)">Resumo</button>
-        <button class="dtab" onclick="dTab('profile',this)">Perfil</button>
-        <button class="dtab" onclick="dTab('payments',this)">Pagamentos</button>
-        <button class="dtab" onclick="dTab('wallet',this)">Certificados</button>
+      <div class="dtabs" role="tablist">
+        <button class="dtab active" role="tab" aria-selected="true" onclick="dTab('overview',this)">Resumo</button>
+        <button class="dtab" role="tab" aria-selected="false" onclick="dTab('profile',this)">Perfil</button>
+        <button class="dtab" role="tab" aria-selected="false" onclick="dTab('payments',this)">Pagamentos</button>
+        <button class="dtab" role="tab" aria-selected="false" onclick="dTab('wallet',this)">Certificados</button>
       </div>
       <!-- Overview -->
-      <div class="dpanel active" id="dp-overview">
+      <div class="dpanel active" id="dp-overview" role="tabpanel">
         <div class="stats4">
-          <div class="card-flat stat-box"><div style="font-size:1.4rem;margin-bottom:.3rem">🏅</div><div class="v">3</div><div class="l">Certificados</div></div>
-          <div class="card-flat stat-box"><div style="font-size:1.4rem;margin-bottom:.3rem">📅</div><div class="v">2</div><div class="l">Eventos inscritos</div></div>
-          <div class="card-flat stat-box"><div style="font-size:1.4rem;margin-bottom:.3rem">📥</div><div class="v">5</div><div class="l">Docs transferidos</div></div>
-          <div class="card-flat stat-box"><div style="font-size:1.4rem;margin-bottom:.3rem">🔑</div><div class="v" id="d-qval">Ativo</div><div class="l">Quota</div></div>
+          <div class="card-flat stat-box"><div style="font-size:1.4rem;margin-bottom:.3rem" aria-hidden="true">🏅</div><div class="v">3</div><div class="l">Certificados</div></div>
+          <div class="card-flat stat-box"><div style="font-size:1.4rem;margin-bottom:.3rem" aria-hidden="true">📅</div><div class="v">2</div><div class="l">Eventos inscritos</div></div>
+          <div class="card-flat stat-box"><div style="font-size:1.4rem;margin-bottom:.3rem" aria-hidden="true">📥</div><div class="v">5</div><div class="l">Docs transferidos</div></div>
+          <div class="card-flat stat-box"><div style="font-size:1.4rem;margin-bottom:.3rem" aria-hidden="true">🔑</div><div class="v" id="d-qval">Ativo</div><div class="l">Quota</div></div>
         </div>
         <div id="d-qalert"></div>
       </div>
       <!-- Profile -->
-      <div class="dpanel" id="dp-profile" style="max-width:500px">
-        <div class="fg"><label>Nome completo</label><input id="p-name"></div>
-        <div class="fg"><label>Email</label><input id="p-email" readonly style="opacity:.6"></div>
-        <div class="fg"><label>Tipo de membro</label><input id="p-type" readonly style="opacity:.6"></div>
+      <div class="dpanel" id="dp-profile" role="tabpanel" style="max-width:500px">
+        <div class="fg"><label for="p-name">Nome completo</label><input id="p-name"></div>
+        <div class="fg"><label for="p-email">Email</label><input id="p-email" readonly style="opacity:.6" autocomplete="off"></div>
+        <div class="fg"><label for="p-type">Tipo de membro</label><input id="p-type" readonly style="opacity:.6"></div>
         <div class="fg"><label>N.º sócio INCOSE</label><input value="INC-PT-00342" readonly style="opacity:.6"></div>
         <div class="fg">
           <label>Opt-in Member Directory</label>
           <div style="display:flex;align-items:center;gap:.6rem;margin-top:.3rem">
-            <input type="checkbox" checked style="accent-color:var(--teal);width:16px;height:16px">
-            <span style="font-size:.82rem;color:rgba(255,255,255,.68)">Visível para outros membros</span>
+            <input type="checkbox" checked style="accent-color:var(--teal);width:16px;height:16px" id="ch-dir">
+            <label for="ch-dir" style="font-size:.82rem;color:rgba(255,255,255,.68)">Visível para outros membros</label>
           </div>
         </div>
         <div class="fg">
@@ -1440,24 +1444,24 @@ img, video, iframe { max-width: 100%; }
         <button class="btn btn-primary btn-md">Guardar alterações</button>
       </div>
       <!-- Payments -->
-      <div class="dpanel" id="dp-payments">
-        <div style="overflow-x:auto">
-        <table class="tbl">
-          <thead><tr><th>Descrição</th><th>Valor</th><th>Data</th><th>Estado</th><th></th></tr></thead>
-          <tbody>
-            <tr><td>Quota anual 2026 – Membro Individual</td><td style="font-weight:700">80.00€</td><td style="color:var(--muted)">2026-01-10</td><td><span class="badge b-green">✓ pago</span></td><td><button class="btn btn-ghost btn-sm">Fatura</button></td></tr>
-            <tr><td>Quota anual 2025 – Membro Individual</td><td style="font-weight:700">80.00€</td><td style="color:var(--muted)">2025-01-12</td><td><span class="badge b-green">✓ pago</span></td><td><button class="btn btn-ghost btn-sm">Fatura</button></td></tr>
-            <tr><td>Summit 2025 – Bilhete membro</td><td style="font-weight:700">60.00€</td><td style="color:var(--muted)">2025-10-20</td><td><span class="badge b-green">✓ pago</span></td><td><button class="btn btn-ghost btn-sm">Fatura</button></td></tr>
-          </tbody>
-        </table>
+      <div class="dpanel" id="dp-payments" role="tabpanel">
+        <div class="tbl-wrap">
+          <table class="tbl">
+            <thead><tr><th>Descrição</th><th>Valor</th><th>Data</th><th>Estado</th><th></th></tr></thead>
+            <tbody>
+              <tr><td>Quota anual 2026 – Membro Individual</td><td style="font-weight:700">80.00€</td><td style="color:var(--muted)">2026-01-10</td><td><span class="badge b-green">✓ pago</span></td><td><button class="btn btn-ghost btn-sm">Fatura</button></td></tr>
+              <tr><td>Quota anual 2025 – Membro Individual</td><td style="font-weight:700">80.00€</td><td style="color:var(--muted)">2025-01-12</td><td><span class="badge b-green">✓ pago</span></td><td><button class="btn btn-ghost btn-sm">Fatura</button></td></tr>
+              <tr><td>Summit 2025 – Bilhete membro</td><td style="font-weight:700">60.00€</td><td style="color:var(--muted)">2025-10-20</td><td><span class="badge b-green">✓ pago</span></td><td><button class="btn btn-ghost btn-sm">Fatura</button></td></tr>
+            </tbody>
+          </table>
         </div>
       </div>
       <!-- Wallet -->
-      <div class="dpanel" id="dp-wallet">
+      <div class="dpanel" id="dp-wallet" role="tabpanel">
         <p style="color:var(--muted);margin-bottom:1.3rem;font-size:.86rem">Certificados gerados automaticamente após check-in em eventos.</p>
-        <div class="card-flat cert-row"><div style="font-size:1.6rem">🏅</div><div style="flex:1"><div style="font-weight:700;font-size:.87rem">INCOSE Portugal Summit 2025 – Participação</div><div style="font-size:.72rem;color:var(--muted)">2025-11-15 · CERT-2025-001</div></div><button class="btn btn-ghost btn-sm">⬇ PDF</button></div>
-        <div class="card-flat cert-row"><div style="font-size:1.6rem">🏅</div><div style="flex:1"><div style="font-weight:700;font-size:.87rem">ASEP Prep-Course – Dezembro 2025</div><div style="font-size:.72rem;color:var(--muted)">2025-12-08 · CERT-2025-002</div></div><button class="btn btn-ghost btn-sm">⬇ PDF</button></div>
-        <div class="card-flat cert-row"><div style="font-size:1.6rem">🏅</div><div style="flex:1"><div style="font-weight:700;font-size:.87rem">Webinar MBSE Intro – Novembro 2025</div><div style="font-size:.72rem;color:var(--muted)">2025-11-28 · CERT-2025-003</div></div><button class="btn btn-ghost btn-sm">⬇ PDF</button></div>
+        <div class="card-flat cert-row"><div style="font-size:1.6rem" aria-hidden="true">🏅</div><div style="flex:1;min-width:0"><div style="font-weight:700;font-size:.87rem">INCOSE Portugal Summit 2025 – Participação</div><div style="font-size:.72rem;color:var(--muted)">2025-11-15 · CERT-2025-001</div></div><button class="btn btn-ghost btn-sm">⬇ PDF</button></div>
+        <div class="card-flat cert-row"><div style="font-size:1.6rem" aria-hidden="true">🏅</div><div style="flex:1;min-width:0"><div style="font-weight:700;font-size:.87rem">ASEP Prep-Course – Dezembro 2025</div><div style="font-size:.72rem;color:var(--muted)">2025-12-08 · CERT-2025-002</div></div><button class="btn btn-ghost btn-sm">⬇ PDF</button></div>
+        <div class="card-flat cert-row"><div style="font-size:1.6rem" aria-hidden="true">🏅</div><div style="flex:1;min-width:0"><div style="font-weight:700;font-size:.87rem">Webinar MBSE Intro – Novembro 2025</div><div style="font-size:.72rem;color:var(--muted)">2025-11-28 · CERT-2025-003</div></div><button class="btn btn-ghost btn-sm">⬇ PDF</button></div>
       </div>
     </div>
   </div>
@@ -1467,7 +1471,7 @@ img, video, iframe { max-width: 100%; }
 <div id="page-admin" class="page">
   <div class="wrap">
     <div id="adm-locked" style="text-align:center;padding:4rem 0">
-      <div style="font-size:3rem;margin-bottom:1rem">🚫</div>
+      <div style="font-size:3rem;margin-bottom:1rem" aria-hidden="true">🚫</div>
       <h2 style="margin-bottom:.5rem">Acesso restrito</h2>
       <p style="color:var(--muted)">Apenas administradores SESPT têm acesso ao Backoffice.</p>
     </div>
@@ -1475,46 +1479,46 @@ img, video, iframe { max-width: 100%; }
       <p class="slabel">Administração SESPT</p>
       <h1 class="stitle">Back<span class="grad">office</span></h1>
       <div class="admin4">
-        <div class="card-flat astat"><div class="ico">👥</div><div><div class="v">240</div><div class="l">Membros ativos</div></div></div>
-        <div class="card-flat astat"><div class="ico">🏢</div><div><div class="v">18</div><div class="l">Empresas CAB</div></div></div>
-        <div class="card-flat astat"><div class="ico">⏳</div><div><div class="v" id="a-pcount">1</div><div class="l">Vagas pendentes</div></div></div>
-        <div class="card-flat astat"><div class="ico">📅</div><div><div class="v">5</div><div class="l">Eventos futuros</div></div></div>
+        <div class="card-flat astat"><div class="ico" aria-hidden="true">👥</div><div><div class="v">240</div><div class="l">Membros ativos</div></div></div>
+        <div class="card-flat astat"><div class="ico" aria-hidden="true">🏢</div><div><div class="v">18</div><div class="l">Empresas CAB</div></div></div>
+        <div class="card-flat astat"><div class="ico" aria-hidden="true">⏳</div><div><div class="v" id="a-pcount">1</div><div class="l">Vagas pendentes</div></div></div>
+        <div class="card-flat astat"><div class="ico" aria-hidden="true">📅</div><div><div class="v">5</div><div class="l">Eventos futuros</div></div></div>
       </div>
-      <div class="dtabs">
-        <button class="dtab active" onclick="aTab('news',this)">📰 Notícias</button>
-        <button class="dtab" onclick="aTab('pending',this)">💼 Vagas pendentes</button>
-        <button class="dtab" onclick="aTab('users',this)">👥 Utilizadores</button>
-        <button class="dtab" onclick="aTab('newsletter',this)">✉ Newsletter</button>
+      <div class="dtabs" role="tablist">
+        <button class="dtab active" role="tab" onclick="aTab('news',this)">📰 Notícias</button>
+        <button class="dtab" role="tab" onclick="aTab('pending',this)">💼 Vagas pendentes</button>
+        <button class="dtab" role="tab" onclick="aTab('users',this)">👥 Utilizadores</button>
+        <button class="dtab" role="tab" onclick="aTab('newsletter',this)">✉ Newsletter</button>
       </div>
       <!-- News CMS -->
-      <div class="dpanel active" id="adp-news">
+      <div class="dpanel active" id="adp-news" role="tabpanel">
         <div class="card-flat" style="padding:1.3rem;margin-bottom:1.3rem">
           <h3 style="margin-bottom:.9rem">Criar novo artigo</h3>
           <div class="g-2" style="margin-bottom:.8rem">
-            <div class="fg" style="margin:0"><label>Título *</label><input id="na-t" placeholder="Título..."></div>
+            <div class="fg" style="margin:0"><label for="na-t">Título *</label><input id="na-t" placeholder="Título..."></div>
             <div style="display:grid;grid-template-columns:2fr 1fr;gap:.8rem">
-              <div class="fg" style="margin:0"><label>Categoria</label><select id="na-c"><option>Destaque</option><option>CAB</option><option>Certificação</option><option>Internacional</option><option>Eventos</option></select></div>
-              <div class="fg" style="margin:0"><label>Ícone</label><input id="na-i" value="📰" maxlength="2"></div>
+              <div class="fg" style="margin:0"><label for="na-c">Categoria</label><select id="na-c"><option>Destaque</option><option>CAB</option><option>Certificação</option><option>Internacional</option><option>Eventos</option></select></div>
+              <div class="fg" style="margin:0"><label for="na-i">Ícone</label><input id="na-i" value="📰" maxlength="2"></div>
             </div>
           </div>
-          <div class="fg"><label>Resumo</label><textarea id="na-e" placeholder="Breve descrição..."></textarea></div>
+          <div class="fg"><label for="na-e">Resumo</label><textarea id="na-e" placeholder="Breve descrição..."></textarea></div>
           <button class="btn btn-teal btn-md" onclick="addArticle()">Publicar →</button>
         </div>
         <h3 style="margin-bottom:.85rem">Artigos publicados</h3>
         <div id="a-news-list"></div>
       </div>
       <!-- Pending -->
-      <div class="dpanel" id="adp-pending">
+      <div class="dpanel" id="adp-pending" role="tabpanel">
         <h3 style="margin-bottom:.9rem">Vagas aguardando aprovação</h3>
         <div id="a-pending-list"></div>
       </div>
       <!-- Users -->
-      <div class="dpanel" id="adp-users">
+      <div class="dpanel" id="adp-users" role="tabpanel">
         <h3 style="margin-bottom:.9rem">Gestão de utilizadores</h3>
-        <div style="overflow-x:auto"><table class="tbl"><thead><tr><th>Nome</th><th>Email</th><th>Tipo</th><th>Quota</th><th></th></tr></thead><tbody id="a-users-tbody"></tbody></table></div>
+        <div class="tbl-wrap"><table class="tbl"><thead><tr><th>Nome</th><th>Email</th><th>Tipo</th><th>Quota</th><th></th></tr></thead><tbody id="a-users-tbody"></tbody></table></div>
       </div>
       <!-- Newsletter -->
-      <div class="dpanel" id="adp-newsletter">
+      <div class="dpanel" id="adp-newsletter" role="tabpanel">
         <h3 style="margin-bottom:.75rem">Gerador de Newsletter</h3>
         <p style="font-size:.83rem;color:var(--muted);margin-bottom:1.2rem">Selecione notícias → HTML automático para Mailchimp.</p>
         <div id="a-nl-list" style="display:flex;flex-direction:column;gap:.5rem;max-width:600px;margin-bottom:1.3rem"></div>
@@ -1530,34 +1534,34 @@ img, video, iframe { max-width: 100%; }
 </main>
 
 <!-- ══ FOOTER ═════════════════════════════════════════════════════════════ -->
-<footer>
+<footer role="contentinfo">
   <div class="ft-cols">
     <div class="ft-col">
       <div style="display:flex;align-items:center;gap:.65rem;margin-bottom:.8rem">
-        <div class="logo-mark" style="width:32px;height:32px;font-size:.5rem">INC</div>
+        <div class="logo-mark" style="width:32px;height:32px;font-size:.5rem" aria-hidden="true">INC</div>
         <div style="font-weight:700;font-size:.88rem;font-family:'Syne',sans-serif">INCOSE Portugal</div>
       </div>
       <p>Capítulo oficial INCOSE. Operado pela SESPT desde 2025.</p>
       <div class="ft-social">
-        <button class="soc-btn">in</button>
-        <button class="soc-btn">▶</button>
-        <button class="soc-btn">✉</button>
+        <button class="soc-btn" aria-label="LinkedIn">in</button>
+        <button class="soc-btn" aria-label="YouTube">▶</button>
+        <button class="soc-btn" aria-label="Email">✉</button>
       </div>
     </div>
     <div class="ft-col">
       <h4>Quick Links</h4>
-      <a onclick="navTo('about')">Sobre Nós</a>
-      <a onclick="navTo('membership')">Membership</a>
-      <a onclick="navTo('events')">Eventos</a>
-      <a onclick="navTo('knowledge')">Knowledge Base</a>
-      <a onclick="navTo('jobs')">Job Board</a>
-      <a href="https://www.incose.org" target="_blank">INCOSE Global ↗</a>
+      <a onclick="navTo('about')" href="#">Sobre Nós</a>
+      <a onclick="navTo('membership')" href="#">Membership</a>
+      <a onclick="navTo('events')" href="#">Eventos</a>
+      <a onclick="navTo('knowledge')" href="#">Knowledge Base</a>
+      <a onclick="navTo('jobs')" href="#">Job Board</a>
+      <a href="https://www.incose.org" target="_blank" rel="noopener">INCOSE Global ↗</a>
     </div>
     <div class="ft-col">
       <h4>Contacto SESPT</h4>
       <p>Rua [a completar]<br>1000-000 Lisboa</p>
-      <a href="/cdn-cgi/l/email-protection#99fefcebf8f5d9eafceae9edb7e9ed"><span class="__cf_email__" data-cfemail="cbacaeb9aaa78bb8aeb8bbbfe5bbbf">[email&#160;protected]</span></a>
-      <a href="/cdn-cgi/l/email-protection#cda0a8a0afa8bfbea5a4bd8dbea8bebdb9e3bdb9"><span class="__cf_email__" data-cfemail="ec8189818e899e9f84859cac9f899f9c98c29c98">[email&#160;protected]</span></a>
+      <a href="mailto:geral@sespt.pt">geral@sespt.pt</a>
+      <a href="mailto:incose@sespt.pt">incose@sespt.pt</a>
     </div>
     <div class="ft-col">
       <h4>Legal</h4>
@@ -1574,8 +1578,8 @@ img, video, iframe { max-width: 100%; }
   </div>
 </footer>
 
-<!-- ════════════════ JAVASCRIPT (fim do body = DOM já existe) ════════════ -->
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<!-- ════════════════ JAVASCRIPT ════════════════════════════════════════════ -->
+<script>
 'use strict';
 
 /* ── DATA ───────────────────────────────────────────────────────────────── */
@@ -1588,11 +1592,11 @@ const USERS = {
 const PASS = 'demo123';
 
 const EVENTS = [
-  {id:1,title:'INCOSE Portugal Summit 2026',          date:'2026-03-15',loc:'Centro de Congressos do Estoril, Lisboa',format:'presencial',type:'summit',  desc:'A maior conferência anual do capítulo, com keynotes internacionais.',                               price:{p:120,m:60, s:25 },cap:300,reg:187},
-  {id:2,title:'Webinar: MBSE com SysML v2',           date:'2026-03-28',loc:'Online · Zoom',                          format:'online',    type:'webinar', desc:'Introdução prática ao SysML v2 com exemplos reais de sistemas aeroespaciais.',                    price:{p:20, m:0,  s:0  },cap:200,reg:89},
-  {id:3,title:'ASEP Prep-Course – Lisboa (Primavera)',date:'2026-04-12',loc:'Lisboa · Local a confirmar',             format:'presencial',type:'workshop',desc:'3 dias intensivos de preparação para o exame ASEP com instrutores certificados.',                 price:{p:400,m:280,s:150},cap:30, reg:22},
-  {id:4,title:'WG Defense Systems – Reunião Q2',      date:'2026-05-24',loc:'Online · Teams',                        format:'online',    type:'wg',      desc:'Reunião aberta do Working Group de Defense Systems.',                                              price:{p:0,  m:0,  s:0  },cap:100,reg:34},
-  {id:5,title:'Workshop: Requirements Eng. para ESA', date:'2026-06-10',loc:'Porto · Hotel Sheraton',                format:'presencial',type:'workshop',desc:'Workshop focado nos standards ECSS para engenharia de requisitos em projetos espaciais.',           price:{p:350,m:220,s:120},cap:25, reg:18},
+  {id:1,title:'INCOSE Portugal Summit 2026',          date:'2026-03-15',loc:'Centro de Congressos do Estoril, Lisboa',format:'presencial',type:'summit',  desc:'A maior conferência anual do capítulo, com keynotes internacionais.',price:{p:120,m:60,s:25},cap:300,reg:187},
+  {id:2,title:'Webinar: MBSE com SysML v2',           date:'2026-03-28',loc:'Online · Zoom',                          format:'online',    type:'webinar', desc:'Introdução prática ao SysML v2 com exemplos reais de sistemas aeroespaciais.',price:{p:20,m:0,s:0},cap:200,reg:89},
+  {id:3,title:'ASEP Prep-Course – Lisboa (Primavera)',date:'2026-04-12',loc:'Lisboa · Local a confirmar',             format:'presencial',type:'workshop',desc:'3 dias intensivos de preparação para o exame ASEP com instrutores certificados.',price:{p:400,m:280,s:150},cap:30,reg:22},
+  {id:4,title:'WG Defense Systems – Reunião Q2',      date:'2026-05-24',loc:'Online · Teams',                        format:'online',    type:'wg',      desc:'Reunião aberta do Working Group de Defense Systems.',price:{p:0,m:0,s:0},cap:100,reg:34},
+  {id:5,title:'Workshop: Requirements Eng. para ESA', date:'2026-06-10',loc:'Porto · Hotel Sheraton',                format:'presencial',type:'workshop',desc:'Workshop focado nos standards ECSS para engenharia de requisitos em projetos espaciais.',price:{p:350,m:220,s:120},cap:25,reg:18},
 ];
 
 const DOCS = [
@@ -1614,16 +1618,16 @@ let NEWS = [
 ];
 
 let JOBS = [
-  {id:1,co:'Embraer Portugal',    logo:'EMB',title:'Systems Engineer – Aerostructures',loc:'Évora',          type:'Full-time', tags:['MBSE','SysML','Aerostructures'],  desc:'Integração de sistemas de estruturas aeronáuticas no novo programa de jatos executivos.',pending:false},
-  {id:2,co:'EDP Renewables',      logo:'EDP',title:'Lead SE – Offshore Wind Division', loc:'Lisboa',         type:'Full-time', tags:['Requisitos','Interface Mgmt'],    desc:'Liderança técnica da equipa de SE para o programa WindFloat Atlantic 2.0.',           pending:false},
-  {id:3,co:'IST / INESC-ID',      logo:'IST',title:'Investigador Doutoramento – MBSE', loc:'Lisboa / Remoto',type:'Bolsa FCT', tags:['PhD','MBSE','Investigação'],      desc:'Bolsa FCT para doutoramento em Model-Based Systems Engineering.',                    pending:false},
-  {id:4,co:'Thales Alenia Space',  logo:'TAS',title:'Systems Architect – Space Segment',loc:'Porto',         type:'Full-time', tags:['Space','ECSS','CSEP preferido'], desc:'Arquitetura de sistemas para segmento espacial.',                                     pending:false},
-  {id:5,co:'Critical Software',   logo:'CSW',title:'SE Consultant – Automotive',       loc:'Coimbra/Remoto', type:'Full-time', tags:['ISO 26262','SOTIF','Requisitos'], desc:'Consultoria em engenharia de sistemas para projetos de veículos autónomos.',       pending:false},
-  {id:6,co:'Hovione',             logo:'HOV',title:'Validation Systems Engineer',       loc:'Lisboa',         type:'Full-time', tags:['GxP','V&V','Farmacêutico'],      desc:'Engenheiro de validação para linha de produção farmacêutica contínua.',           pending:false},
+  {id:1,co:'Embraer Portugal',   logo:'EMB',title:'Systems Engineer – Aerostructures',  loc:'Évora',          type:'Full-time', tags:['MBSE','SysML','Aerostructures'],  desc:'Integração de sistemas de estruturas aeronáuticas no novo programa de jatos executivos.',pending:false},
+  {id:2,co:'EDP Renewables',     logo:'EDP',title:'Lead SE – Offshore Wind Division',   loc:'Lisboa',         type:'Full-time', tags:['Requisitos','Interface Mgmt'],    desc:'Liderança técnica da equipa de SE para o programa WindFloat Atlantic 2.0.',pending:false},
+  {id:3,co:'IST / INESC-ID',     logo:'IST',title:'Investigador Doutoramento – MBSE',   loc:'Lisboa / Remoto',type:'Bolsa FCT', tags:['PhD','MBSE','Investigação'],      desc:'Bolsa FCT para doutoramento em Model-Based Systems Engineering.',pending:false},
+  {id:4,co:'Thales Alenia Space', logo:'TAS',title:'Systems Architect – Space Segment', loc:'Porto',          type:'Full-time', tags:['Space','ECSS','CSEP preferido'], desc:'Arquitetura de sistemas para segmento espacial.',pending:false},
+  {id:5,co:'Critical Software',  logo:'CSW',title:'SE Consultant – Automotive',         loc:'Coimbra/Remoto', type:'Full-time', tags:['ISO 26262','SOTIF','Requisitos'], desc:'Consultoria em engenharia de sistemas para projetos de veículos autónomos.',pending:false},
+  {id:6,co:'Hovione',            logo:'HOV',title:'Validation Systems Engineer',         loc:'Lisboa',         type:'Full-time', tags:['GxP','V&V','Farmacêutico'],      desc:'Engenheiro de validação para linha de produção farmacêutica contínua.',pending:false},
 ];
 let PENDING_JOBS = [{id:99,co:'Nova empresa Lda.',title:'Systems Engineer Jr.'}];
 
-/* State */
+/* ── STATE ──────────────────────────────────────────────────────────────── */
 let user        = null;
 let evtFF       = 'all';
 let evtFT       = 'all';
@@ -1633,6 +1637,14 @@ let appliedJobs = [];
 let regEvts     = [];
 let lang        = 'pt';
 
+/* ── DEBOUNCE ────────────────────────────────────────────────────────────── */
+function debounce(fn, delay) {
+  let t;
+  return function(...args) { clearTimeout(t); t = setTimeout(() => fn.apply(this, args), delay); };
+}
+const debouncedRenderDocs = debounce(renderDocs, 250);
+const debouncedRenderJobs = debounce(renderJobs, 250);
+
 /* ── NAVIGATION ─────────────────────────────────────────────────────────── */
 function navTo(id) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -1640,7 +1652,6 @@ function navTo(id) {
   document.querySelectorAll('#mob-drawer .mob-nav-btn').forEach(b => b.classList.remove('active'));
   const pg = document.getElementById('page-' + id);
   if (pg) pg.classList.add('active');
-  /* Highlight active nav */
   const pageNavMap = {home:0,about:1,events:2,knowledge:3,jobs:4,membership:5};
   if (pageNavMap[id] !== undefined) {
     const nb = document.querySelector('#desk-nav button[data-nav="'+pageNavMap[id]+'"]');
@@ -1660,15 +1671,25 @@ function toggleDrawer() {
   const b = document.getElementById('burger');
   const open = d.classList.toggle('open');
   b.textContent = open ? '✕' : '☰';
+  b.setAttribute('aria-expanded', open);
   document.body.style.overflow = open ? 'hidden' : '';
 }
 function closeDrawer() {
-  document.getElementById('mob-drawer').classList.remove('open');
-  document.getElementById('burger').textContent = '☰';
+  const d = document.getElementById('mob-drawer');
+  const b = document.getElementById('burger');
+  d.classList.remove('open');
+  b.textContent = '☰';
+  b.setAttribute('aria-expanded', 'false');
   document.body.style.overflow = '';
 }
-window.addEventListener('resize', () => {
-  if (window.innerWidth > 768) closeDrawer();
+window.addEventListener('resize', () => { if (window.innerWidth > 768) closeDrawer(); });
+
+/* Close drawer on Escape */
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    closeDrawer();
+    document.querySelectorAll('.overlay.open').forEach(o => o.classList.remove('open'));
+  }
 });
 
 /* ── LANGUAGE ─────────────────────────────────────────────────────────────*/
@@ -1685,15 +1706,13 @@ function setLang(l) {
   if (el('h-sub'))   el('h-sub').textContent = t.sub;
   if (el('h-cta1'))  el('h-cta1').textContent = t.cta1;
   if (el('h-cta2'))  el('h-cta2').textContent = t.cta2;
-  /* Nav labels */
   document.querySelectorAll('#desk-nav button[data-nav]').forEach(btn => {
     const i = +btn.getAttribute('data-nav');
     if (t.nav[i]) btn.textContent = t.nav[i];
   });
-  /* Toggle active state */
   ['lt-pt','lt-en'].forEach(id => {
     const btn = el(id);
-    if (btn) btn.className = (id.endsWith(l)) ? 'active' : '';
+    if (btn) { btn.className = (id.endsWith(l)) ? 'active' : ''; btn.setAttribute('aria-pressed', id.endsWith(l)); }
   });
   const mpp = el('mob-lt-pt'), mpe = el('mob-lt-en');
   if (mpp) mpp.className = l==='pt' ? 'btn btn-teal btn-sm' : 'btn btn-ghost btn-sm';
@@ -1704,15 +1723,18 @@ function setLang(l) {
 function openModal(id)  { document.getElementById(id).classList.add('open'); }
 function closeModal(id) { document.getElementById(id).classList.remove('open'); }
 
-/* Close overlay on bg click */
 document.querySelectorAll('.overlay').forEach(o => {
   o.addEventListener('click', e => { if (e.target === o) o.classList.remove('open'); });
 });
 
 function authTab(t) {
-  document.querySelectorAll('.mtab').forEach((b,i) => b.classList.toggle('active',(i===0&&t==='login')||(i===1&&t==='register')));
-  document.getElementById('auth-login').style.display    = t==='login'    ? 'block':'none';
-  document.getElementById('auth-register').style.display = t==='register' ? 'block':'none';
+  document.querySelectorAll('.mtab').forEach((b,i) => {
+    const active = (i===0&&t==='login')||(i===1&&t==='register');
+    b.classList.toggle('active', active);
+    b.setAttribute('aria-selected', active);
+  });
+  document.getElementById('auth-login').style.display    = t==='login'    ? 'block' : 'none';
+  document.getElementById('auth-register').style.display = t==='register' ? 'block' : 'none';
   document.getElementById('auth-title').textContent = t==='login' ? 'Entrar na plataforma' : 'Criar conta';
 }
 
@@ -1745,9 +1767,7 @@ function doLogout() {
 
 function updateUI() {
   const u = user;
-  /* Util bar */
   const uu = document.getElementById('util-user');
-  /* Mobile user row */
   const mu = document.getElementById('mob-user');
   if (u) {
     const chip = `<span style="display:inline-flex;align-items:center;gap:.55rem">
@@ -1761,10 +1781,10 @@ function updateUI() {
     if (uu) uu.innerHTML = `<button class="btn btn-primary btn-sm" onclick="openModal('modal-auth')">🔐 Login / Registo</button>`;
     if (mu) mu.innerHTML = `<button class="btn btn-primary btn-md btn-full" onclick="openModal('modal-auth');closeDrawer()">🔐 Login / Registo</button>`;
   }
-  const show  = (el,v) => { const e=document.getElementById(el); if(e) e.style.display=v; };
-  const dash  = u ? 'block' : 'none';
-  const adm   = (u&&u.role==='admin') ? 'block' : 'none';
-  const cab   = (u&&(u.role==='cab'||u.role==='admin')) ? 'inline-flex' : 'none';
+  const show = (el,v) => { const e=document.getElementById(el); if(e) e.style.display=v; };
+  const dash = u ? 'block' : 'none';
+  const adm  = (u&&u.role==='admin') ? 'block' : 'none';
+  const cab  = (u&&(u.role==='cab'||u.role==='admin')) ? 'inline-flex' : 'none';
   show('nav-dash',dash); show('nav-adm',adm);
   show('mob-nav-dash',dash); show('mob-nav-adm',adm);
   show('btn-post',cab);
@@ -1782,12 +1802,12 @@ function renderHomeNews() {
   const el = document.getElementById('home-news');
   if (!el) return;
   el.innerHTML = NEWS.slice(0,3).map((n,i) => `
-    <div class="card" style="padding:1.2rem;cursor:pointer">
-      <div style="font-size:${i===0?'2rem':'1.7rem'};margin-bottom:.7rem">${n.icon}</div>
+    <div class="card" style="padding:1.2rem;cursor:pointer" tabindex="0" role="article">
+      <div style="font-size:${i===0?'2rem':'1.7rem'};margin-bottom:.7rem" aria-hidden="true">${n.icon}</div>
       <span class="badge b-teal">${n.cat}</span>
       <h3 style="font-size:${i===0?'1rem':'.88rem'};font-weight:700;margin:.45rem 0 .35rem;line-height:1.35">${n.title}</h3>
       ${i===0 ? `<p style="font-size:.82rem;color:var(--muted);line-height:1.6">${n.excerpt}</p>` : ''}
-      <div style="font-size:.7rem;color:rgba(255,255,255,.25);margin-top:.55rem">${n.date}</div>
+      <div style="font-size:.7rem;color:rgba(255,255,255,.25);margin-top:.55rem"><time>${n.date}</time></div>
     </div>`).join('');
 }
 
@@ -1809,14 +1829,17 @@ function renderEvents() {
     (evtFF==='all'||e.format===evtFF) &&
     (evtFT==='all'||e.type===evtFT)
   );
-  if (!list.length) { el.innerHTML = '<p style="color:var(--muted);padding:2rem 0">Nenhum evento encontrado para os filtros selecionados.</p>'; return; }
+  if (!list.length) {
+    el.innerHTML = '<p style="color:var(--muted);padding:2rem 0">Nenhum evento encontrado para os filtros selecionados.</p>';
+    return;
+  }
   el.innerHTML = list.map(e => {
     const d   = new Date(e.date + 'T12:00:00');
     const pr  = getEvtPrice(e);
     const isR = regEvts.includes(e.id);
     const disc= user&&user.quota&&pr<e.price.p;
-    return `<div class="card evt-row">
-      <div class="evt-date">
+    return `<div class="card evt-row" role="listitem">
+      <div class="evt-date" aria-label="${d.getDate()} de ${d.toLocaleString('pt',{month:'long'})}">
         <div class="evt-day">${d.getDate()}</div>
         <div class="evt-mon">${d.toLocaleString('pt',{month:'short'})}</div>
       </div>
@@ -1887,8 +1910,8 @@ function openEvtModal(id) {
         <span style="color:var(--muted)">${l}</span>
         <strong style="color:${p===0?'var(--success)':'#fff'}">${p===0?'Grátis':p+'€'}</strong>
       </div>`).join('')}
-    <div style="display:flex;gap:.6rem;margin-top:1.1rem">
-      <button class="btn ${isR?'btn-success':'btn-primary'} btn-md" style="flex:1" onclick="regEvt(${id})">
+    <div style="display:flex;gap:.6rem;margin-top:1.1rem;flex-wrap:wrap">
+      <button class="btn ${isR?'btn-success':'btn-primary'} btn-md" style="flex:1;min-width:140px" onclick="regEvt(${id})">
         ${isR?'✓ Já inscrito':'Inscrever agora'}
       </button>
       <button class="btn btn-ghost btn-md" onclick="dlICS(${id})">⬇ .ics</button>
@@ -1912,20 +1935,26 @@ function renderKnowledge() {
   const cc = document.getElementById('doc-cats');
   const gr = document.getElementById('docs-grid');
   if (!al) return;
-  if (!user)        al.innerHTML = `<div class="alert a-info">🔒 Materiais técnicos requerem login e quota ativa. <button onclick="openModal('modal-auth')" style="background:none;border:none;color:var(--teal2);cursor:pointer;font-weight:600;font-family:inherit">Entrar →</button></div>`;
+  if (!user)         al.innerHTML = `<div class="alert a-info">🔒 Materiais técnicos requerem login e quota ativa. <button onclick="openModal('modal-auth')" style="background:none;border:none;color:var(--teal2);cursor:pointer;font-weight:600;font-family:inherit">Entrar →</button></div>`;
   else if(!user.quota) al.innerHTML = `<div class="alert a-warn">⚠ Quota inativa. Renove a adesão para aceder aos materiais.</div>`;
-  else              al.innerHTML = `<div class="alert a-ok">✓ Acesso completo – quota ativa até dezembro 2026.</div>`;
-
+  else               al.innerHTML = `<div class="alert a-ok">✓ Acesso completo – quota ativa até dezembro 2026.</div>`;
   cc.innerHTML = Object.entries(CAT_LABELS).map(([k,v]) =>
     `<button class="btn ${docCat===k?'btn-teal':'btn-ghost'} btn-sm" onclick="fDoc('${k}')">${v}</button>`
   ).join('');
+  renderDocs();
+}
 
+function renderDocs() {
+  const gr = document.getElementById('docs-grid');
+  if (!gr) return;
   const q = (document.getElementById('doc-q')?.value||'').toLowerCase();
   const filtered = DOCS.filter(d => (docCat==='all'||d.cat===docCat) && d.title.toLowerCase().includes(q));
   const canGet = d => !d.restricted || user?.quota;
-  gr.innerHTML = filtered.map(d => `
+  gr.innerHTML = filtered.length === 0
+    ? '<p style="color:var(--muted);padding:1rem 0">Nenhum documento encontrado.</p>'
+    : filtered.map(d => `
     <div class="card doc-card" style="${!canGet(d)?'opacity:.58':''}">
-      <div style="font-size:1.9rem;margin-bottom:.65rem">${d.icon}</div>
+      <div style="font-size:1.9rem;margin-bottom:.65rem" aria-hidden="true">${d.icon}</div>
       <div style="display:flex;gap:.3rem;flex-wrap:wrap;margin-bottom:.45rem">
         <span class="badge b-blue">${d.type}</span>
         ${d.restricted?`<span class="badge ${canGet(d)?'b-green':'b-warn'}">${canGet(d)?'✓ Acesso':'🔒 Membros'}</span>`:''}
@@ -1947,15 +1976,13 @@ function renderJobs() {
   const tg = document.getElementById('job-tags');
   const gr = document.getElementById('jobs-grid');
   if (!al) return;
-  if (!user)          al.innerHTML = `<div class="alert a-info">🔒 Candidatura 1-click para membros. <button onclick="openModal('modal-auth')" style="background:none;border:none;color:var(--teal2);cursor:pointer;font-weight:600;font-family:inherit">Entrar →</button></div>`;
+  if (!user)           al.innerHTML = `<div class="alert a-info">🔒 Candidatura 1-click para membros. <button onclick="openModal('modal-auth')" style="background:none;border:none;color:var(--teal2);cursor:pointer;font-weight:600;font-family:inherit">Entrar →</button></div>`;
   else if(!user.quota) al.innerHTML = `<div class="alert a-warn">⚠ Quota inativa. Renove para usar candidatura 1-click.</div>`;
-  else                al.innerHTML = `<div class="alert a-ok">✓ Perfil ativo – candidatura 1-click disponível.</div>`;
-
+  else                 al.innerHTML = `<div class="alert a-ok">✓ Perfil ativo – candidatura 1-click disponível.</div>`;
   const allTags = [...new Set(JOBS.flatMap(j=>j.tags))];
   tg.innerHTML = ['all',...allTags].map(t =>
     `<button class="btn ${jobTag===t?'btn-teal':'btn-ghost'} btn-sm" onclick="fJob('${t}')">${t==='all'?'Todas':t}</button>`
   ).join('');
-
   const q = (document.getElementById('job-q')?.value||'').toLowerCase();
   const list = JOBS.filter(j => !j.pending &&
     (jobTag==='all'||j.tags.includes(jobTag)) &&
@@ -1964,10 +1991,10 @@ function renderJobs() {
   gr.innerHTML = list.map(j => {
     const isA = appliedJobs.includes(j.id);
     return `<div class="card job-card">
-      <div style="display:flex;gap:.8rem;margin-bottom:.75rem">
-        <div class="job-logo-box">${j.logo}</div>
-        <div>
-          <h4 style="font-weight:700;font-size:.9rem;margin-bottom:.12rem">${j.title}</h4>
+      <div style="display:flex;gap:.8rem;margin-bottom:.75rem;align-items:flex-start">
+        <div class="job-logo-box" aria-hidden="true">${j.logo}</div>
+        <div style="min-width:0">
+          <h4 style="font-weight:700;font-size:.9rem;margin-bottom:.12rem;word-break:break-word">${j.title}</h4>
           <div style="font-size:.76rem;color:var(--muted)">${j.co} · ${j.loc}</div>
         </div>
       </div>
@@ -1976,7 +2003,7 @@ function renderJobs() {
         ${j.tags.map(t=>`<span class="badge b-def">${t}</span>`).join('')}
         <span class="badge b-blue">${j.type}</span>
       </div>
-      <div style="display:flex;align-items:center;justify-content:space-between">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem">
         <span style="font-size:.67rem;color:rgba(255,255,255,.2)">Publicado: ${j.posted||'2026-02'}</span>
         ${isA
           ? '<button class="btn btn-success btn-sm">✓ Candidatura enviada</button>'
@@ -1995,7 +2022,7 @@ function applyJob(id) {
   renderJobs();
 }
 
-function showPostJob() { document.getElementById('post-form').style.display='block'; }
+function showPostJob() { document.getElementById('post-form').style.display='block'; window.scrollTo({top:document.getElementById('post-form').offsetTop - 80, behavior:'smooth'}); }
 
 function submitJob() {
   const t = document.getElementById('nj-t').value.trim();
@@ -2034,9 +2061,9 @@ function renderDashboard() {
 
 function dTab(id, btn) {
   document.querySelectorAll('#dash-content .dpanel').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('#dash-content .dtab').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('#dash-content .dtab').forEach(b => { b.classList.remove('active'); b.setAttribute('aria-selected','false'); });
   document.getElementById('dp-'+id).classList.add('active');
-  if (btn) btn.classList.add('active');
+  if (btn) { btn.classList.add('active'); btn.setAttribute('aria-selected','true'); }
 }
 
 /* ── ADMIN ──────────────────────────────────────────────────────────────── */
@@ -2053,15 +2080,15 @@ function renderAdmNews() {
   if (!el) return;
   el.innerHTML = NEWS.map(n => `
     <div class="card-flat news-row">
-      <div style="font-size:1.3rem">${n.icon}</div>
+      <div style="font-size:1.3rem" aria-hidden="true">${n.icon}</div>
       <div style="flex:1;min-width:0">
         <div style="display:flex;gap:.3rem;flex-wrap:wrap;margin-bottom:.2rem"><span class="badge b-teal">${n.cat}</span></div>
-        <h4 style="font-weight:700;font-size:.86rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${n.title}</h4>
-        <p style="font-size:.7rem;color:var(--muted)">${n.date}</p>
+        <h4 style="font-weight:700;font-size:.86rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${n.title}</h4>
+        <p style="font-size:.7rem;color:var(--muted)"><time>${n.date}</time></p>
       </div>
       <div style="display:flex;gap:.4rem;flex-shrink:0">
-        <button class="btn btn-ghost btn-sm">✏</button>
-        <button class="btn btn-danger btn-sm" onclick="delArticle(${n.id})">🗑</button>
+        <button class="btn btn-ghost btn-sm" aria-label="Editar artigo">✏</button>
+        <button class="btn btn-danger btn-sm" onclick="delArticle(${n.id})" aria-label="Eliminar artigo">🗑</button>
       </div>
     </div>`).join('');
 }
@@ -2074,8 +2101,8 @@ function renderAdmPending() {
   el.innerHTML = PENDING_JOBS.length===0
     ? '<p style="color:var(--muted)">Sem vagas pendentes.</p>'
     : PENDING_JOBS.map(j => `
-      <div class="card-flat news-row">
-        <div style="flex:1">
+      <div class="card-flat news-row" style="flex-wrap:wrap;gap:.6rem">
+        <div style="flex:1;min-width:160px">
           <h4 style="font-weight:700;font-size:.88rem">${j.title}</h4>
           <p style="font-size:.76rem;color:var(--muted)">${j.co}</p>
         </div>
@@ -2093,7 +2120,7 @@ function renderAdmUsers() {
   if (!el) return;
   el.innerHTML = Object.entries(USERS).map(([email,u]) => `
     <tr>
-      <td><div style="display:flex;align-items:center;gap:.5rem"><div style="width:25px;height:25px;border-radius:50%;background:var(--teal);display:inline-flex;align-items:center;justify-content:center;font-size:.6rem;font-weight:800">${u.avatar}</div>${u.name}</div></td>
+      <td><div style="display:flex;align-items:center;gap:.5rem"><div style="width:25px;height:25px;border-radius:50%;background:var(--teal);display:inline-flex;align-items:center;justify-content:center;font-size:.6rem;font-weight:800;flex-shrink:0" aria-hidden="true">${u.avatar}</div>${u.name}</div></td>
       <td style="color:var(--muted);font-size:.8rem">${email}</td>
       <td><span class="badge b-blue">${u.type}</span></td>
       <td><span class="badge ${u.quota?'b-green':'b-warn'}">${u.quota?'Ativa':'Inativa'}</span></td>
@@ -2106,8 +2133,8 @@ function renderAdmNL() {
   if (!el) return;
   el.innerHTML = NEWS.map(n => `
     <label class="card-flat" style="padding:.8rem 1rem;display:flex;align-items:center;gap:.75rem;cursor:pointer">
-      <input type="checkbox" style="accent-color:var(--teal);width:15px;height:15px">
-      <span style="font-size:.86rem">${n.icon} ${n.title}</span>
+      <input type="checkbox" style="accent-color:var(--teal);width:15px;height:15px;flex-shrink:0">
+      <span style="font-size:.86rem" aria-hidden="true">${n.icon}</span> <span style="font-size:.86rem">${n.title}</span>
     </label>`).join('');
 }
 
@@ -2127,16 +2154,16 @@ function delArticle(id) {
 
 function aTab(id, btn) {
   document.querySelectorAll('#adm-content .dpanel').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('#adm-content .dtab').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('#adm-content .dtab').forEach(b => { b.classList.remove('active'); b.setAttribute('aria-selected','false'); });
   document.getElementById('adp-' + id).classList.add('active');
-  if (btn) btn.classList.add('active');
+  if (btn) { btn.classList.add('active'); btn.setAttribute('aria-selected','true'); }
 }
 
 /* ── INIT ───────────────────────────────────────────────────────────────── */
 (function init() {
   renderHomeNews();
   renderEvents();
-  renderDocs();
+  renderKnowledge();
   renderJobs();
 })();
 </script>
