@@ -969,6 +969,103 @@ html, body { overflow-x: hidden; }
   50% { opacity:1 }
 }
 
+
+/* ===== Advanced Typography Upgrade ===== */
+
+body {
+  font-feature-settings: "ss01", "ss02";
+}
+
+h1 {
+  font-size: clamp(2.8rem, 5vw, 4.2rem);
+  line-height: 1.02;
+  letter-spacing: -0.04em;
+}
+
+h2 {
+  font-size: 2.4rem;
+  letter-spacing: -0.03em;
+}
+
+h3 {
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.section-subtle {
+  font-size: .8rem;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  color: #42a5f5;
+  margin-bottom: .75rem;
+}
+
+
+/* ===== Product-style Knowledge Section ===== */
+
+.knowledge-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 2rem;
+  margin-top: 3rem;
+}
+
+.knowledge-card {
+  background: linear-gradient(
+    145deg,
+    rgba(14,30,60,.8),
+    rgba(10,20,40,.9)
+  );
+  border: 1px solid rgba(66,165,245,.15);
+  border-radius: 18px;
+  padding: 2rem;
+  transition: all .35s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.knowledge-card:hover {
+  transform: translateY(-6px);
+  border-color: rgba(66,165,245,.4);
+  box-shadow: 0 20px 60px rgba(0,0,0,.6);
+}
+
+.knowledge-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    circle at top right,
+    rgba(66,165,245,.15),
+    transparent 60%
+  );
+  opacity: 0;
+  transition: .4s;
+}
+
+.knowledge-card:hover::after {
+  opacity: 1;
+}
+
+.card-eyebrow {
+  font-size: .7rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #90caf9;
+  margin-bottom: .6rem;
+}
+
+.card-title {
+  font-size: 1.4rem;
+  margin-bottom: .8rem;
+}
+
+.card-desc {
+  color: rgba(255,255,255,.65);
+  font-size: .95rem;
+  line-height: 1.5;
+}
+
 </style>
 </head>
 <body>
@@ -1001,7 +1098,7 @@ html, body { overflow-x: hidden; }
         <div id="l-err" class="alert a-err" style="display:none" role="alert">Email ou password incorretos.</div>
         <button class="btn btn-primary btn-md btn-full" onclick="doLogin()">Entrar &rarr;</button>
         <hr class="div">
-        <p style="font-size:.68rem;color:var(--muted);margin-bottom:.45rem;font-weight:600;letter-spacing:.6px;text-transform:uppercase">Demo — selecione um perfil:</p>
+        <p class="card-desc" style="font-size:.68rem;color:var(--muted);margin-bottom:.45rem;font-weight:600;letter-spacing:.6px;text-transform:uppercase">Demo — selecione um perfil:</p>
         <div style="display:flex;gap:.35rem;flex-wrap:wrap">
           <button class="btn btn-ghost btn-sm" onclick="fillDemo('admin@sespt.pt')">Admin SESPT</button>
           <button class="btn btn-ghost btn-sm" onclick="fillDemo('membro@incose.pt')">Membro Ativo</button>
@@ -1155,22 +1252,22 @@ html, body { overflow-x: hidden; }
       <p class="slabel">O que oferecemos</p>
       <h2 class="stitle">Recursos para <span class="accent-text">Systems Engineers</span></h2>
       <div class="g-4" style="margin-top:1.5rem" id="quick-grid">
-        <div class="card" onclick="navTo('events')">
+        <div class="knowledge-card" onclick="navTo('events')">
           <div style="font-size:.6rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--accent);margin-bottom:.5rem">Certificação</div>
           <div style="font-weight:700;font-size:.88rem;margin-bottom:.2rem;font-family:'Inter Tight',sans-serif">CSEP / ASEP</div>
           <div style="font-size:.73rem;color:var(--muted)">Prep-courses e exames certificados</div>
         </div>
-        <div class="card" onclick="navTo('jobs')">
+        <div class="knowledge-card" onclick="navTo('jobs')">
           <div style="font-size:.6rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--accent);margin-bottom:.5rem">Carreiras</div>
           <div style="font-weight:700;font-size:.88rem;margin-bottom:.2rem;font-family:'Inter Tight',sans-serif">Job Board SE</div>
           <div style="font-size:.73rem;color:var(--muted)">Vagas em empresas CAB parceiras</div>
         </div>
-        <div class="card" onclick="navTo('knowledge')">
+        <div class="knowledge-card" onclick="navTo('knowledge')">
           <div style="font-size:.6rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--accent);margin-bottom:.5rem">Biblioteca</div>
           <div style="font-weight:700;font-size:.88rem;margin-bottom:.2rem;font-family:'Inter Tight',sans-serif">Knowledge Base</div>
           <div style="font-size:.73rem;color:var(--muted)">Handbook, templates e webinars</div>
         </div>
-        <div class="card" onclick="navTo('about')">
+        <div class="knowledge-card" onclick="navTo('about')">
           <div style="font-size:.6rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--accent);margin-bottom:.5rem">Comunidade</div>
           <div style="font-weight:700;font-size:.88rem;margin-bottom:.2rem;font-family:'Inter Tight',sans-serif">Working Groups</div>
           <div style="font-size:.73rem;color:var(--muted)">MBSE &middot; Defense &middot; Space &middot; Sustainability</div>
@@ -1187,8 +1284,8 @@ html, body { overflow-x: hidden; }
     <h1 class="stitle">Sobre o <span class="accent-text">Capítulo</span></h1>
     <div class="g-about">
       <div>
-        <p style="color:rgba(255,255,255,.7);line-height:1.8;margin-bottom:1rem;font-size:.9rem">O SESPT – Engenharia de Sistemas é o capítulo oficial da International Council on Systems Engineering em Portugal. Representado legalmente pela <strong style="color:var(--accent2)">SESPT — Sociedade de Engenharia de Sistemas de Portugal</strong>, o capítulo reúne profissionais, académicos e empresas comprometidos com a excelência em Engenharia de Sistemas.</p>
-        <p style="color:rgba(255,255,255,.7);line-height:1.8;margin-bottom:1.5rem;font-size:.9rem">Fundado em 2025, cresceu rapidamente para mais de 240 membros e 18 empresas parceiras CAB, tornando-se polo de referência na comunidade europeia de SE.</p>
+        <p class="card-desc" style="color:rgba(255,255,255,.7);line-height:1.8;margin-bottom:1rem;font-size:.9rem">O SESPT – Engenharia de Sistemas é o capítulo oficial da International Council on Systems Engineering em Portugal. Representado legalmente pela <strong style="color:var(--accent2)">SESPT — Sociedade de Engenharia de Sistemas de Portugal</strong>, o capítulo reúne profissionais, académicos e empresas comprometidos com a excelência em Engenharia de Sistemas.</p>
+        <p class="card-desc" style="color:rgba(255,255,255,.7);line-height:1.8;margin-bottom:1.5rem;font-size:.9rem">Fundado em 2025, cresceu rapidamente para mais de 240 membros e 18 empresas parceiras CAB, tornando-se polo de referência na comunidade europeia de SE.</p>
         <h3 style="margin-bottom:.8rem;font-size:1rem">Working Groups ativos</h3>
         <div class="wg-grid">
           <div class="card-flat wg-card">
@@ -1222,7 +1319,7 @@ html, body { overflow-x: hidden; }
           <div class="dir-row"><span style="font-weight:600">Pedro Nunes</span><span style="color:var(--muted)">Secretário</span></div>
         </div>
         <div class="topbox">
-          <p style="font-size:.76rem;color:var(--muted);line-height:1.65"><strong style="color:rgba(255,255,255,.45)">Identificação legal:</strong><br>SESPT — Sociedade de Engenharia de Sistemas de Portugal<br>NIF: [inserir número]<br>Sede: Lisboa, Portugal</p>
+          <p class="card-desc" style="font-size:.76rem;color:var(--muted);line-height:1.65"><strong style="color:rgba(255,255,255,.45)">Identificação legal:</strong><br>SESPT — Sociedade de Engenharia de Sistemas de Portugal<br>NIF: [inserir número]<br>Sede: Lisboa, Portugal</p>
         </div>
       </div>
     </div>
@@ -1342,7 +1439,7 @@ html, body { overflow-x: hidden; }
       </div>
     </div>
     <div class="topbox" style="text-align:center;margin-top:1.4rem">
-      <p style="font-size:.78rem;color:var(--muted)">As quotas internacionais INCOSE são pagas separadamente em <a href="https://www.incose.org" target="_blank" rel="noopener" style="color:var(--accent2)">incose.org &nearr;</a>. A SESPT emite fatura nos termos legais portugueses.</p>
+      <p class="card-desc" style="font-size:.78rem;color:var(--muted)">As quotas internacionais INCOSE são pagas separadamente em <a href="https://www.incose.org" target="_blank" rel="noopener" style="color:var(--accent2)">incose.org &nearr;</a>. A SESPT emite fatura nos termos legais portugueses.</p>
     </div>
   </div>
 </div>
@@ -1353,7 +1450,7 @@ html, body { overflow-x: hidden; }
     <div id="dash-locked" style="text-align:center;padding:4rem 0">
       <div style="width:48px;height:48px;border-radius:50%;background:rgba(14,58,140,.2);border:1px solid rgba(18,82,200,.2);display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;font-size:.75rem;font-weight:700;color:var(--accent);letter-spacing:1px" aria-hidden="true">LOCK</div>
       <h2 style="margin-bottom:.45rem;font-size:1.25rem">Área privada</h2>
-      <p style="color:var(--muted);margin-bottom:1.4rem;font-size:.86rem">Faça login para aceder ao seu dashboard.</p>
+      <p class="card-desc" style="color:var(--muted);margin-bottom:1.4rem;font-size:.86rem">Faça login para aceder ao seu dashboard.</p>
       <button class="btn btn-primary btn-lg" onclick="openModal('modal-auth')">Entrar &rarr;</button>
     </div>
     <div id="dash-content" style="display:none">
@@ -1394,7 +1491,7 @@ html, body { overflow-x: hidden; }
         <div class="fg">
           <label>CV / Currículo (1-Click Apply)</label>
           <div class="card-flat" style="padding:.85rem;text-align:center;border-style:dashed">
-            <p style="font-size:.78rem;color:var(--muted)">Arraste o CV ou clique para upload</p>
+            <p class="card-desc" style="font-size:.78rem;color:var(--muted)">Arraste o CV ou clique para upload</p>
             <button class="btn btn-ghost btn-sm" style="margin-top:.45rem">Carregar PDF</button>
           </div>
         </div>
@@ -1413,7 +1510,7 @@ html, body { overflow-x: hidden; }
         </div>
       </div>
       <div class="dpanel" id="dp-wallet" role="tabpanel">
-        <p style="color:var(--muted);margin-bottom:1.2rem;font-size:.83rem">Certificados gerados automaticamente após check-in em eventos.</p>
+        <p class="card-desc" style="color:var(--muted);margin-bottom:1.2rem;font-size:.83rem">Certificados gerados automaticamente após check-in em eventos.</p>
         <div class="card-flat cert-row" style="border-left:3px solid var(--blue2)"><div style="flex:1;min-width:0"><div style="font-weight:700;font-size:.84rem;font-family:'Inter Tight',sans-serif">SESPT – Engenharia de Sistemas Summit 2025 — Participação</div><div style="font-size:.7rem;color:var(--muted);margin-top:2px">2025-11-15 &middot; CERT-2025-001</div></div><button class="btn btn-ghost btn-sm">PDF &darr;</button></div>
         <div class="card-flat cert-row" style="border-left:3px solid var(--blue2)"><div style="flex:1;min-width:0"><div style="font-weight:700;font-size:.84rem;font-family:'Inter Tight',sans-serif">ASEP Prep-Course — Dezembro 2025</div><div style="font-size:.7rem;color:var(--muted);margin-top:2px">2025-12-08 &middot; CERT-2025-002</div></div><button class="btn btn-ghost btn-sm">PDF &darr;</button></div>
         <div class="card-flat cert-row" style="border-left:3px solid var(--blue2)"><div style="flex:1;min-width:0"><div style="font-weight:700;font-size:.84rem;font-family:'Inter Tight',sans-serif">Webinar MBSE Intro — Novembro 2025</div><div style="font-size:.7rem;color:var(--muted);margin-top:2px">2025-11-28 &middot; CERT-2025-003</div></div><button class="btn btn-ghost btn-sm">PDF &darr;</button></div>
@@ -1428,7 +1525,7 @@ html, body { overflow-x: hidden; }
     <div id="adm-locked" style="text-align:center;padding:4rem 0">
       <div style="font-size:.65rem;font-weight:700;letter-spacing:2px;color:var(--danger);margin-bottom:1rem;text-transform:uppercase">Acesso restrito</div>
       <h2 style="margin-bottom:.45rem;font-size:1.25rem">Área de administração</h2>
-      <p style="color:var(--muted);font-size:.85rem">Apenas administradores SESPT têm acesso ao Backoffice.</p>
+      <p class="card-desc" style="color:var(--muted);font-size:.85rem">Apenas administradores SESPT têm acesso ao Backoffice.</p>
     </div>
     <div id="adm-content" style="display:none">
       <p class="slabel">Administração SESPT</p>
@@ -1471,7 +1568,7 @@ html, body { overflow-x: hidden; }
       </div>
       <div class="dpanel" id="adp-newsletter" role="tabpanel">
         <h3 style="margin-bottom:.7rem;font-size:.9rem">Gerador de Newsletter</h3>
-        <p style="font-size:.8rem;color:var(--muted);margin-bottom:1.1rem">Selecione notícias para gerar HTML automático para Mailchimp.</p>
+        <p class="card-desc" style="font-size:.8rem;color:var(--muted);margin-bottom:1.1rem">Selecione notícias para gerar HTML automático para Mailchimp.</p>
         <div id="a-nl-list" style="display:flex;flex-direction:column;gap:.45rem;max-width:580px;margin-bottom:1.2rem"></div>
         <div style="display:flex;gap:.55rem;flex-wrap:wrap">
           <button class="btn btn-primary btn-md">Gerar HTML &rarr;</button>
@@ -1680,10 +1777,10 @@ function closeCookie(){const c=document.getElementById('cookie');if(c)c.style.di
 function renderHomeNews(){
   const el=document.getElementById('home-news');if(!el)return;
   el.innerHTML=NEWS.slice(0,3).map((n,i)=>`
-    <div class="card" style="padding:1.15rem;cursor:pointer${i===0?';border-left:3px solid var(--blue2)':''}" tabindex="0" role="article">
+    <div class="knowledge-card" style="padding:1.15rem;cursor:pointer${i===0?';border-left:3px solid var(--blue2)':''}" tabindex="0" role="article">
       <span class="badge b-teal" style="margin-bottom:.5rem">${n.cat}</span>
       <h3 style="font-size:${i===0?'.95rem':'.84rem'};font-weight:700;margin:.4rem 0 .3rem;line-height:1.3;letter-spacing:-0.01em">${n.title}</h3>
-      ${i===0?`<p style="font-size:.79rem;color:var(--muted);line-height:1.58">${n.excerpt}</p>`:''}
+      ${i===0?`<p class="card-desc" style="font-size:.79rem;color:var(--muted);line-height:1.58">${n.excerpt}</p>`:''}
       <div style="font-size:.67rem;color:rgba(255,255,255,.2);margin-top:.5rem"><time>${n.date}</time></div>
     </div>`).join('');
 }
@@ -1696,7 +1793,7 @@ function getEvtPrice(e){if(!user)return e.price.p;if(user.role==='student')retur
 function renderEvents(){
   const el=document.getElementById('evts-list');if(!el)return;
   const list=EVENTS.filter(e=>(evtFF==='all'||e.format===evtFF)&&(evtFT==='all'||e.type===evtFT));
-  if(!list.length){el.innerHTML='<p style="color:var(--muted);padding:2rem 0">Nenhum evento encontrado para os filtros selecionados.</p>';return;}
+  if(!list.length){el.innerHTML='<p class="card-desc" style="color:var(--muted);padding:2rem 0">Nenhum evento encontrado para os filtros selecionados.</p>';return;}
   el.innerHTML=list.map(e=>{
     const d=new Date(e.date+'T12:00:00'),pr=getEvtPrice(e),isR=regEvts.includes(e.id),disc=user&&user.quota&&pr<e.price.p;
     return `<div class="card evt-row" role="listitem">
@@ -1710,7 +1807,7 @@ function renderEvents(){
           <span class="badge b-blue">${evtTypeLabel[e.type]}</span>
           ${disc?'<span class="badge b-green">Preço membro</span>':''}
         </div>
-        <h3>${e.title}</h3><p>${e.loc}</p>
+        <div class="card-eyebrow">MBSE MODULE</div><h3 class="card-title">${e.title}</h3><p>${e.loc}</p>
       </div>
       <div class="evt-right">
         <div class="evt-price ${pr===0?'price-free':''}">${pr===0?'Grátis':pr+'€'}</div>
@@ -1736,7 +1833,7 @@ function openEvtModal(id){
   document.getElementById('em-title').textContent=e.title;
   document.getElementById('em-body').innerHTML=`
     <div style="display:flex;gap:.3rem;flex-wrap:wrap;margin-bottom:.8rem"><span class="badge ${evtFmtColor[e.format]}">${e.format}</span><span class="badge b-blue">${evtTypeLabel[e.type]}</span></div>
-    <p style="font-size:.84rem;color:rgba(255,255,255,.65);line-height:1.68;margin-bottom:.85rem">${e.desc}</p>
+    <p class="card-desc" style="font-size:.84rem;color:rgba(255,255,255,.65);line-height:1.68;margin-bottom:.85rem">${e.desc}</p>
     <div class="topbox" style="margin-bottom:.85rem">
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:.45rem;font-size:.78rem">
         <div><span style="color:var(--muted)">Data: </span>${e.date}</div>
@@ -1745,7 +1842,7 @@ function openEvtModal(id){
         <div><span style="color:var(--muted)">Inscritos: </span>${e.reg}</div>
       </div>
     </div>
-    <p style="font-size:.67rem;font-weight:700;color:var(--muted);letter-spacing:.8px;margin-bottom:.35rem;text-transform:uppercase">Preços</p>
+    <p class="card-desc" style="font-size:.67rem;font-weight:700;color:var(--muted);letter-spacing:.8px;margin-bottom:.35rem;text-transform:uppercase">Preços</p>
     ${[['Público geral',e.price.p],['Membro ativo',e.price.m],['Estudante',e.price.s]].map(([l,p])=>`<div style="display:flex;justify-content:space-between;font-size:.8rem;padding:.22rem 0;border-bottom:1px solid var(--border)"><span style="color:var(--muted)">${l}</span><strong style="color:${p===0?'var(--success)':'#fff'}">${p===0?'Grátis':p+'€'}</strong></div>`).join('')}
     <div style="display:flex;gap:.55rem;margin-top:1rem;flex-wrap:wrap">
       <button class="btn ${isR?'btn-success':'btn-primary'} btn-md" style="flex:1;min-width:130px" onclick="regEvt(${id})">${isR?'Já inscrito':'Inscrever agora'}</button>
@@ -1770,14 +1867,14 @@ function renderDocs(){
   const q=(document.getElementById('doc-q')?.value||'').toLowerCase();
   const filtered=DOCS.filter(d=>(docCat==='all'||d.cat===docCat)&&d.title.toLowerCase().includes(q));
   const canGet=d=>!d.restricted||user?.quota;
-  gr.innerHTML=filtered.length===0?'<p style="color:var(--muted);padding:1rem 0">Nenhum documento encontrado.</p>':filtered.map(d=>`
+  gr.innerHTML=filtered.length===0?'<p class="card-desc" style="color:var(--muted);padding:1rem 0">Nenhum documento encontrado.</p>':filtered.map(d=>`
     <div class="card doc-card" style="${!canGet(d)?'opacity:.55':''}">
       <div class="doc-type-badge">${d.type}</div>
       <div style="display:flex;gap:.3rem;flex-wrap:wrap;margin-bottom:.4rem">
         ${d.restricted?`<span class="badge ${canGet(d)?'b-green':'b-warn'}">${canGet(d)?'Acesso':'Membros'}</span>`:'<span class="badge b-def">Público</span>'}
       </div>
       <h4 style="font-weight:700;font-size:.84rem;margin-bottom:.2rem;line-height:1.32;letter-spacing:-0.01em">${d.title}</h4>
-      <p style="font-size:.68rem;color:var(--muted);margin-bottom:.7rem">${d.size} &middot; ${d.date}</p>
+      <p class="card-desc" style="font-size:.68rem;color:var(--muted);margin-bottom:.7rem">${d.size} &middot; ${d.date}</p>
       ${canGet(d)?`<button class="btn btn-primary btn-sm">Download &darr;</button>`:`<button class="btn btn-ghost btn-sm" onclick="openModal('modal-auth')">${user?'Renovar quota':'Fazer login'}</button>`}
     </div>`).join('');
 }
@@ -1800,7 +1897,7 @@ function renderJobs(){
         <div class="job-logo-box" aria-hidden="true">${j.logo}</div>
         <div style="min-width:0"><h4 style="font-weight:700;font-size:.88rem;margin-bottom:.1rem;font-family:'Inter Tight',sans-serif;letter-spacing:-0.01em;word-break:break-word">${j.title}</h4><div style="font-size:.73rem;color:var(--muted)">${j.co} &middot; ${j.loc}</div></div>
       </div>
-      <p style="font-size:.77rem;color:rgba(255,255,255,.48);line-height:1.55;margin-bottom:.7rem">${j.desc}</p>
+      <p class="card-desc" style="font-size:.77rem;color:rgba(255,255,255,.48);line-height:1.55;margin-bottom:.7rem">${j.desc}</p>
       <div style="display:flex;gap:.28rem;flex-wrap:wrap;margin-bottom:.7rem">${j.tags.map(t=>`<span class="badge b-def">${t}</span>`).join('')}<span class="badge b-blue">${j.type}</span></div>
       <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.45rem">
         <span style="font-size:.65rem;color:rgba(255,255,255,.18)">Publicado: ${j.posted||'2026-02'}</span>
@@ -1859,7 +1956,7 @@ function renderAdmNews(){
       <div style="flex:1;min-width:0">
         <div style="margin-bottom:.18rem"><span class="badge b-teal">${n.cat}</span></div>
         <h4 style="font-weight:700;font-size:.84rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;letter-spacing:-0.01em">${n.title}</h4>
-        <p style="font-size:.68rem;color:var(--muted)"><time>${n.date}</time></p>
+        <p class="card-desc" style="font-size:.68rem;color:var(--muted)"><time>${n.date}</time></p>
       </div>
       <div style="display:flex;gap:.35rem;flex-shrink:0">
         <button class="btn btn-ghost btn-sm" aria-label="Editar">Editar</button>
@@ -1870,9 +1967,9 @@ function renderAdmNews(){
 function renderAdmPending(){
   const el=document.getElementById('a-pending-list'),ct=document.getElementById('a-pcount');
   if(ct)ct.textContent=PENDING_JOBS.length;if(!el)return;
-  el.innerHTML=PENDING_JOBS.length===0?'<p style="color:var(--muted)">Sem vagas pendentes.</p>':PENDING_JOBS.map(j=>`
+  el.innerHTML=PENDING_JOBS.length===0?'<p class="card-desc" style="color:var(--muted)">Sem vagas pendentes.</p>':PENDING_JOBS.map(j=>`
     <div class="card-flat news-row" style="flex-wrap:wrap;gap:.55rem">
-      <div style="flex:1;min-width:150px"><h4 style="font-weight:700;font-size:.86rem;letter-spacing:-0.01em">${j.title}</h4><p style="font-size:.73rem;color:var(--muted)">${j.co}</p></div>
+      <div style="flex:1;min-width:150px"><h4 style="font-weight:700;font-size:.86rem;letter-spacing:-0.01em">${j.title}</h4><p class="card-desc" style="font-size:.73rem;color:var(--muted)">${j.co}</p></div>
       <span class="badge b-warn">Pendente</span>
       <button class="btn btn-success btn-sm" onclick="approveJob(${j.id})">Aprovar</button>
       <button class="btn btn-danger btn-sm" onclick="rejectJob(${j.id})">Rejeitar</button>
